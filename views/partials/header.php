@@ -19,22 +19,22 @@
 
                 <div>
                     <ul>
-                        <li><a href="">ACCUEIL</a></li>
+                        <li><a href="/offers.php">ACCUEIL</a></li>
 
                         <li>
-                            <a href="../pages/mesOffres.php">MES OFFRES</a>
+                            <a href="./demandes.php">LES DEMANDES</a>
                         </li>
 
                         <li>
-                            <a href="./Nosoffres.php">NOS OFFRES</a>
+                            <a href="/mesoffres.php">MES ANNONCES</a>
                         </li>
 
                         <li>
-                            <a href="./Company.php">NOS COMPAGNIES</a>
+                            <a href="/mesdemandes.php">MES DEMANDES</a>
                         </li>
 
                         <li>
-                            <a href="../pages/maCompany.php">MA COMPAGNIE</a>
+                            <a href="../pages/maCompany.php">MES FAVORIES</a>
                         </li>
 
                         <li>

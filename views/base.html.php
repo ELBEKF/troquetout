@@ -7,7 +7,16 @@
 </head>
 <body>
     
-    <?php require_once 'views/partials/header.php'?>
+    <?php 
+if ($title === 'Connexion') {
+    
+} else {
+     require_once 'views/partials/header.php';
+}
+?>
+
+   
+
     <?= $content ?>
     
     <?php require_once 'views/partials/footer.php';?>

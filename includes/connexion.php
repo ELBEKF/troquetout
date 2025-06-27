@@ -14,10 +14,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($user && $password === $user['password']) {
         // ici on stocke les infos importantes dans la session
         
-        $_SESSION['new_id'] = $user['id'];
-        $_SESSION['new_email'] = $user['email'];
-        $_SESSION['new_nom'] = $user['nom'];
-        $_SESSION['new_role'] = $user['role'];
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_email'] = $user['email'];
+        $_SESSION['user_nom'] = $user['nom'];
+        $_SESSION['user_role'] = $user['role'];
 
         header('Location: /offers.php');
         exit;

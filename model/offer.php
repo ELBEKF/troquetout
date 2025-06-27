@@ -1,361 +1,189 @@
 <?php
 require_once dirname(__DIR__) . '/config/database.php';
+
 class Offers
 {
     private $id;
-    private $title;
+    private $titre;
     private $description;
-    private $mission;
-    private $location;
-    private $category;
-    private $employment_type_id;
-    private $technologies;
-    private $benefits;
-    private int $participants_count;
-    private $created_at;
-    private $image_url;
-    private $id_company;
-
-    public function __construct(){}
-
-public function findAll($pdo)
-{
-    $query = "SELECT * FROM `offers`";
-    $pdostmt = $pdo->prepare($query);
-    $pdostmt->execute();
-
-    return $pdostmt->fetchAll(PDO::FETCH_ASSOC);
-}
+    private $sens;
+    private $type;
+    private $categorie;
+    private $etat;
+    private $prix;
+    private $caution;
+    private $localisation;
+    private $photo;
+    private $disponibilite;
+    private $statut;
+    private $date_creation;
+    
 
 
+    public function __construct(array $data = [])
+    {
+        foreach ($data as $key => $value) {
+            if (property_exists($this, $key)) {
+                $this->$key = $value;
+            }
+        }
+    }
+
+    public function findAll($pdo)
+    {
+        $query = "SELECT * FROM offers";
+        $pdostmt = $pdo->prepare($query);
+        $pdostmt->execute();
+
+        return $pdostmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
     public function addOffers($pdo)
     {
+        try {
+            $query = "
+                INSERT INTO offers (
+                    titre, description, sens, type, categorie, etat, prix, caution, localisation, photo, disponibilite, statut, date_creation
+                ) VALUES (
+                    :titre, :description, :sens, :type, :categorie, :etat, :prix, :caution, :localisation, :photo, :disponibilite, :statut, NOW()
+                )
+            ";
 
-        $query = "
-        INSERT INTO job_offers (title, description, mission, location, category, id_company, employment_type_id, technologies_used, benefits, created_at, image_url)
-        VALUES ( :titre, :description, :mission, :adresse, :poste, :id_company, :contrat, :technologie, :positif, :dateCreation, :imageUrl)";
+            $pdostmt = $pdo->prepare($query);
 
-        $pdostmt = $pdo->prepare($query);
+            return $pdostmt->execute([
+                ":titre"         => $this->titre,
+                ":description"   => $this->description,
+                ":sens"          => $this->sens,
+                ":type"          => $this->type,
+                ":categorie"     => $this->categorie,
+                ":etat"          => $this->etat,
+                ":prix"          => $this->prix,
+                ":caution"       => $this->caution,
+                ":localisation"  => $this->localisation,
+                ":photo"         => $this->photo,
+                ":disponibilite" => $this->disponibilite,
+                ":statut"        => $this->statut
+            ]);
 
-        $pdostmt->execute([
-            ":titre" => $this->title,
-            ":description" => $this->description,
-            ":mission" => $this->mission,
-            ":adresse" => $this->location,
-            ":poste" => $this->category,
-            ":id_company" => $this->id_company,
-            ":contrat" => $this->employment_type_id,
-            ":technologie" => $this->technologies,
-            ":positif" => $this->benefits,
-            ":dateCreation" => $this->created_at,
-            ":imageUrl" => $this->image_url
-        ]);
+        } catch (PDOException $e) {
+            echo "<strong>Erreur SQL :</strong> " . $e->getMessage() . "<br>";
+            echo "<strong>Données de l'objet :</strong><pre>";
+            var_dump($this);
+            echo "</pre>";
+            return false;
+        }
     }
 
-   public function findOfferById($pdo, $id)
+    public function findOfferById($pdo, $id)
     {
-    $sql = "SELECT * FROM offers WHERE id = :id";
-    $pdostmt = $pdo->prepare($sql);
-    $pdostmt->execute(['id' => $id]);
-    $offer = $pdostmt->fetch(PDO::FETCH_ASSOC);
-    return $offer;
+        $sql = "SELECT * FROM offers WHERE id = :id";
+        $pdostmt = $pdo->prepare($sql);
+        $pdostmt->execute(['id' => $id]);
+        return $pdostmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+public function deleteOffer($pdo, $id)
+{
+    $sql = "DELETE FROM offers WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute(['id' => $id]);
+}
+
+public function updateOfferInDb($pdo, $id)
+{
+    $sql = "
+        UPDATE offers SET
+            titre = :titre,
+            description = :description,
+            sens = :sens,
+            type = :type,
+            categorie = :categorie,
+            etat = :etat,
+            prix = :prix,
+            caution = :caution,
+            localisation = :localisation,
+            photo = :photo,
+            disponibilite = :disponibilite,
+            statut = :statut
+        WHERE id = :id
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([
+        ':titre'         => $this->titre,
+        ':description'   => $this->description,
+        ':sens'          => $this->sens,
+        ':type'          => $this->type,
+        ':categorie'     => $this->categorie,
+        ':etat'          => $this->etat,
+        ':prix'          => $this->prix,
+        ':caution'       => $this->caution,
+        ':localisation'  => $this->localisation,
+        ':photo'         => $this->photo,
+        ':disponibilite' => $this->disponibilite,
+        ':statut'        => $this->statut,
+        ':id'            => $id
+    ]);
+}
+
+public function searchOffersByTitre($pdo, $search) {
+$sql = "SELECT * FROM offers WHERE titre LIKE :search";
+$stmt = $pdo->prepare($sql);
+$stmt->execute(['search' => '%' . $search . '%']);
+return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
+
+public function findWithFilters($pdo, $search = '', $type = '')
+{
+    $query = "SELECT * FROM offers WHERE 1=1";
+    $params = [];
+
+    if (!empty($search)) {
+        $query .= " AND titre LIKE :search";
+        $params[':search'] = '%' . $search . '%';
+    }
+
+    if (!empty($type)) {
+        $query .= " AND type = :type";
+        $params[':type'] = $type;
+    }
+
+    $stmt = $pdo->prepare($query);
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 
-    /**
-     * Get the value of id
-     */ 
-    public function getId()
-    {
-        return $this->id;
-    }
 
-    /**
-     * Set the value of id
-     *
-     * @return  self
-     */ 
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of title
-     */ 
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * Set the value of title
-     *
-     * @return  self
-     */ 
-    public function setTitle($title)
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of description
-     */ 
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * Set the value of description
-     *
-     * @return  self
-     */ 
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of mission
-     */ 
-    public function getMission()
-    {
-        return $this->mission;
-    }
-
-    /**
-     * Set the value of mission
-     *
-     * @return  self
-     */ 
-    public function setMission($mission)
-    {
-        $this->mission = $mission;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of location
-     */ 
-    public function getLocation()
-    {
-        return $this->location;
-    }
-
-    /**
-     * Set the value of location
-     *
-     * @return  self
-     */ 
-    public function setLocation($location)
-    {
-        $this->location = $location;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of category
-     */ 
-    public function getCategory()
-    {
-        return $this->category;
-    }
-
-    /**
-     * Set the value of category
-     *
-     * @return  self
-     */ 
-    public function setCategory($category)
-    {
-        $this->category = $category;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of employment_type_id
-     */ 
-    public function getEmployment_type_id()
-    {
-        return $this->employment_type_id;
-    }
-
-    /**
-     * Set the value of employment_type_id
-     *
-     * @return  self
-     */ 
-    public function setEmployment_type_id($employment_type_id)
-    {
-        $this->employment_type_id = $employment_type_id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of technologies
-     */ 
-    public function getTechnologies()
-    {
-        return $this->technologies;
-    }
-
-    /**
-     * Set the value of technologies
-     *
-     * @return  self
-     */ 
-    public function setTechnologies($technologies)
-    {
-        $this->technologies = $technologies;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of benefits
-     */ 
-    public function getBenefits()
-    {
-        return $this->benefits;
-    }
-
-    /**
-     * Set the value of benefits
-     *
-     * @return  self
-     */ 
-    public function setBenefits($benefits)
-    {
-        $this->benefits = $benefits;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of participants_count
-     */ 
-    public function getParticipants_count()
-    {
-        return $this->participants_count;
-    }
-
-    /**
-     * Set the value of participants_count
-     *
-     * @return  self
-     */ 
-    public function setParticipants_count($participants_count)
-    {
-        $this->participants_count = $participants_count;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of created_at
-     */ 
-    public function getCreated_at()
-    {
-        return $this->created_at;
-    }
-
-    /**
-     * Set the value of created_at
-     *
-     * @return  self
-     */ 
-    public function setCreated_at($created_at)
-    {
-        $this->created_at = $created_at;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of image_url
-     */ 
-    public function getImage_url()
-    {
-        return $this->image_url;
-    }
-
-    /**
-     * Set the value of image_url
-     *
-     * @return  self
-     */ 
-    public function setImage_url($image_url)
-    {
-        $this->image_url = $image_url;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of id_company
-     */ 
-    public function getId_company()
-    {
-        return $this->id_company;
-    }
-
-    /**
-     * Set the value of id_company
-     *
-     * @return  self
-     */ 
-    public function setId_company($id_company)
-    {
-        $this->id_company = $id_company;
-
-        return $this;
-    }
+    // Getters and setters...
+    public function getId() { return $this->id; }
+    public function setId($id) { $this->id = $id; return $this; }
+    public function getTitre() { return $this->titre; }
+    public function setTitre($titre) { $this->titre = $titre; return $this; }
+    public function getDescription() { return $this->description; }
+    public function setDescription($description) { $this->description = $description; return $this; }
+    public function getSens() { return $this->sens; }
+    public function setSens($sens) { $this->sens = $sens; return $this; }
+    public function getType() { return $this->type; }
+    public function setType($type) { $this->type = $type; return $this; }
+    public function getCategorie() { return $this->categorie; }
+    public function setCategorie($categorie) { $this->categorie = $categorie; return $this; }
+    public function getEtat() { return $this->etat; }
+    public function setEtat($etat) { $this->etat = $etat; return $this; }
+    public function getPrix() { return $this->prix; }
+    public function setPrix($prix) { $this->prix = $prix; return $this; }
+    public function getCaution() { return $this->caution; }
+    public function setCaution($caution) { $this->caution = $caution; return $this; }
+    public function getLocalisation() { return $this->localisation; }
+    public function setLocalisation($localisation) { $this->localisation = $localisation; return $this; }
+    public function getPhoto() { return $this->photo; }
+    public function setPhoto($photo) { $this->photo = $photo; return $this; }
+    public function getDisponibilite() { return $this->disponibilite; }
+    public function setDisponibilite($disponibilite) { $this->disponibilite = $disponibilite; return $this; }
+    public function getStatut() { return $this->statut; }
+    public function setStatut($statut) { $this->statut = $statut; return $this; }
+    public function getDate_creation() { return $this->date_creation; }
+    public function setDate_creation($date_creation) { $this->date_creation = $date_creation; return $this; }
 }
-// // if ($_SERVER["REQUEST_METHOD"] === "POST") {
-//     if (
-//         !empty($_POST["inputTitre"]) &&
-//         !empty($_POST["inputDescription"]) &&
-//         !empty($_POST["inputMission"]) &&
-//         !empty($_POST["inputAdresse"]) &&
-//         !empty($_POST["inputPoste"]) &&
-//         !empty($_POST["inputEntreprise"]) &&
-//         !empty($_POST["inputContrat"]) &&
-//         !empty($_POST["inputTechnologie"]) &&
-//         !empty($_POST["inputPositif"]) &&
-//         !empty($_POST["inputDateCreation"]) &&
-//         !empty($_POST["inputImage"])
-//     ) {
-
-//         $newOffer = new Offers(
-//             htmlspecialchars($_POST["inputTitre"]),
-//             htmlspecialchars($_POST["inputDescription"]),
-//             htmlspecialchars($_POST["inputMission"]),
-//             htmlspecialchars($_POST["inputAdresse"]),
-//             htmlspecialchars($_POST["inputPoste"]),
-//             htmlspecialchars($_POST["inputContrat"]),
-//             htmlspecialchars($_POST["inputTechnologie"]),
-//             htmlspecialchars($_POST["inputPositif"]),
-//             htmlspecialchars($_POST["inputDateCreation"]),
-//             htmlspecialchars($_POST["inputImage"]),
-//             (int) $_POST["inputEntreprise"],
-//             0,
-//             null // Donc mettre aussi $id = null à la fin
-//         );
-
-//         $newOffer->addOffers($pdo);
-
-//         header("Location: NosOffres.php");
-//         exit();
-//     }

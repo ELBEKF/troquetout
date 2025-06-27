@@ -34,7 +34,8 @@ unset($_SESSION['error']); // supprime la variable de session error juste après
                     <button type="submit">Se connecter</button>
                 </div>
                 <div>
-                    <p>Vous n'avez pas de compte ? <a href="./views/pages/Inscription.html.php">Inscription !</a></p>
+                    <p>Vous n'avez pas de compte ? <a href="/inscription.php">Inscription !</a></p>
+
                     <p>Vous êtes une Compagnie ? <a href="./views/pages/NewCompany.html.php">Rejoignez-nous !</a></p>
                 </div>
             </form>
