@@ -9,15 +9,22 @@ class OffersController {
 {
     $search = $_GET['search'] ?? '';
     $type = $_GET['type'] ?? '';
+    $etat = $_GET['etat'] ?? '';
+    $localisation = $_GET['localisation'] ?? '';
+    $sort = $_GET['sort'] ?? 'desc';
+
 
     $offerModel = new Offers();
-    $offers = $offerModel->findWithFilters($pdo, $search, $type);
+    $offers = $offerModel->findWithFilters($pdo, $search, $type, $etat, $localisation, $sort);
 
     render('homepage', [
         "title" => "Offres",
         "offers" => $offers,
         "search" => $search,
         "type" => $type,
+         "etat" => $etat,
+        "localisation" => $localisation,
+        "sort" => $sort,
     ]);
 }
 
@@ -73,12 +80,23 @@ echo "</pre>";
                 $addOffer->setDisponibilite($_POST["disponibilite"]);
                 $addOffer->setStatut($_POST["statut"]);
 
-                if ($addOffer->addOffers($pdo)) {
-                    header("Location: /offers.php");
-                    exit;
-                } else {
-                    echo "Erreur lors de l'ajout de l'offre";
-                }
+                if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (isset($_SESSION['user_id'])) {
+    $addOffer->setUserId($_SESSION['user_id']);
+} else {
+    echo "Vous devez être connecté pour ajouter une offre.";
+    exit;
+}
+
+if ($addOffer->addOffers($pdo)) {
+    header("Location: /offers.php");
+    exit;
+} else {
+    echo "Erreur lors de l'ajout de l'offre";
+}
             } else {
                 echo "Veuillez remplir tous les champs.";
             }
@@ -90,12 +108,43 @@ echo "</pre>";
     }
 
 public function delete($pdo, $id)
-    {
-        $offerModel = new Offers();
-        $offerModel->deleteOffer($pdo, $id);
-        header("Location: /offers.php");
+{
+    session_start();
+
+    // Vérifie si l'utilisateur est connecté
+    if (!isset($_SESSION['user_id'])) {
+        echo "Accès non autorisé.";
         exit;
     }
+
+    $offerModel = new Offers();
+    $offer = $offerModel->findOfferById($pdo, $id);
+
+    // Vérifie si l'offre existe
+    if (!$offer) {
+        echo "Offre non trouvée.";
+        exit;
+    }
+
+    // Vérifie si l'utilisateur est le propriétaire de l'offre ou un admin
+    if ($_SESSION['user_id'] != $offer['user_id'] && ($_SESSION['user_role'] ?? '') !== 'admin') {
+        echo "Vous n'avez pas la permission de supprimer cette offre.";
+        exit;
+    }
+
+    // Suppression autorisée
+    $offerModel->deleteOffer($pdo, $id);
+
+    // Redirige vers la page précédente si possible, sinon vers une page par défaut
+    if (!empty($_SERVER['HTTP_REFERER'])) {
+        header("Location: " . $_SERVER['HTTP_REFERER']);
+    } else {
+        header("Location: /offers.php"); // page par défaut
+    }
+    exit;
+}
+
+
 
 
 public function modifoffer($pdo, $id)
@@ -136,5 +185,60 @@ public function updateoffer($pdo)
         echo "Erreur lors de la mise à jour.";
     }
 }
+
+public function mesOffres($pdo) {
+    if (!isset($_SESSION['user_id'])) {
+        echo "Erreur : vous devez être connecté pour voir vos offres.";
+        exit;
+    }
+
+    $userId = $_SESSION['user_id'];
+    $offerModel = new Offers();
+    $offers = $offerModel->getByUserId($pdo, $userId);
+
+    render('mesoffres', [
+        'title' => 'Mes offres',
+        'offers' => $offers
+    ]);
+}
+
+
+public function addFavori($pdo)
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['offer_id'])) {
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login.php");
+            exit;
+        }
+
+        $userId = $_SESSION['user_id'];
+        $offerId = intval($_POST['offer_id']);
+
+        $offerModel = new Offers();
+        $offerModel->addFavori($pdo, $userId, $offerId);
+
+        // Redirection vers la page précédente ou les favoris
+        header("Location: mesfavoris.php" );
+        exit;
+    }
+}
+public function favoris($pdo)
+{
+    if (!isset($_SESSION['user_id'])) {
+        // Rediriger vers la page login si pas connecté
+        header("Location: /login.php");
+        exit;
+    }
+
+    $userId = $_SESSION['user_id'];
+    $offerModel = new Offers();
+    $favoris = $offerModel->getFavorisByUser($pdo, $userId);
+
+    render('mesfavoris', [  // on appelle ici la vue mesfavoris.php
+        'title' => 'Mes favoris',
+        'offers' => $favoris
+    ]);
+}
+
 
 }

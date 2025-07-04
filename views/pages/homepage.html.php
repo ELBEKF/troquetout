@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <div class="container my-5">
     <h1 class="mb-4">TOUTES LES OFFRES</h1>
 
@@ -17,6 +21,27 @@
             <option value="pret" <?= ($type === 'pret') ? 'selected' : '' ?>>Prêt</option>
         </select>
     </div>
+<div class="form-group">
+    <label for="etat">État</label>
+    <select name="etat" id="etat" class="form-select">
+        <option value="">-- Tous les états --</option>
+        <option value="neuf" <?= ($etat === 'neuf') ? 'selected' : '' ?>>Neuf</option>
+        <option value="bon" <?= ($etat === 'bon') ? 'selected' : '' ?>>Bon</option>
+        <option value="usé" <?= ($etat === 'usé') ? 'selected' : '' ?>>Usé</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="localisation">Localisation</label>
+    <input type="text" name="localisation" id="localisation" placeholder="Ville" value="<?= htmlspecialchars($localisation ?? '') ?>" class="form-control">
+</div>
+<div class="form-group">
+    <label for="sort">Trier par date</label>
+    <select name="sort" id="sort" class="form-select">
+        <option value="desc" <?= ($sort === 'desc') ? 'selected' : '' ?>>Plus récentes</option>
+        <option value="asc" <?= ($sort === 'asc') ? 'selected' : '' ?>>Plus anciennes</option>
+    </select>
+</div>
 
     <button type="submit" class="btn btn-primary">
         🔍 Rechercher
@@ -50,14 +75,26 @@
     <p class="card-text">
         <strong>Statut:</strong> <?= $offer['statut'] ? '✅ Actif' : '⛔ Inactif' ?>
     </p>
+
     <a href="/offerdetail.php?id=<?= urlencode($offer['id']) ?>" class="btn btn-outline-primary mt-2">Détail</a>
+    <?php if (
+    isset($_SESSION['user_id']) && 
+    ($_SESSION['user_id'] == $offer['user_id'] || ($_SESSION['user_role'] ?? '') === 'admin')
+): ?>
     <a href="/deleteOffer.php?id=<?= urlencode($offer['id']) ?>" 
        class="btn btn-outline-danger mt-2"
        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?');">
        Supprimer
     </a>
-    <a href="modifOffer.php?id=<?= $offer['id'] ?>" class="btn btn-warning">Modifier</a>
+    <a href="modifOffer.php?id=<?= $offer['id'] ?>" class="btn btn-warning mt-2">Modifier</a>
+<?php endif; ?>
 
+    <form action="/addfavoris.php" method="POST" class="mt-2">
+        <input type="hidden" name="offer_id" value="<?= $offer['id'] ?>">
+        <button type="submit" class="btn btn-outline-secondary w-100">
+            ❤️ Ajouter aux favoris
+        </button>
+    </form>
 </div>
 
 

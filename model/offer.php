@@ -17,8 +17,10 @@ class Offers
     private $disponibilite;
     private $statut;
     private $date_creation;
-    
+    private $user_id;
 
+    
+private $pdo;
 
     public function __construct(array $data = [])
     {
@@ -43,9 +45,9 @@ class Offers
         try {
             $query = "
                 INSERT INTO offers (
-                    titre, description, sens, type, categorie, etat, prix, caution, localisation, photo, disponibilite, statut, date_creation
+                    titre, description, sens, type, categorie, etat, prix, caution, localisation, photo, disponibilite, statut, user_id, date_creation
                 ) VALUES (
-                    :titre, :description, :sens, :type, :categorie, :etat, :prix, :caution, :localisation, :photo, :disponibilite, :statut, NOW()
+                    :titre, :description, :sens, :type, :categorie, :etat, :prix, :caution, :localisation, :photo, :disponibilite, :statut,:user_id, NOW()
                 )
             ";
 
@@ -63,7 +65,8 @@ class Offers
                 ":localisation"  => $this->localisation,
                 ":photo"         => $this->photo,
                 ":disponibilite" => $this->disponibilite,
-                ":statut"        => $this->statut
+                ":statut"        => $this->statut,
+                ":user_id"       => $this->user_id
             ]);
 
         } catch (PDOException $e) {
@@ -135,7 +138,7 @@ return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 }
 
-public function findWithFilters($pdo, $search = '', $type = '')
+public function findWithFilters($pdo, $search = '', $type = '', $etat ='', $localisation ='', $sort ='')
 {
     $query = "SELECT * FROM offers WHERE 1=1";
     $params = [];
@@ -150,8 +153,48 @@ public function findWithFilters($pdo, $search = '', $type = '')
         $params[':type'] = $type;
     }
 
+    if (!empty($etat)) {
+        $query .= " AND etat = :etat";
+        $params[':etat'] = $etat;
+    }
+
+    if (!empty($localisation)) {
+        $query .= " AND localisation LIKE :localisation";
+        $params[':localisation'] = '%' . $localisation . '%';
+    }
+    $sort = strtolower($sort) === 'asc' ? 'ASC' : 'DESC';
+    $query .= " ORDER BY date_creation $sort";
+
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function getByUserId($pdo, $userId) {
+    $stmt = $pdo->prepare("SELECT * FROM offers WHERE user_id = :user_id ORDER BY date_creation DESC");
+    $stmt->execute(['user_id' => $userId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+
+
+// offer_functions.php ou offerModel.php (hors de la classe)
+public function addFavori(PDO $pdo, int $userId, int $offerId): bool {
+    $stmt = $pdo->prepare("INSERT IGNORE INTO favoris (user_id, offer_id) VALUES (:user_id, :offer_id)");
+    return $stmt->execute([
+        'user_id' => $userId,
+        'offer_id' => $offerId
+    ]);
+}
+
+public function getFavorisByUser(PDO $pdo, int $userId): array {
+    $stmt = $pdo->prepare("
+        SELECT o.* FROM offers o
+        JOIN favoris f ON o.id = f.offer_id
+        WHERE f.user_id = :user_id
+    ");
+    $stmt->execute(['user_id' => $userId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
@@ -186,4 +229,13 @@ public function findWithFilters($pdo, $search = '', $type = '')
     public function setStatut($statut) { $this->statut = $statut; return $this; }
     public function getDate_creation() { return $this->date_creation; }
     public function setDate_creation($date_creation) { $this->date_creation = $date_creation; return $this; }
+    public function getUserId() {
+    return $this->user_id;
+}
+
+public function setUserId($user_id) {
+    $this->user_id = $user_id;
+    return $this;
+}
+
 }

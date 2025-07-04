@@ -17,10 +17,11 @@
         <p><?= nl2br(htmlspecialchars($req['description'])) ?></p>
 
         <!-- Bouton Proposer -->
-        <form action="proposition.php" method="post" style="margin-top: 10px;">
-            <input type="hidden" name="request_id" value="<?= $req['id'] ?>">
-            <button type="submit">Proposer</button>
-        </form>
+        <form action="proposer.php" method="post">
+    <input type="hidden" name="request_id" value="<?= $req['id'] ?>">
+    <button type="submit">Proposer une offre</button>
+</form>
+
         <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $req['user_id']): ?>
     <!-- Bouton Modifier -->
     <a href="editdemande.php?id=<?= $req['id'] ?>" class="btn btn-warning btn-sm" style="margin-right: 5px;">
