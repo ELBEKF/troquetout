@@ -1,22 +1,31 @@
-<h2>Proposer une offre</h2>
+<h2 class="offer-title">Proposer une offre</h2>
 
 <?php if (!empty($error)): ?>
-    <div style="color:red"><?= htmlspecialchars($error) ?></div>
+    <div class="offer-error"><?= htmlspecialchars($error) ?></div>
 <?php endif; ?>
 
-<form action="proposer.php" method="post">
-    <input type="hidden" name="request_id" value="<?= htmlspecialchars($request_id) ?>">
+<div class="offer-box">
+    <form action="/demande/proposer/<?= htmlspecialchars($request_id) ?>" method="post" class="offer-form">
 
-    <label for="offre_id">Choisissez votre offre :</label><br>
-    <select name="offre_id" id="offre_id" required>
-        <option value="">-- Sélectionnez une offre --</option>
-        <?php foreach ($offres as $offre): ?>
-            <option value="<?= $offre['id'] ?>"><?= htmlspecialchars($offre['titre']) ?></option>
-        <?php endforeach; ?>
-    </select><br><br>
+        <input type="hidden" name="request_id" value="<?= htmlspecialchars($request_id) ?>">
 
-    <label for="message">Message :</label><br>
-    <textarea name="message" id="message" required></textarea><br><br>
+        <div class="offer-field">
+            <label for="offre_id" class="offer-label">Choisissez votre offre :</label>
+            <select name="offre_id" id="offre_id" class="offer-select" required>
+                <option value="">-- Sélectionnez une offre --</option>
+                <?php foreach ($offres as $offre): ?>
+                    <option value="<?= $offre['id'] ?>"><?= htmlspecialchars($offre['titre']) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
 
-    <button type="submit">Envoyer</button>
-</form>
+        <div class="offer-field">
+            <label for="message" class="offer-label">Message :</label>
+            <textarea name="message" id="message" class="offer-textarea" required></textarea>
+        </div>
+
+        <div class="offer-actions">
+            <button type="submit" class="offer-btn">Envoyer</button>
+        </div>
+    </form>
+</div>

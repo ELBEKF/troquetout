@@ -1,60 +1,96 @@
-<div class="container">
+<!-- <div class="form-page"> -->
+    <div class="form-container">
+        <h2 class="form-title">Créer une nouvelle offre</h2>
 
-    <h2>Créer une nouvelle offre</h2>
+        <form class="form" action="addOffer" method="POST">
 
-    <form action="addoffer.php" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="titre">Titre <span class="form-required">*</span></label>
+                <input class="form-input" type="text" name="titre" id="titre" required>
+            </div>
 
-        <label for="titre">Titre :</label>
-        <input type="text" name="titre" id="titre" required><br><br>
+            <div class="form-group">
+                <label class="form-label" for="description">Description <span class="form-required">*</span></label>
+                <textarea class="form-textarea" name="description" id="description" required></textarea>
+            </div>
 
-        <label for="description">Description :</label><br>
-        <textarea name="description" id="description" rows="4" cols="50" required></textarea><br><br>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="sens">Sens <span class="form-required">*</span></label>
+                    <select class="form-select" name="sens" id="sens" required>
+                        <option value="offre">Offre</option>
+                        <option value="demande">Demande</option>
+                    </select>
+                </div>
 
-        <label for="sens">Sens :</label>
-        <select name="sens" id="sens" required>
-            <option value="offre">Offre</option>
-            <option value="demande">Demande</option>
-        </select><br><br>
+                <div class="form-group">
+                    <label class="form-label" for="type">Type <span class="form-required">*</span></label>
+                    <select class="form-select" name="type" id="type" required>
+                        <option value="don">Don</option>
+                        <option value="pret">Prêt</option>
+                        <option value="location">Location</option>
+                    </select>
+                </div>
+            </div>
 
-        <label for="type">Type :</label>
-        <select name="type" id="type" required>
-            <option value="don">Don</option>
-            <option value="pret">Prêt</option>
-            <option value="location">Location</option>
-        </select><br><br>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="categorie">Catégorie <span class="form-required">*</span></label>
+                    <input class="form-input" type="text" name="categorie" id="categorie" required>
+                </div>
 
-        <label for="categorie">Catégorie :</label>
-        <input type="text" name="categorie" id="categorie" required><br><br>
+                <div class="form-group">
+                    <label class="form-label" for="etat">État <span class="form-required">*</span></label>
+                    <select class="form-select" name="etat" id="etat" required>
+                        <option value="neuf">Neuf</option>
+                        <option value="bon">Bon</option>
+                        <option value="use">Utilisé</option>
+                    </select>
+                </div>
+            </div>
 
-        <label for="etat">État :</label>
-        <select name="etat" id="etat" required>
-            <option value="neuf">Neuf</option>
-            <option value="bon">Bon</option>
-            <option value="use">Utilisé</option>
-        </select><br><br>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="prix">Prix (€) <span class="form-required">*</span></label>
+                    <input class="form-input" type="number" step="0.01" name="prix" id="prix" required>
+                </div>
 
-        <label for="prix">Prix (€) :</label>
-        <input type="number" step="0.01" name="prix" id="prix" required><br><br>
+                <div class="form-group">
+                    <label class="form-label" for="caution">Caution (€) <span class="form-required">*</span></label>
+                    <input class="form-input" type="number" step="0.01" name="caution" id="caution" required>
+                </div>
+            </div>
 
-        <label for="caution">Caution (€) :</label>
-        <input type="number" step="0.01" name="caution" id="caution" required><br><br>
+            <div class="form-group">
+                <label class="form-label" for="localisation">Localisation <span class="form-required">*</span></label>
+                <input class="form-input" type="text" name="localisation" id="localisation" required>
+            </div>
 
-        <label for="localisation">Localisation :</label>
-        <input type="text" name="localisation" id="localisation" required><br><br>
+            <div class="form-group">
+                <label class="form-label" for="photo">Photo (URL)</label>
+                <input class="form-input" type="url" name="photo" id="photo" placeholder="https://exemple.com/image.jpg">
+            </div>
 
-        <label for="photo">Photo (URL) :</label>
-        <input type="url" name="photo" id="photo" placeholder="https://exemple.com/image.jpg"><br><br>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="disponibilite">Disponibilité <span class="form-required">*</span></label>
+                    <input class="form-input" type="date" name="disponibilite" id="disponibilite" required>
+                </div>
 
-        <label for="disponibilite">Disponibilité :</label>
-        <input type="date" name="disponibilite" id="disponibilite" required><br><br>
+                <div class="form-group">
+                    <label class="form-label" for="statut">Statut <span class="form-required">*</span></label>
+                    <select class="form-select" name="statut" id="statut" required>
+                        <option value="1">Actif</option>
+                        <option value="0">Inactif</option>
+                    </select>
+                </div>
+            </div>
 
-        <label for="statut">Statut :</label>
-        <select name="statut" id="statut" required>
-            <option value="1">Actif</option>
-            <option value="0">Inactif</option>
-        </select><br><br>
+            <div class="form-buttons">
+                <input type="submit" value="Ajouter l'offre" class="form-submit">
+                <button type="button" class="form-cancel" onclick="history.back()">Annuler</button>
+            </div>
 
-        <input type="submit" value="Ajouter l'offre">
-    </form>
-
+        </form>
+    </div>
 </div>

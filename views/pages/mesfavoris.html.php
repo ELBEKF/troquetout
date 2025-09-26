@@ -1,8 +1,9 @@
 <div class="container my-5">
-    <h1 class="mb-4">Mes Offres Favoris</h1>
+    <h1 class="form-title">Mes Offres Favoris</h1>
 
     <?php if (empty($offers)): ?>
-        <p>Vous n'avez pas encore ajouté d'offres en favoris.</p>
+        <div class="request-alert">
+        <p>Vous n'avez pas encore ajouté d'offres en favoris.</p></div>
     <?php else: ?>
         <div class="row">
             <?php foreach ($offers as $offer): ?>
@@ -18,8 +19,15 @@
                             <p class="card-text">
                                 <strong>Statut:</strong> <?= $offer['statut'] ? '✅ Actif' : '⛔ Inactif' ?>
                             </p>
-                            <a href="/offerdetail.php?id=<?= urlencode($offer['id']) ?>" class="btn btn-outline-primary mt-2">Détail</a>
+                        <a href="/offers/detail/<?= urlencode($offer['id']) ?>" class="btn btn-outline-primary mt-2">Détail</a>
                         </div>
+<form action="/mesfavoris/togglefavoris/" method="POST" class="mt-2">
+                            <input type="hidden" name="offer_id" value="<?= htmlspecialchars($offer['id']) ?>">
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="bi bi-heart-fill"></i> Retirer des favoris
+                            </button>
+                        </form>
+
                     </div>
                 </div>
             <?php endforeach; ?>

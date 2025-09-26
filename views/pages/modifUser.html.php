@@ -1,42 +1,68 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8" />
-    <title>Modifier Utilisateur</title>
-</head>
-<body>
-    <h1>Modifier l'utilisateur</h1>
+<!-- <div class="form-page"> -->
+    <div class="form-container">
+        <h2 class="form-title">Modifier l'utilisateur</h2>
 
-    <?php if (!empty($error)) : ?>
-        <div style="color: red;"><?= htmlspecialchars($error) ?></div>
-    <?php endif; ?>
+        <?php if (!empty($error)) : ?>
+            <p class="form-error"><?= htmlspecialchars($error) ?></p>
+        <?php endif; ?>
 
-    <form method="post" action="modifUser.php">
-        <input type="hidden" name="id" value="<?= htmlspecialchars($user['id']) ?>" />
+        
 
-        <label for="nom">Nom :</label><br />
-        <input type="text" id="nom" name="nom" value="<?= htmlspecialchars($user['nom']) ?>" required /><br /><br />
+        <form class="form" method="POST" action="/admin/modifUser/<?= $user['id'] ?>">
+            <input type="hidden" name="id" value="<?= htmlspecialchars($user['id']) ?>">
 
-        <label for="prenom">Prénom :</label><br />
-        <input type="text" id="prenom" name="prenom" value="<?= htmlspecialchars($user['prenom']) ?>" required /><br /><br />
+            <!-- Nom + Prénom -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="nom">Nom <span class="form-required">*</span></label>
+                    <input class="form-input" type="text" name="nom" id="nom" value="<?= htmlspecialchars($user['nom'] ?? '') ?>" required>
+                </div>
 
-        <label for="email">Email :</label><br />
-        <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required /><br /><br />
+                <div class="form-group">
+                    <label class="form-label" for="prenom">Prénom <span class="form-required">*</span></label>
+                    <input class="form-input" type="text" name="prenom" id="prenom" value="<?= htmlspecialchars($user['prenom'] ?? '') ?>" required>
+                </div>
+            </div>
 
-        <label for="telephone">Téléphone :</label><br />
-        <input type="text" id="telephone" name="telephone" value="<?= htmlspecialchars($user['telephone'] ?? '') ?>" /><br /><br />
+            <!-- Email -->
+            <div class="form-group">
+                <label class="form-label" for="email">Email <span class="form-required">*</span></label>
+                <input class="form-input" type="email" name="email" id="email" value="<?= htmlspecialchars($user['email'] ?? '') ?>" required>
+            </div>
 
-        <label for="ville">Ville :</label><br />
-        <input type="text" id="ville" name="ville" value="<?= htmlspecialchars($user['ville'] ?? '') ?>" /><br /><br />
+            <!-- Téléphone -->
+            <div class="form-group">
+                <label class="form-label" for="telephone">Téléphone</label>
+                <input class="form-input" type="text" name="telephone" id="telephone" value="<?= htmlspecialchars($user['telephone'] ?? '') ?>">
+            </div>
 
-        <label for="code_postal">Code Postal :</label><br />
-        <input type="text" id="code_postal" name="code_postal" value="<?= htmlspecialchars($user['code_postal'] ?? '') ?>" /><br /><br />
+            <!-- Ville + Code Postal -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="ville">Ville</label>
+                    <input class="form-input" type="text" name="ville" id="ville" value="<?= htmlspecialchars($user['ville'] ?? '') ?>">
+                </div>
 
-        <!-- Si tu veux modifier le mot de passe, ajoute un champ ici (optionnel) -->
+                <div class="form-group">
+                    <label class="form-label" for="code_postal">Code postal</label>
+                    <input class="form-input" type="text" name="code_postal" id="code_postal" value="<?= htmlspecialchars($user['code_postal'] ?? '') ?>">
+                </div>
+            </div>
 
-        <button type="submit">Modifier</button>
-    </form>
+            <!-- Informations admin -->
+            <div class="form-group">
+                <div class="admin-info">
+                    <p><strong>ID utilisateur :</strong> <?= htmlspecialchars($user['id']) ?></p>
+                    <p><strong>Rôle :</strong> <?= htmlspecialchars($user['role'] ?? 'user') ?></p>
+                    <p><strong>Date d'inscription :</strong> <?= htmlspecialchars($user['date_inscription'] ?? 'Non disponible') ?></p>
+                </div>
+            </div>
 
-    <p><a href="/admin.php">Retour au tableau de bord</a></p>
-</body>
-</html>
+            <!-- Boutons -->
+            <div class="form-buttons">
+                <button type="submit" class="form-submit">Mettre à jour l'utilisateur</button>
+                <a href="/admin" class="form-cancel">Retour au dashboard</a>
+            </div>
+        </form>
+    </div>
+</div>

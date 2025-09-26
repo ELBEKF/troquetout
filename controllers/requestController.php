@@ -1,13 +1,13 @@
 <?php
 
-session_start();
+// session_start();
 require_once dirname(__DIR__) . '/model/request.php';
 
 class RequestController {
     private $model;
 
-    public function __construct($pdo) {
-        $this->model = new Request($pdo);
+    public function __construct() {
+        $this->model = new Request();
     }
 
     public function create() {
@@ -27,7 +27,7 @@ class RequestController {
             ];
 
             $this->model->create($data);
-            header('Location: demandes.php');
+            header('Location: /demandes');
             exit;
         }
 
@@ -60,7 +60,7 @@ class RequestController {
             $success = $this->model->update($id, $data);
 
             if ($success) {
-                header('Location: demandes.php');
+                header('Location: /demandes');
                 exit;
             } else {
                 echo "Erreur : modification impossible ou non autorisée.";
@@ -90,7 +90,7 @@ class RequestController {
         $success = $this->model->delete($id, $_SESSION['user_id']);
 
         if ($success) {
-            header('Location: demandes.php');
+            header('Location: /mesdemandes');
             exit;
         } else {
             echo "Erreur : suppression impossible ou non autorisée.";

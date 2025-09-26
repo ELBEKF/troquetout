@@ -22,25 +22,35 @@ class Offers
     
 private $pdo;
 
-    public function __construct(array $data = [])
-    {
-        foreach ($data as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->$key = $value;
-            }
-        }
-    }
+    public function __construct(){
+// Connexion à la base de données
+$dsn = "mysql:host=localhost;dbname=troquetout;charset=utf8";
+$username = "root";
+$password = "";
 
-    public function findAll($pdo)
+try {
+    $this->pdo = new PDO($dsn, $username, $password, [
+         // Activation des erreurs PDO (bonnes pratiques)
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
+   
+} catch (PDOException $e) {
+    echo "Connexion échouée : " . $e->getMessage();
+}
+
+
+}
+
+    public function findAll()
     {
         $query = "SELECT * FROM offers";
-        $pdostmt = $pdo->prepare($query);
+        $pdostmt = $this->pdo->prepare($query);
         $pdostmt->execute();
 
         return $pdostmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function addOffers($pdo)
+    public function addOffers()
     {
         try {
             $query = "
@@ -51,7 +61,7 @@ private $pdo;
                 )
             ";
 
-            $pdostmt = $pdo->prepare($query);
+            $pdostmt = $this->pdo->prepare($query);
 
             return $pdostmt->execute([
                 ":titre"         => $this->titre,
@@ -78,22 +88,22 @@ private $pdo;
         }
     }
 
-    public function findOfferById($pdo, $id)
+    public function findOfferById( $id)
     {
         $sql = "SELECT * FROM offers WHERE id = :id";
-        $pdostmt = $pdo->prepare($sql);
+        $pdostmt = $this->pdo->prepare($sql);
         $pdostmt->execute(['id' => $id]);
         return $pdostmt->fetch(PDO::FETCH_ASSOC);
     }
 
-public function deleteOffer($pdo, $id)
+public function deleteOffer( $id)
 {
     $sql = "DELETE FROM offers WHERE id = :id";
-    $stmt = $pdo->prepare($sql);
+    $stmt = $this->pdo->prepare($sql);
     return $stmt->execute(['id' => $id]);
 }
 
-public function updateOfferInDb($pdo, $id)
+public function updateOfferInDb( $id)
 {
     $sql = "
         UPDATE offers SET
@@ -112,7 +122,7 @@ public function updateOfferInDb($pdo, $id)
         WHERE id = :id
     ";
 
-    $stmt = $pdo->prepare($sql);
+    $stmt = $this->pdo->prepare($sql);
     return $stmt->execute([
         ':titre'         => $this->titre,
         ':description'   => $this->description,
@@ -130,15 +140,97 @@ public function updateOfferInDb($pdo, $id)
     ]);
 }
 
-public function searchOffersByTitre($pdo, $search) {
+
+
+public function getByUserId( $userId) {
+    $stmt = $this->pdo->prepare("SELECT * FROM offers WHERE user_id = :user_id ORDER BY date_creation DESC");
+    $stmt->execute(['user_id' => $userId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+
+
+// offer_functions.php ou offerModel.php (hors de la classe)
+public function addFavori( int $userId, int $offerId): bool {
+    $stmt = $this->pdo->prepare("INSERT IGNORE INTO favoris (user_id, offer_id) VALUES (:user_id, :offer_id)");
+    return $stmt->execute([
+        'user_id' => $userId,
+        'offer_id' => $offerId
+    ]);
+}
+
+public function getFavorisByUser( int $userId): array {
+    $stmt = $this->pdo->prepare("
+        SELECT o.* FROM offers o
+        JOIN favoris f ON o.id = f.offer_id
+        WHERE f.user_id = :user_id
+    ");
+    $stmt->execute(['user_id' => $userId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function toggleFavoris( $userId, $offerId) {
+    // Vérifier si l'offre est déjà en favoris
+    $stmt = $this->pdo->prepare("SELECT * FROM favoris WHERE user_id = :user_id AND offer_id = :offer_id");
+    $stmt->execute(['user_id' => $userId, 'offer_id' => $offerId]);
+    $exists = $stmt->fetch();
+
+    if ($exists) {
+        // Supprimer des favoris
+        $stmt = $this->pdo->prepare("DELETE FROM favoris WHERE user_id = :user_id AND offer_id = :offer_id");
+        $stmt->execute(['user_id' => $userId, 'offer_id' => $offerId]);
+        return false; // retiré des favoris
+    } else {
+        // Ajouter aux favoris
+        $stmt = $this->pdo->prepare("INSERT INTO favoris (user_id, offer_id, date_ajout) VALUES (:user_id, :offer_id, NOW())");
+        $stmt->execute(['user_id' => $userId, 'offer_id' => $offerId]);
+        return true; // ajouté aux favoris
+    }
+}
+
+public function isFavori($userId, $offerId) {
+    $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM favoris WHERE user_id = :user_id AND offer_id = :offer_id");
+    $stmt->execute([
+        'user_id' => $userId,
+        'offer_id' => $offerId
+    ]);
+    return $stmt->fetchColumn() > 0;
+}
+
+public function getAllOffersWithFavoris( ?int $userId = null): array
+{
+    if ($userId === null) {
+        $sql = "SELECT o.*, 0 AS is_favori FROM offers o ORDER BY o.date_creation DESC";
+        $stmt = $this->pdo->query($sql);
+    } else {
+        $sql = "
+            SELECT o.*,
+            CASE 
+                WHEN f.id IS NOT NULL THEN 1
+                ELSE 0
+            END AS is_favori
+            FROM offers o
+            LEFT JOIN favoris f ON o.id = f.offer_id AND f.user_id = :user_id
+            ORDER BY o.date_creation DESC
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+    }
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+
+public function searchOffersByTitre( $search) {
 $sql = "SELECT * FROM offers WHERE titre LIKE :search";
-$stmt = $pdo->prepare($sql);
+$stmt = $this->pdo->prepare($sql);
 $stmt->execute(['search' => '%' . $search . '%']);
 return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 }
 
-public function findWithFilters($pdo, $search = '', $type = '', $etat ='', $localisation ='', $sort ='')
+public function findWithFilters( $search = '', $type = '', $etat ='', $localisation ='', $sort ='')
 {
     $query = "SELECT * FROM offers WHERE 1=1";
     $params = [];
@@ -165,40 +257,62 @@ public function findWithFilters($pdo, $search = '', $type = '', $etat ='', $loca
     $sort = strtolower($sort) === 'asc' ? 'ASC' : 'DESC';
     $query .= " ORDER BY date_creation $sort";
 
-    $stmt = $pdo->prepare($query);
+    $stmt = $this->pdo->prepare($query);
     $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-public function getByUserId($pdo, $userId) {
-    $stmt = $pdo->prepare("SELECT * FROM offers WHERE user_id = :user_id ORDER BY date_creation DESC");
-    $stmt->execute(['user_id' => $userId]);
+
+public function findWithFiltersAndFavoris($search = '', $type = '', $etat = '', $localisation = '', $sort = '', $userId = null)
+{
+    $query = "SELECT o.*, ";
+    
+    if ($userId !== null) {
+        $query .= "CASE WHEN f.id IS NOT NULL THEN 1 ELSE 0 END AS is_favori ";
+    } else {
+        $query .= "0 AS is_favori ";
+    }
+    
+    $query .= "FROM offers o ";
+    
+    if ($userId !== null) {
+        $query .= "LEFT JOIN favoris f ON o.id = f.offer_id AND f.user_id = :user_id ";
+    }
+    
+    $query .= "WHERE 1=1";
+    $params = [];
+
+    if ($userId !== null) {
+        $params[':user_id'] = $userId;
+    }
+
+    if (!empty($search)) {
+        $query .= " AND o.titre LIKE :search";
+        $params[':search'] = '%' . $search . '%';
+    }
+
+    if (!empty($type)) {
+        $query .= " AND o.type = :type";
+        $params[':type'] = $type;
+    }
+
+    if (!empty($etat)) {
+        $query .= " AND o.etat = :etat";
+        $params[':etat'] = $etat;
+    }
+
+    if (!empty($localisation)) {
+        $query .= " AND o.localisation LIKE :localisation";
+        $params[':localisation'] = '%' . $localisation . '%';
+    }
+    
+    $sort = strtolower($sort) === 'asc' ? 'ASC' : 'DESC';
+    $query .= " ORDER BY o.date_creation $sort";
+
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
-
-
-
-// offer_functions.php ou offerModel.php (hors de la classe)
-public function addFavori(PDO $pdo, int $userId, int $offerId): bool {
-    $stmt = $pdo->prepare("INSERT IGNORE INTO favoris (user_id, offer_id) VALUES (:user_id, :offer_id)");
-    return $stmt->execute([
-        'user_id' => $userId,
-        'offer_id' => $offerId
-    ]);
-}
-
-public function getFavorisByUser(PDO $pdo, int $userId): array {
-    $stmt = $pdo->prepare("
-        SELECT o.* FROM offers o
-        JOIN favoris f ON o.id = f.offer_id
-        WHERE f.user_id = :user_id
-    ");
-    $stmt->execute(['user_id' => $userId]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-
 
     // Getters and setters...
     public function getId() { return $this->id; }

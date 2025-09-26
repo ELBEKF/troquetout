@@ -1,46 +1,61 @@
-<!doctype html>
-<html lang="fr">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Gestion</title>
-</head>
+<header class="header">
+  <div class="container">
+      <div class="row">
+          <div class="col-md-12">
+              <nav class="navbar navbar-expand-lg navbar-light navigation">
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <a class="navbar-brand" href="/">
+                      <?php endif; ?>
+                      <img class="logo" src="/images/logo.png" alt="TroqueTout" style="width: 120px; height: auto;">
+                  </a>
+                  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+                          aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <div class="collapse navbar-collapse" id="navbarContent">
+                      <ul class="navbar-nav ml-auto main-nav">
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
 
-<body>
+                          <li class="nav-item"><a class="nav-link" href="/demandes">Les Demandes</a></li>
 
-<header>
-    <nav>
-        <div>
-            <h2>
-                Bonjour, <?= htmlspecialchars($_SESSION['user_nom'] ?? 'invité') ?> !
-            </h2>
+                          
+                              <li class="nav-item"><a class="nav-link" href="/mesoffres">Mes annonces</a></li>
+                              <li class="nav-item"><a class="nav-link" href="/mesdemandes">Mes demandes</a></li>
+                              <li class="nav-item"><a class="nav-link" href="/mesfavoris">Mes Favoris</a></li>
+                          
 
-            <ul>
-                <li><a href="/offers.php">ACCUEIL</a></li>
-                <li><a href="/demandes.php">LES DEMANDES</a></li>
-                <li><a href="/mesoffres.php">MES ANNONCES</a></li>
-                <li><a href="/mesdemande.php">MES DEMANDES</a></li>
-                <li><a href="/mesfavoris.php">MES FAVORIES</a></li>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li><a href="/messages_recus.php">MES MESSAGES</a></li>
-                <?php endif; ?>
+                          <!-- Forcer la ligne suivante -->
+                          <li class="break"></li>
 
-                <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-                    <li><a href="/admin.php">DASHBOARD</a></li>
-                <?php endif; ?>
+                          
+                              <li class="nav-item"><a class="nav-link" href="/messages_recus">Messages</a></li>
+                              <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                              
+                              <?php endif; ?>
 
-                <li><a href="/profil.php">PROFIL</a></li>
-                <li><a href="/contact.php">CONTACT</a></li>
-                <li>
-                    <form action="/deconnexion.php" method="post" style="display:inline;">
-                        <button type="submit">SE DÉCONNECTER</button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </nav>
+                          <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+                              <li class="nav-item"><a class="nav-link" href="/admin">DASHBOARD</a></li>
+                          <?php endif; ?>
+
+                          <?php if (isset($_SESSION['user_id'])): ?>
+                              <li class="nav-item"><a class="nav-link" href="/profil">Mon Profil</a></li>
+                          <?php endif; ?>
+                      </ul>
+                  </div>
+
+                  <div class="nav-item">
+                      <?php if (isset($_SESSION['user_id'])): ?>
+                          <form action="/deconnexion" method="post">
+                              <button type="submit" class="btn btn-danger btn-sm">Déconnexion</button>
+                          </form>
+                      <?php else: ?>
+                          <a href="/connexion" class="btn btn-primary btn-sm">Connexion</a>
+                      <?php endif; ?>
+                  </div>
+              </nav>
+          </div>
+      </div>
+  </div>
 </header>
-
-</body>
-</html>

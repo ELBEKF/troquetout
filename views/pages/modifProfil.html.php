@@ -1,29 +1,58 @@
-<h1>Modifier mon profil</h1>
+<!-- <div class="form-page"> -->
+    <div class="form-container">
+        <h2 class="form-title">Modifier mon profil</h2>
 
-<?php if (!empty($error)) : ?>
-    <p style="color:red"><?= htmlspecialchars($error) ?></p>
-<?php endif; ?>
+        <?php if (!empty($error)) : ?>
+            <p class="form-error"><?= htmlspecialchars($error) ?></p>
+        <?php endif; ?>
 
-<form method="POST" action="">
-    <input type="hidden" name="id" value="<?= htmlspecialchars($user['id'] ?? '') ?>">
+       <form class="form" method="POST" action="/profil/modifProfil">
 
-    <label>Nom :</label>
-    <input type="text" name="nom" value="<?= htmlspecialchars($user['nom'] ?? '') ?>" required><br>
+            <input type="hidden" name="id" value="<?= htmlspecialchars($user['id'] ?? '') ?>">
 
-    <label>Prénom :</label>
-    <input type="text" name="prenom" value="<?= htmlspecialchars($user['prenom'] ?? '') ?>" required><br>
+            <!-- Nom + Prénom -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="nom">Nom <span class="form-required">*</span></label>
+                    <input class="form-input" type="text" name="nom" id="nom" value="<?= htmlspecialchars($user['nom'] ?? '') ?>" required>
+                </div>
 
-    <label>Email :</label>
-    <input type="email" name="email" value="<?= htmlspecialchars($user['email'] ?? '') ?>" required><br>
+                <div class="form-group">
+                    <label class="form-label" for="prenom">Prénom <span class="form-required">*</span></label>
+                    <input class="form-input" type="text" name="prenom" id="prenom" value="<?= htmlspecialchars($user['prenom'] ?? '') ?>" required>
+                </div>
+            </div>
 
-    <label>Téléphone :</label>
-    <input type="text" name="telephone" value="<?= htmlspecialchars($user['telephone'] ?? '') ?>"><br>
+            <!-- Email -->
+            <div class="form-group">
+                <label class="form-label" for="email">Email <span class="form-required">*</span></label>
+                <input class="form-input" type="email" name="email" id="email" value="<?= htmlspecialchars($user['email'] ?? '') ?>" required>
+            </div>
 
-    <label>Ville :</label>
-    <input type="text" name="ville" value="<?= htmlspecialchars($user['ville'] ?? '') ?>"><br>
+            <!-- Téléphone -->
+            <div class="form-group">
+                <label class="form-label" for="telephone">Téléphone</label>
+                <input class="form-input" type="text" name="telephone" id="telephone" value="<?= htmlspecialchars($user['telephone'] ?? '') ?>">
+            </div>
 
-    <label>Code postal :</label>
-    <input type="text" name="code_postal" value="<?= htmlspecialchars($user['code_postal'] ?? '') ?>"><br>
+            <!-- Ville + Code Postal -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="ville">Ville</label>
+                    <input class="form-input" type="text" name="ville" id="ville" value="<?= htmlspecialchars($user['ville'] ?? '') ?>">
+                </div>
 
-    <button type="submit">Mettre à jour</button>
-</form>
+                <div class="form-group">
+                    <label class="form-label" for="code_postal">Code postal</label>
+                    <input class="form-input" type="text" name="code_postal" id="code_postal" value="<?= htmlspecialchars($user['code_postal'] ?? '') ?>">
+                </div>
+            </div>
+
+            <!-- Boutons -->
+            <div class="form-buttons">
+                <button type="submit" class="form-submit">Mettre à jour</button>
+                <button type="button" class="form-cancel" onclick="history.back()">Annuler</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -2,9 +2,24 @@
 class Request {
     private $pdo;
 
-    public function __construct($pdo) {
-        $this->pdo = $pdo;
-    }
+    public function __construct(){
+// Connexion à la base de données
+$dsn = "mysql:host=localhost;dbname=troquetout;charset=utf8";
+$username = "root";
+$password = "";
+
+try {
+    $this->pdo = new PDO($dsn, $username, $password, [
+         // Activation des erreurs PDO (bonnes pratiques)
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
+   
+} catch (PDOException $e) {
+    echo "Connexion échouée : " . $e->getMessage();
+}
+
+
+}
 
     public function create($data) {
         $stmt = $this->pdo->prepare("INSERT INTO requests (user_id, titre, description, type_demande, date_besoin)
