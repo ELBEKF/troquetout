@@ -1,4 +1,6 @@
-<h2 class="offer-title">Proposer une offre</h2>
+<link rel="stylesheet" href="/css/proposeoffre.css">
+
+<h2 class="form-title">Proposer une offre</h2>
 
 <?php if (!empty($error)): ?>
     <div class="offer-error"><?= htmlspecialchars($error) ?></div>
@@ -11,8 +13,8 @@
 
         <div class="offer-field">
             <label for="offre_id" class="offer-label">Choisissez votre offre :</label>
-            <select name="offre_id" id="offre_id" class="offer-select" required>
-                <option value="">-- Sélectionnez une offre --</option>
+            <select name="offre_id" id="offre_id" class="form-select" required>
+                <option value="">Sélectionnez une offre</option>
                 <?php foreach ($offres as $offre): ?>
                     <option value="<?= $offre['id'] ?>"><?= htmlspecialchars($offre['titre']) ?></option>
                 <?php endforeach; ?>
@@ -21,11 +23,11 @@
 
         <div class="offer-field">
             <label for="message" class="offer-label">Message :</label>
-            <textarea name="message" id="message" class="offer-textarea" required></textarea>
+            <textarea name="message" id="message" class="form-textarea" required></textarea>
         </div>
 
         <div class="offer-actions">
-            <button type="submit" class="offer-btn">Envoyer</button>
+            <button type="submit" class="contact-button">Envoyer</button>
         </div>
     </form>
 </div>

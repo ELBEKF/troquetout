@@ -1,4 +1,6 @@
-<div class="form-page">
+<link rel="stylesheet" href="/css/inscription.css">
+
+<!-- <div class="form-page"> -->
     <div class="form-container">
         <h2 class="form-title">Inscription</h2>
 

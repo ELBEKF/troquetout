@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/modifoffer.css">
+
 <!-- <div class="form-page"> -->
     <div class="form-container">
         <h2 class="form-title">Modifier votre offre</h2>

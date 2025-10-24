@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/edit.css">
+
 <!-- <div class="form-page"> -->
 <h2 class="form-title">Modifier votre demande</h2>
 

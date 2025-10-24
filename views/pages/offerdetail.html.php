@@ -1,8 +1,10 @@
+<link rel="stylesheet" href="/css/detailoffer.css">
+
 <?php if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 ?>
-<div class="offer-detail">
+<!-- <div class="offer-detail"> -->
     <div class="offer-header">
         <h1 class="offer-title">
             <i class="fa-solid fa-box-open"></i>

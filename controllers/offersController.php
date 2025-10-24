@@ -65,68 +65,86 @@ class OffersController {
   public function handleAddOffer()
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Vérification des champs
-        if (
-            !empty($_POST["titre"]) &&
-            !empty($_POST["description"]) &&
-            !empty($_POST["sens"]) &&
-            !empty($_POST["type"]) &&
-            !empty($_POST["categorie"]) &&
-            !empty($_POST["etat"]) &&
-            isset($_POST["prix"]) &&
-            isset($_POST["caution"]) &&
-            !empty($_POST["localisation"]) &&
-            !empty($_POST["photo"]) &&
-            !empty($_POST["disponibilite"]) &&
-            isset($_POST["statut"])
-        ) {
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
-
-            if (!isset($_SESSION['user_id'])) {
-                echo "Vous devez être connecté pour ajouter une offre.";
-                exit;
-            }
-
-            $addOffer = new Offers();
-            $addOffer->setTitre($_POST["titre"]);
-            $addOffer->setDescription($_POST["description"]);
-            $addOffer->setSens($_POST["sens"]);
-            $addOffer->setType($_POST["type"]);
-            $addOffer->setCategorie($_POST["categorie"]);
-            $addOffer->setEtat($_POST["etat"]);
-            $addOffer->setPrix($_POST["prix"]);
-            $addOffer->setCaution($_POST["caution"]);
-            $addOffer->setLocalisation($_POST["localisation"]);
-            $addOffer->setPhoto($_POST["photo"]);
-            $addOffer->setDisponibilite($_POST["disponibilite"]);
-            $addOffer->setStatut($_POST["statut"]);
-            $addOffer->setUserId($_SESSION['user_id']);
-
-            if ($addOffer->addOffers()) {
-                header("Location: /");
-                exit;
-            } else {
-                $error = "Erreur lors de l'ajout de l'offre.";
-            }
-        } else {
-            $error = "Veuillez remplir tous les champs.";
+        // Vérifie la session
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
 
-        // En cas d'erreur en POST, on affiche à nouveau le formulaire avec un message
+        if (!isset($_SESSION['user_id'])) {
+            echo "Vous devez être connecté pour ajouter une offre.";
+            exit;
+        }
+
+        // Vérifie les champs obligatoires (sauf photo, gérée à part)
+        $requiredFields = ['titre', 'description', 'sens', 'type', 'categorie', 'etat', 'prix', 'caution', 'localisation', 'disponibilite', 'statut'];
+        foreach ($requiredFields as $field) {
+            if (empty($_POST[$field]) && $_POST[$field] !== "0") {
+                $error = "Veuillez remplir tous les champs.";
+                render('addOffers', ["title" => "Ajout d'une offre", "error" => $error]);
+                return;
+            }
+        }
+
+        // === 🔹 Gestion de l'image uploadée ===
+        $photo_path = null;
+
+        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+            $tmp_name = $_FILES['photo']['tmp_name'];
+            $nom_original = basename($_FILES['photo']['name']);
+            $extension = strtolower(pathinfo($nom_original, PATHINFO_EXTENSION));
+
+            // Vérifie que c’est bien une image
+            $extensions_autorisees = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            if (in_array($extension, $extensions_autorisees)) {
+                $dossier_upload = dirname(__DIR__, 2) . '/'; // dossier /public/uploads/
+                if (!is_dir($dossier_upload)) {
+                    mkdir($dossier_upload, 0755, true);
+                }
+
+                $nom_fichier = uniqid('img_') . '.' . $extension;
+                $chemin_final = $dossier_upload . $nom_fichier;
+
+                if (move_uploaded_file($tmp_name, $chemin_final)) {
+                    $photo_path = 'uploads/' . $nom_fichier; // chemin relatif à stocker en BDD
+                }
+            }
+        }
+
+        // Crée et enregistre l’offre
+        $addOffer = new Offers();
+        $addOffer->setTitre($_POST["titre"]);
+        $addOffer->setDescription($_POST["description"]);
+        $addOffer->setSens($_POST["sens"]);
+        $addOffer->setType($_POST["type"]);
+        $addOffer->setCategorie($_POST["categorie"]);
+        $addOffer->setEtat($_POST["etat"]);
+        $addOffer->setPrix($_POST["prix"]);
+        $addOffer->setCaution($_POST["caution"]);
+        $addOffer->setLocalisation($_POST["localisation"]);
+        $addOffer->setPhoto($photo_path); // ✅ chemin local
+        $addOffer->setDisponibilite($_POST["disponibilite"]);
+        $addOffer->setStatut($_POST["statut"]);
+        $addOffer->setUserId($_SESSION['user_id']);
+
+        if ($addOffer->addOffers()) {
+            header("Location: /");
+            exit;
+        } else {
+            $error = "Erreur lors de l'ajout de l'offre.";
+        }
+
         render('addOffers', [
             "title" => "Ajout d'une offre",
             "error" => $error ?? ''
         ]);
-
     } else {
-        // Requête GET → afficher le formulaire vide
+        // GET : affiche le formulaire
         render('addOffers', [
             "title" => "Ajout d'une offre"
         ]);
     }
 }
+
 
 
 public function delete( $id)

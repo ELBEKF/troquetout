@@ -1,0 +1,223 @@
+/* ====== CSS EXACT POUR LE RENDU DE LA PAGE CONNEXION ====== */
+
+
+/* === Centrage de la page === */
+.connexion-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 120px);
+    /* padding: 40px 20px; */
+    position: relative;
+    z-index: 1;
+}
+
+/* === Titre principal === */
+.form-title {
+    color: #3d5a73;
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    /* margin-bottom: 60px; */
+    /* margin-top: 40px; */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* === Formulaire de connexion === */
+.connexion-form {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    max-width: 440px;
+    width: 100%;
+    padding: 50px ;
+    border-radius: 24px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Bordure dégradée en haut */
+.connexion-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #5eb5ac 0%, #4a8fa8 100%);
+}
+
+/* === Labels === */
+.connexion-label {
+    display: block;
+    /* margin-bottom: 10px; */
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1rem;
+}
+
+/* === Inputs === */
+.connexion-input {
+    width: 100%;
+    padding: 16px 20px;
+    /* margin-bottom: 25px; */
+    border: 2px solid #e1e8ed;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.connexion-input:focus {
+    border-color: #5eb5ac;
+    box-shadow: 0 0 0 3px rgba(94, 181, 172, 0.1);
+    outline: none;
+}
+
+.connexion-input::placeholder {
+    color: #adb5bd;
+}
+
+/* === Bouton de connexion === */
+.connexion-button {
+    width: 100%;
+    background: linear-gradient(90deg, #5eb5ac 0%, #3d5a73 100%);
+    color: #ffffff;
+    border: none;
+    padding: 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(94, 181, 172, 0.3);
+    margin-top: 10px;
+}
+
+.connexion-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(94, 181, 172, 0.4);
+}
+
+.connexion-button:active {
+    transform: translateY(0);
+}
+
+/* === Footer du formulaire === */
+.connexion-footer {
+    /* margin-top: 25px; */
+    text-align: center;
+}
+
+.connexion-footer p {
+    color: #5a6c7d;
+    font-size: 0.95rem;
+    /* margin: 0; */
+}
+
+.connexion-footer a {
+    color: #5eb5ac;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.connexion-footer a:hover {
+    color: #3d5a73;
+    text-decoration: underline;
+}
+
+/* === Modal d'erreur === */
+.connexion-modal {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    animation: slideDown 0.4s ease;
+}
+
+.connexion-modal-content {
+    background: linear-gradient(135deg, #ffe8e8 0%, #fff5f5 100%);
+    color: #d32f2f;
+    padding: 18px 28px;
+    border-radius: 12px;
+    border: 2px solid #e57373;
+    box-shadow: 0 6px 20px rgba(211, 47, 47, 0.2);
+    min-width: 300px;
+    max-width: 500px;
+}
+
+.connexion-modal-content p {
+    /* margin: 0; */
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* === Divs internes === */
+/* .connexion-form > div {
+    margin-bottom: 0;
+} */
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .form-title {
+        font-size: 2.5rem;
+        /* margin-bottom: 40px; */
+    }
+
+    .connexion-form {
+        padding: 40px 30px;
+        max-width: 90%;
+    }
+
+    .floating-cards .cart {
+        width: 70px !important;
+        height: 70px !important;
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-title {
+        font-size: 2rem;
+        /* margin-bottom: 30px; */
+    }
+
+    .connexion-form {
+        padding: 35px 25px;
+    }
+
+    .connexion-input {
+        padding: 14px 16px;
+    }
+
+    .connexion-button {
+        padding: 14px;
+        font-size: 1rem;
+    }
+
+    .floating-cards .cart {
+        width: 60px !important;
+        height: 60px !important;
+        font-size: 1.5rem;
+    }
+}
+
+/* === Animation === */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -30px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+.logoco{
+    width: 20px;
+}

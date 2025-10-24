@@ -1,5 +1,7 @@
+<link rel="stylesheet" href="/css/contact.css">
 
 
+<link rel="stylesheet" href="./css/connexion.css">
 
     <div class="form-container">
         <h2 class="form-title"><?= htmlspecialchars($title) ?></h2>

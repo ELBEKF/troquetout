@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/homepage.css">
+
 <?php
 $search = $search ?? '';
 $type = $type ?? '';
@@ -5,52 +7,13 @@ $etat = $etat ?? '';
 $localisation = $localisation ?? '';
 $sort = $sort ?? 'desc';
 ?>
-<!-- MESSAGE DE BIENVENUE SELON LE STATUT -->
-<section class="section section-welcome">
-  
-  <div class="container">
-    <h2 class="center-large-text">
-      <?php if (isset($_SESSION['user_id'])): ?>
-        <span class="text-primary">Bonjour,</span>
-        <span class="text-accent">
-          <?= htmlspecialchars($_SESSION['user_nom']) ?>
-        </span> !
-        <?php else: ?>
-          <h1 class="troquetout-title text-center mb-4"> 
-            BIENVENUE SUR <span class="text-primary">TROQUETOUT</span> 
-          </h1>
-          <p class="explique">
-            Bienvenue sur <strong>TrocTout</strong>, la plateforme qui facilite les échanges entre particuliers. 
-            Ici, vous pouvez proposer vos objets dont vous n’avez plus besoin, découvrir de nouvelles annonces, 
-            mettre en favori celles qui vous intéressent et entrer en contact directement avec les membres de la communauté. 
-            Notre objectif est simple : donner une seconde vie aux objets tout en favorisant la convivialité et l’économie locale.
-          </p>
-          
-          
-          
-          <div id="welcomeCarousel" class="carousel slide text-center" data-bs-ride="carousel"data-bs-ride="carousel"
-          data-bs-interval="2000">
-          <div class="carousel-inner">
-            
-            
-            <div class="mt-4">
-              <a href="/connexion" class="btn btn-primary">Se connecter</a>
-              <a href="/inscription" class="btn btn-success ms-2">S'inscrire</a>
-            </div>
-            
-            <?php endif; ?>
-          </h2>
-          
-          
-          
-        </div>
-</section>
+
+
 
 <!-- FORMULAIRE DE RECHERCHE -->
-<section class="section">
   <div class="container">
     <form method="GET" class="recherche">
-      <div class="">
+      <div class="search">
         <label for="search">Titre</label>
         <input type="text" name="search" id="search" placeholder="Rechercher par nom" value="<?= htmlspecialchars($search) ?>" class="form-control">
       </div>
@@ -58,7 +21,7 @@ $sort = $sort ?? 'desc';
       <div class="filtre">
         <label for="type">Type d'offre</label>
         <select name="type" id="type" class="form-select">
-          <option value="">-- Tous les types --</option>
+          <option value="">Tous les types</option>
           <option value="don" <?= ($type === 'don') ? 'selected' : '' ?>>Don</option>
           <option value="location" <?= ($type === 'location') ? 'selected' : '' ?>>Location</option>
           <option value="pret" <?= ($type === 'pret') ? 'selected' : '' ?>>Prêt</option>
@@ -68,7 +31,7 @@ $sort = $sort ?? 'desc';
       <div class="filtre">
         <label for="etat">État</label>
         <select name="etat" id="etat" class="form-select">
-          <option value="">-- Tous les états --</option>
+          <option value="">Tous les états</option>
           <option value="neuf" <?= ($etat === 'neuf') ? 'selected' : '' ?>>Neuf</option>
           <option value="bon" <?= ($etat === 'bon') ? 'selected' : '' ?>>Bon</option>
           <option value="usé" <?= ($etat === 'usé') ? 'selected' : '' ?>>Usé</option>
@@ -78,7 +41,7 @@ $sort = $sort ?? 'desc';
       <div class="filtre flex-fill">
         <label for="localisation">Localisation</label>
         <input type="text" name="localisation" id="localisation" placeholder="Ville" value="<?= htmlspecialchars($localisation) ?>" class="form-control">
-      </div>filtre
+      </div>
 
       <div class="filtre">
         <label for="sort">Trier par date</label>
@@ -89,16 +52,25 @@ $sort = $sort ?? 'desc';
       </div>
 
       <button type="submit" class="btn btn-primary">
-         Rechercher
+        Rechercher
       </button>
     </form>
+    <!-- <script>// Supprime les paramètres de l'URL sans recharger
+window.history.replaceState({}, document.title, window.location.pathname);
+</script> -->
+<section class="section">
 
     <!-- Bouton Ajouter une offre -->
     <div class="offres-wrapper p-4 my-4">
     <?php if (isset($_SESSION['user_id'])): ?>
-      <a href="offers/addOffer" class="btn btn-primary mb-4">
-        Ajouter une offre
-      </a>
+      <a href="offers/addOffer" class="btn btn-primary mb-4 btn-add">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor">
+        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+    </svg>
+    Ajouter une offre
+</a>
+
     <?php else: ?>
       <button class="btn btn-outline-secondary w-100 mb-4" disabled>
         🔒 Connectez-vous pour ajouter une offre
@@ -109,7 +81,7 @@ $sort = $sort ?? 'desc';
     <div class="row">
       <?php foreach ($offers as $offer): ?>
         <div class="col-lg-4 col-md-6 mb-4">
-          <div class="card h-100 shadow-sm">
+          <div class="card">
             <a href="/offers/detail/<?= urlencode($offer['id']) ?>">
               <img class="card-img-top" src="<?= htmlspecialchars($offer['photo']) ?>" alt="Image de l'offre" style="height: 200px; object-fit: contain;">
             </a>
@@ -172,6 +144,9 @@ $sort = $sort ?? 'desc';
     
   </div>
 </section>
+
+
+
 <script>
 function toggleFavori(button, event) {
   event.preventDefault(); // Empêche le submit classique
@@ -204,6 +179,5 @@ function toggleFavori(button, event) {
     alert("Une erreur s'est produite lors de la modification des favoris.");
   });
 }
+
 </script>
-
-

@@ -172,3 +172,57 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
+document.addEventListener('DOMContentLoaded', function() {
+  
+  // Toggle menu mobile
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  if (mobileMenuButton) {
+    mobileMenuButton.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const menu = document.getElementById('mobile-menu');
+      const openIcon = document.getElementById('menu-open-icon');
+      const closeIcon = document.getElementById('menu-close-icon');
+      
+      if (menu) menu.classList.toggle('hidden');
+      if (openIcon) openIcon.classList.toggle('hidden');
+      if (closeIcon) closeIcon.classList.toggle('hidden');
+    });
+  }
+
+  // Toggle menu utilisateur
+  const userMenuButton = document.getElementById('user-menu-button');
+  if (userMenuButton) {
+    userMenuButton.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const menu = document.getElementById('user-menu');
+      if (menu) menu.classList.toggle('hidden');
+    });
+  }
+
+  // Fermer le menu utilisateur si on clique ailleurs
+  document.addEventListener('click', function(event) {
+    const userMenuButton = document.getElementById('user-menu-button');
+    const userMenu = document.getElementById('user-menu');
+    
+    if (userMenuButton && userMenu && 
+        !userMenuButton.contains(event.target) && 
+        !userMenu.contains(event.target)) {
+      userMenu.classList.add('hidden');
+    }
+  });
+
+  // Fermer le menu mobile en cliquant sur un lien
+  const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+  mobileNavLinks.forEach(function(link) {
+    link.addEventListener('click', function() {
+      const menu = document.getElementById('mobile-menu');
+      const openIcon = document.getElementById('menu-open-icon');
+      const closeIcon = document.getElementById('menu-close-icon');
+      
+      if (menu) menu.classList.add('hidden');
+      if (openIcon) openIcon.classList.remove('hidden');
+      if (closeIcon) closeIcon.classList.add('hidden');
+    });
+  });
+  
+});

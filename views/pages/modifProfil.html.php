@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/modifprofil.css">
+
 <!-- <div class="form-page"> -->
     <div class="form-container">
         <h2 class="form-title">Modifier mon profil</h2>

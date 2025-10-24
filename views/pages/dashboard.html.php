@@ -1,103 +1,103 @@
+<link rel="stylesheet" href="/css/dashboard.css">
 
 <?php if (isset($_SESSION['success'])) : ?>
-    <div class="alert alert-success" id="successMessage"><?= htmlspecialchars($_SESSION['success']) ?></div>
+    <div class="alert alert-success" id="successMessage">
+        <?= htmlspecialchars($_SESSION['success']) ?>
+    </div>
     <?php unset($_SESSION['success']); ?>
     <script>
-        setTimeout(function() {
-            const message = document.getElementById('successMessage');
-            if (message) {
-                message.style.transition = 'opacity 0.5s ease-out';
-                message.style.opacity = '0';
-                setTimeout(function() {
-                    message.remove();
-                }, 500);
+        setTimeout(() => {
+            const msg = document.getElementById('successMessage');
+            if (msg) {
+                msg.style.transition = 'opacity 0.4s ease-out';
+                msg.style.opacity = '0';
+                setTimeout(() => msg.remove(), 400);
             }
-        }, 1000);
+        }, 1500);
     </script>
 <?php endif; ?>
-<div class="container my-5">
-    <h1 class="form-title">Dashboard Admin</h1>
 
+<div class="admin-dashboard container my-5">
+    <h1 class="form-title">Dashboard Administrateur</h1>
+
+    <!-- Statistiques -->
     <section class="stat">
-        <h3 style="color: white">Statistiques</h3>
-        <ul>
-            <li>Utilisateurs enregistrés : <?= $stats['total_users'] ?></li>
-            <li>Offres publiées : <?= $stats['total_offers'] ?></li>
-        </ul>
+        <h3>Statistiques</h3>
+        <div class="stat-cards">
+            <div class="stat-card">
+                <span class="stat-title">Utilisateurs enregistrés</span>
+                <p class="stat-number"><?= $stats['total_users'] ?></p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-title">Offres publiées</span>
+                <p class="stat-number"><?= $stats['total_offers'] ?></p>
+            </div>
+        </div>
     </section>
 
-    <hr>
-
-    <section>
-        <div class="container my-5">
+    <!-- Liste des utilisateurs -->
+    <section class="admin-section">
         <h3>Liste des utilisateurs</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th><th>Nom</th><th>Email</th><th>Telephone</th><th>Ville</th><th>code postale</th><th>Rôle</th><th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($users as $u): ?>
-                <tr>
-                    <td><?= $u['id'] ?></td>
-                    <td><?= htmlspecialchars($u['nom']) . ' ' . htmlspecialchars($u['prenom']) ?></td>
-                    <td><?= htmlspecialchars($u['email']) ?></td>
-                    <td><?= htmlspecialchars($u['telephone']) ?></td>
-                    <td><?= htmlspecialchars($u['ville']) ?></td>
-                    <td><?= htmlspecialchars($u['code_postal']) ?></td>
-                    <td><?= $u['role'] ?></td>
-                    <td>
-                        <?php if ($_SESSION['user_role'] == 'admin'): ?>
-                            
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Nom</th><th>Email</th><th>Téléphone</th>
+                        <th>Ville</th><th>Code postal</th><th>Rôle</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($users as $u): ?>
+                    <tr>
+                        <td><?= $u['id'] ?></td>
+                        <td><?= htmlspecialchars($u['nom']) . ' ' . htmlspecialchars($u['prenom']) ?></td>
+                        <td><?= htmlspecialchars($u['email']) ?></td>
+                        <td><?= htmlspecialchars($u['telephone']) ?></td>
+                        <td><?= htmlspecialchars($u['ville']) ?></td>
+                        <td><?= htmlspecialchars($u['code_postal']) ?></td>
+                        <td><span class="role <?= $u['role'] ?>"><?= ucfirst($u['role']) ?></span></td>
+                        <td class="action-buttons">
+                            <a href="/admin/modifUser/<?= $u['id'] ?>" class="btn btn-sm btn-warning">Modifier</a>
                             <a href="/deleteUser/<?= $u['id'] ?>" class="btn btn-sm btn-danger"
-                            onclick="return confirm('Supprimer cet utilisateur ?');">Supprimer</a>
-                            <a href="/admin/modifUser/<?= $u['id'] ?>" class="btn btn-sm btn-warning mt-2">Modifier</a>
-                            
-                            
-                            
-                            <?php endif; ?>
+                               onclick="return confirm('Supprimer cet utilisateur ?');">Supprimer</a>
                         </td>
                     </tr>
                     <?php endforeach ?>
                 </tbody>
             </table>
-        </section>
-        
-        <hr>
+        </div>
+    </section>
 
-        <section>
-            <h3>Liste des offres</h3>
+    <!-- Liste des offres -->
+    <section class="admin-section">
+        <h3>Liste des offres</h3>
+        <div class="table-container">
             <table class="table">
-        <thead>
-            <tr>
-                <th>Image</th><th>ID</th><th>Titre</th><th>Type</th><th>Ville</th><th>Statut</th><th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($offers as $o): ?>
-                <tr>
-                    <td>
-                    <img src="<?= htmlspecialchars($o['photo']) ?>" alt="Photo de l'offre"
-                    style="height: 100px; width: 150px; object-fit: cover; border-radius: 8px;">
-                </td>
-                <td><?= $o['id'] ?></td>
-                <td><?= htmlspecialchars($o['titre']) ?></td>
-                <td><?= $o['type'] ?></td>
-                <td><?= $o['localisation'] ?></td>
-                <td><?= $o['statut'] ? '✅' : '⛔' ?></td>
-                <td>
-                    <?php if ($_SESSION['user_role'] === 'admin'): ?>
-                        <a href="/deleteOffer/<?= $o['id'] ?>" class="btn btn-sm btn-danger"
-                        onclick="return confirm('Supprimer cette offre ?');">Supprimer</a>
-                        <a href="/offers/modifoffer/<?= $o['id'] ?>" class="btn btn-warning mt-2">Modifier</a>
-                        <a href="/offers/detail/<?= urlencode($o['id']) ?>" class="btn btn-outline-primary mt-2">Détail</a>
-                        <?php endif; ?>
-                </td>
-            </tr>
-            <?php endforeach ?>
-        </tbody>
-    </table>
-</section>
-
+                <thead>
+                    <tr>
+                        <th>Image</th><th>ID</th><th>Titre</th><th>Type</th>
+                        <th>Ville</th><th>Statut</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($offers as $o): ?>
+                    <tr>
+                        <td><img src="<?= htmlspecialchars($o['photo']) ?>" alt="Photo" class="offer-thumbnail"></td>
+                        <td><?= $o['id'] ?></td>
+                        <td><?= htmlspecialchars($o['titre']) ?></td>
+                        <td><?= htmlspecialchars($o['type']) ?></td>
+                        <td><?= htmlspecialchars($o['localisation']) ?></td>
+                        <td><?= $o['statut'] ? '<span class="status active">Actif</span>' : '<span class="status inactive">Inactif</span>' ?></td>
+                        <td class="action-buttons">
+                            <a href="/offers/detail/<?= urlencode($o['id']) ?>" class="btn btn-sm btn-outline-primary">Détail</a>
+                            <a href="/offers/modifoffer/<?= $o['id'] ?>" class="btn btn-sm btn-warning">Modifier</a>
+                            <a href="/deleteOffer/<?= $o['id'] ?>" class="btn btn-sm btn-danger"
+                               onclick="return confirm('Supprimer cette offre ?');">Supprimer</a>
+                        </td>
+                    </tr>
+                    <?php endforeach ?>
+                </tbody>
+            </table>
+        </div>
+    </section>
 </div>

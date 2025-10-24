@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/modifuser.css">
+
 <!-- <div class="form-page"> -->
     <div class="form-container">
         <h2 class="form-title">Modifier l'utilisateur</h2>

@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/favoris.css">
+
 <div class="container my-5">
     <h1 class="form-title">Mes Offres Favoris</h1>
 

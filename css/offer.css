@@ -1,0 +1,450 @@
+/* ============================================
+   VARIABLES GLOBALES
+   ============================================ */
+:root {
+  --primary-color: #40afa7;
+  --secondary-color: #2d8b85;
+  --accent-color: #5bc7bf;
+  --text-primary: #2c3e50;
+  --text-secondary: #6c757d;
+  --text-light: #adb5bd;
+  --bg-primary: #ffffff;
+  --bg-light: #f8f9fa;
+  --radius: 12px;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.12);
+  --transition: all 0.25s ease;
+  --primary-gradient: linear-gradient(135deg, #40afa7, #2d8b85);
+}
+
+/* ============================================
+   FIX POUR LAYOUT BODY - OVERRIDE CSS GÉNÉRAL
+   ============================================ */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Correction pour l'élément .carte qui est en fixed */
+.carte {
+  pointer-events: none;
+}
+
+/* ============================================
+   FIX FOOTER PLEINE LARGEUR
+   ============================================ */
+footer {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 20px 0 !important;
+  margin-top: auto !important;
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  text-align: center;
+  color: white;
+}
+
+footer .container {
+  max-width: 100% !important;
+  padding: 0 20px !important;
+  margin: 0 !important;
+}
+
+/* ============================================
+   CONTENEUR PRINCIPAL - FIX POUR LE FOOTER
+   ============================================ */
+.offres-wrapper {
+  flex: 1;
+  padding: 40px 20px 60px 20px !important;
+  margin: 0 auto !important;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1400px;
+}
+
+/* ============================================
+   TITRE PRINCIPAL
+   ============================================ */
+.form-title {
+  color: var(--text-primary);
+  text-align: center;
+  margin: 30px 0 40px 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   BOUTONS PRINCIPAUX
+   ============================================ */
+.btn {
+  padding: 12px 28px;
+  border-radius: var(--radius);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(64, 175, 167, 0.3);
+}
+
+.btn-outline-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 2px solid var(--text-light);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-outline-secondary:disabled {
+  pointer-events: none;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+/* ============================================
+   SECTION EXPLICATIVE
+   ============================================ */
+.explique {
+  background: var(--bg-light);
+  border-left: 4px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 20px 30px;
+  margin-bottom: 30px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.explique strong {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* ============================================
+   ALERTE (PAS D'OFFRES)
+   ============================================ */
+.request-alert {
+  background: var(--bg-light);
+  border-left: 4px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0 40px 0;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-info {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* ============================================
+   GRILLE D'OFFRES
+   ============================================ */
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+  padding-bottom: 60px;
+}
+
+/* ============================================
+   CARTE D'OFFRE
+   ============================================ */
+.card-body {
+  background: var(--bg-primary);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-body:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* ============================================
+   IMAGE DE L'OFFRE
+   ============================================ */
+.offer-thumbnail {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: #f0f0f0;
+  position: relative;
+}
+
+.offer-thumbnail img,
+.card-img-top {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.3s ease;
+}
+
+.card-body:hover .offer-thumbnail img,
+.card-body:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+/* ============================================
+   DÉTAILS DE L'OFFRE
+   ============================================ */
+.offer-details {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.offer-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+.offer-details p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.offer-details strong {
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 80px;
+}
+
+/* Badge Type */
+.offer-type {
+  background: var(--primary-color);
+  color: white;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 0.75rem;
+  text-transform: lowercase;
+  font-weight: 500;
+  display: inline-block;
+}
+
+/* Date */
+.offer-date {
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* Description */
+.offer-description {
+  background: var(--bg-light);
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+/* ============================================
+   ACTIONS (BOUTONS MODIFIER/SUPPRIMER)
+   ============================================ */
+.offer-actions {
+  display: flex;
+  gap: 8px;
+  padding: 15px;
+  border-top: 1px solid #e9ecef;
+  background: #fafbfc;
+}
+
+.offer-btn {
+  flex: 1;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+}
+
+/* Bouton Modifier (Jaune) */
+.offer-edit {
+  background: transparent;
+  color: #f5ce59;
+  border: 2px solid #f5ce59;
+}
+
+.offer-edit:hover {
+  background: #f5ce59;
+  color: #2c3e50;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(245, 206, 89, 0.3);
+}
+
+/* Bouton Supprimer (Rouge) */
+.offer-delete {
+  background: transparent;
+  color: #dc3545;
+  border: 2px solid #dc3545;
+}
+
+.offer-delete:hover {
+  background: #dc3545;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Petits écrans (mobile) */
+@media (max-width: 768px) {
+  .offres-wrapper {
+    padding: 30px 15px 40px 15px !important;
+  }
+
+  .form-title {
+    font-size: 2rem;
+    margin: 20px 0 30px 0;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-bottom: 40px;
+  }
+
+  .explique {
+    padding: 15px 20px;
+    font-size: 0.9rem;
+  }
+
+  .offer-details {
+    padding: 15px;
+  }
+
+  .offer-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .offer-btn {
+    width: 100%;
+  }
+
+  .offer-thumbnail {
+    height: 200px;
+  }
+}
+
+/* Tablettes */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .form-title {
+    font-size: 2.2rem;
+  }
+}
+
+/* Grands écrans */
+@media (min-width: 1201px) {
+  .row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Très grands écrans */
+@media (min-width: 1600px) {
+  .row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-body {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* ============================================
+   ÉTATS DE CHARGEMENT / VIDE
+   ============================================ */
+.offer-thumbnail img[src=""],
+.offer-thumbnail img:not([src]) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e9ecef;
+  color: var(--text-light);
+}
+
+.offer-thumbnail img[src=""]::after,
+.offer-thumbnail img:not([src])::after {
+  content: "📷";
+  font-size: 3rem;
+}

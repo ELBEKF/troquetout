@@ -1,0 +1,489 @@
+/* ====== PAGE LISTE DES OFFRES ====== */
+
+/* Conteneur principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.section {
+    /* padding: 60px 0; */
+}
+
+/* ====== FORMULAIRE DE RECHERCHE ====== */
+.recherche {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+    background: var(--bg-primary);
+    padding: 30px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 40px;
+    border: 1px solid rgba(64, 175, 167, 0.1);
+    position: relative;
+}
+
+.recherche::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--primary-gradient);
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+}
+
+.recherche > div {
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+    flex: 1;
+}
+
+.recherche label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.recherche .form-control,
+.recherche .form-select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: var(--border-radius-md);
+    font-size: 1rem;
+    background: var(--bg-primary);
+    transition: all 0.3s ease;
+}
+
+.recherche .form-control:focus,
+.recherche .form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(64, 175, 167, 0.1);
+    transform: translateY(-2px);
+}
+
+.recherche .form-select {
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%2340AFA7" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 18px;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+.recherche button.btn {
+    align-self: flex-end;
+    padding: 12px 30px;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+/* Classes spécifiques */
+.search {
+    flex: 2;
+    min-width: 250px;
+}
+
+.filtre {
+    flex: 1;
+    min-width: 150px;
+}
+
+.flex-fill {
+    flex: 1.5;
+}
+
+/* ====== WRAPPER DES OFFRES ====== */
+.offres-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem 1rem;
+}
+
+/* Bouton ajouter offre */
+.offres-wrapper .btn {
+    align-self: flex-start;
+    margin-bottom: 2rem;
+}
+
+.btn-outline-secondary {
+    background: transparent;
+    border: 2px solid #6c757d;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover:not(:disabled) {
+    background: #6c757d;
+    color: white;
+}
+
+/* ====== GRID DES CARTES ====== */
+.row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+/* ====== STYLE DES CARTES D'OFFRES ====== */
+.card {
+    background: #fff;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid rgba(64, 175, 167, 0.1);
+    position: relative;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-gradient);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.card:hover::before {
+    transform: scaleX(1);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Image de la carte */
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    background: #f9f9f9;
+    transition: transform 0.4s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+/* Contenu de la carte */
+.card-body {
+    padding: 1.2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.8rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.3;
+}
+
+.card-text {
+    color: #555;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.card-text strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Boutons dans la carte */
+.card-body .btn {
+    margin-top: 0.5rem;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+/* Bouton outline primary */
+.btn-outline-primary {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Bouton outline danger */
+.btn-outline-danger {
+    background: transparent;
+    border: 2px solid #c0392b;
+    color: #c0392b;
+}
+
+.btn-outline-danger:hover {
+    background: #c0392b;
+    color: white;
+}
+
+/* Bouton warning (modifier) */
+.btn-warning {
+    background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
+    border: 2px solid #f1c40f;
+    color: var(--text-primary);
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+}
+
+/* ====== SECTION FAVORIS ====== */
+.p-2 {
+    padding: 0.5rem;
+}
+
+.favoris-form {
+    width: 100%;
+}
+
+.favoris-btn {
+    width: 100%;
+    padding: 0.7rem;
+    font-size: 1.3rem;
+    transition: all 0.3s ease;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.favoris-btn i {
+    font-size: 1.2rem;
+}
+
+/* Bouton favoris rouge plein (déjà favori) */
+.btn-danger {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    border: 2px solid #c0392b;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+    transform: scale(1.05);
+}
+
+/* Bouton favoris outline (pas encore favori) */
+.favoris-btn.btn-outline-danger {
+    background: transparent;
+    border: 2px solid #e74c3c;
+    color: #e74c3c;
+}
+
+.favoris-btn.btn-outline-danger:hover {
+    background: #e74c3c;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* ====== UTILITAIRES ====== */
+.w-100 {
+    width: 100% !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+.mt-2 {
+    /* margin-top: 0.5rem !important; */
+}
+
+.my-4 {
+    /* margin-top: 1.5rem !important; */
+    /* margin-bottom: 1.5rem !important; */
+}
+
+/* ====== ANIMATIONS ====== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.card:nth-child(1) { animation-delay: 0s; }
+.card:nth-child(2) { animation-delay: 0.05s; }
+.card:nth-child(3) { animation-delay: 0.1s; }
+.card:nth-child(4) { animation-delay: 0.15s; }
+.card:nth-child(5) { animation-delay: 0.2s; }
+.card:nth-child(6) { animation-delay: 0.25s; }
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 992px) {
+    .recherche {
+        padding: 25px;
+    }
+
+    .row {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .recherche {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .recherche > div {
+        min-width: 100%;
+        width: 100%;
+    }
+
+    .recherche button.btn {
+        width: 100%;
+        align-self: stretch;
+    }
+
+    .row {
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        gap: 1rem;
+    }
+
+    .card-img-top {
+        height: 180px;
+    }
+
+    .offres-wrapper .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 0 10px;
+    }
+
+    .section {
+        padding: 40px 0;
+    }
+
+    .recherche {
+        padding: 15px;
+    }
+
+    .offres-wrapper {
+        padding: 1rem 0.5rem;
+        gap: 1.5rem;
+    }
+
+    .row {
+        grid-template-columns: 1fr;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+    }
+
+    .card-text {
+        font-size: 0.9rem;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .favoris-btn {
+        padding: 0.6rem;
+        font-size: 1.1rem;
+    }
+}
+
+/* ====== ÉTATS SPÉCIAUX ====== */
+/* Carte désactivée/inactive */
+.card.inactive {
+    opacity: 0.7;
+}
+
+.card.inactive::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.05);
+    pointer-events: none;
+}
+
+/* Message vide */
+.empty-message {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-light);
+    font-size: 1.2rem;
+    font-style: italic;
+}
+
+.empty-message::before {
+    content: '📦';
+    display: block;
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+.btn.btn-primary {
+    display: flex;          /* active flex */
+    justify-content: center; /* centre horizontalement */
+    align-items: center;    /* centre verticalement */
+    width: 100%;            /* prend toute la largeur */
+}
+.btn-add svg {
+    transition: 0.3s ease;
+}
+
+.btn-add:hover svg {
+    transform: rotate(90deg);
+}

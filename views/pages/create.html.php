@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/creat.css">
+
 <!-- <div class="form-page">     -->
     <div class="form-container">
         <h2 class="form-title">Créer une nouvelle demande</h2>

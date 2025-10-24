@@ -33,6 +33,8 @@ class Message {
             JOIN users ON messages.sender_id = users.id
             WHERE messages.receiver_id = ?
             ORDER BY messages.date_sent DESC
+            
+            
         ");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -49,6 +51,7 @@ class Message {
             JOIN users ON messages.receiver_id = users.id
             WHERE messages.sender_id = ?
             ORDER BY messages.date_sent DESC
+            
         ");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

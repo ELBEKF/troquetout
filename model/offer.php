@@ -189,14 +189,17 @@ public function toggleFavoris( $userId, $offerId) {
     }
 }
 
-public function isFavori($userId, $offerId) {
-    $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM favoris WHERE user_id = :user_id AND offer_id = :offer_id");
-    $stmt->execute([
-        'user_id' => $userId,
-        'offer_id' => $offerId
-    ]);
-    return $stmt->fetchColumn() > 0;
-}
+// pratique pour l’affichage (coeur rempli ou vide)
+    public function isFavorite($userId, $offerId)
+    {
+        $sql = "SELECT COUNT(*) FROM favorites WHERE user_id = :user_id AND offer_id = :offer_id";
+        $pdostmt = $this->pdo->prepare($sql);
+        $pdostmt->execute([
+            ':user_id' => $userId,
+            ':offer_id' => $offerId
+        ]);
+        return $pdostmt->fetchColumn() > 0;
+    }
 
 public function getAllOffersWithFavoris( ?int $userId = null): array
 {

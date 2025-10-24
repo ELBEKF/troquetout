@@ -456,7 +456,7 @@ if ($segments[0] === "send_message") {
             );
 
             if ($success) {
-                header("Location: /offers/detail/$offerId?sent=1");
+                header("Location: /messages_recus");
                 exit;
             } else {
                 echo "Erreur lors de l'envoi du message.";
@@ -490,7 +490,7 @@ if ($segments[0] === 'sendcontact' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->Host = 'smtp.gmail.com';
                 $mail->SMTPAuth = true;
                 $mail->Username = 'faycaltroquetout@gmail.com';
-                $mail->Password = 'zscpmxdltmkfbndr';
+                $mail->Password = 'gbdg iloh ylmz iwho';
                 $mail->SMTPSecure = 'tls';
                 $mail->Port = 587;
 

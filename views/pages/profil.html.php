@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/profil.css">
+
 <!-- <div class="form-page"> -->
     <div class="form-container">
         <h2 class="form-title"><?= htmlspecialchars($title) ?></h2>

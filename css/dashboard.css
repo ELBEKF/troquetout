@@ -1,0 +1,244 @@
+/* 🌐 Conteneur principal */
+.admin-dashboard {
+  max-width: 1200px;
+  margin: 40px auto;
+  background: rgba(152, 175, 255, 0.589);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* 🧭 Titre principal */
+.form-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-align: center;
+  color: #1f2a44;
+  margin-bottom: 2.5rem;
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 📊 Section Statistiques */
+.stat {
+  margin-bottom: 3rem;
+}
+
+.stat h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.stat-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.stat-card {
+  flex: 1 1 250px;
+  background: linear-gradient(135deg, #60a5fa, #93c5fd);
+  color: white;
+  padding: 1.6rem;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.stat-card:nth-child(2) {
+  background: linear-gradient(135deg, #34d399, #6ee7b7);
+}
+
+.stat-card:nth-child(3) {
+  background: linear-gradient(135deg, #fbbf24, #fcd34d);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  filter: brightness(1.05);
+}
+
+.stat-title {
+  font-size: 1rem;
+  opacity: 0.95;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 0.4rem;
+}
+
+/* 🧱 Sections générales */
+.admin-section {
+  margin-top: 2.5rem;
+}
+
+.admin-section h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  border-left: 4px solid #3b82f6;
+  padding-left: 10px;
+}
+
+/* 📋 Tableau stylisé */
+.table-container {
+  background: #aad5ff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.table thead {
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  color: white;
+}
+
+.table th {
+  text-align: left;
+  padding: 14px 16px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.table tr:nth-child(even) td {
+  background: rgba(240, 249, 255, 0.8);
+}
+
+.table tr:hover td {
+  background: #e0f2fe;
+}
+
+/* 🖼️ Image d'offre */
+.offer-thumbnail {
+  width: 90px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* 🎛️ Boutons */
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-warning {
+  background: linear-gradient(90deg, #fbbf24, #fcd34d);
+  color: #1e293b;
+}
+.btn-warning:hover {
+  background: linear-gradient(90deg, #f59e0b, #c78f01ce);
+}
+
+.btn-danger {
+  background: linear-gradient(90deg, #ef4444, #d42727b6);
+  color: white;
+}
+.btn-danger:hover {
+  background: linear-gradient(90deg, #dc2626, #ef4444);
+}
+
+.btn-outline-primary {
+  border: 1px solid #3b82f6;
+  color: #1e3a8a;
+  background: white;
+}
+.btn-outline-primary:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+/* 🧩 Rôle utilisateur & Statut offre */
+.role {
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.role.admin {
+  background: linear-gradient(90deg, #dc2626, #830505);
+}
+
+.role.utilisateur {
+  background: linear-gradient(90deg, #2563eb, #2f4363);
+}
+
+.status {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+}
+
+.status.active {
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+}
+
+.status.inactive {
+  background: linear-gradient(90deg, #d97706, #fbbf24);
+}
+
+/* ✅ Message succès */
+.alert-success {
+  background: linear-gradient(90deg, #86efac, #bbf7d0);
+  color: #064e3b;
+  border-radius: 12px;
+  text-align: center;
+  padding: 12px 20px;
+  font-weight: 500;
+  width: 85%;
+  margin: 1.5rem auto 2rem auto;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+  border: 1px solid #10b981;
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 1.2rem;
+  }
+  .stat-cards {
+    flex-direction: column;
+  }
+  .table td, .table th {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+}

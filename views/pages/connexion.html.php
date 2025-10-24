@@ -1,4 +1,5 @@
 <!--  -->
+<link rel="stylesheet" href="/css/connexion.css">
 
 <?php if (!empty($error)): ?>
     <div id="errorModal" class="connexion-modal">
@@ -7,23 +8,17 @@
         </div>
     </div>
 <?php endif; ?>
-<h1 class="form-title">Connexion</h1>
 <div class="connexion-center">
-<form action="/connexion" method="POST" class="connexion-form">
+    <form action="/connexion" method="POST" class="connexion-form">
+    <h1 class="form-title">Connexion&nbsp;<img class="logoco" src="/images/sac.png" alt="TroqueTout" /></h1>
         <body class="connexion-body">
         <div>
             <label for="inputEmail" class="connexion-label">Email</label>
-            <input type="email" name="inputEmail" id="inputEmail" class="connexion-input">
+            <input placeholder="exemple@gmail.com" type="email" name="inputEmail" id="inputEmail" class="connexion-input">
         </div>
         <div>
             <label for="inputMdp" class="connexion-label">Mot de passe</label>
-            <input type="password" name="inputMdp" id="inputMdp" class="connexion-input">
-        </div>
-        <div>
-            <input type="checkbox" id="rememberMe" class="connexion-checkbox">
-            <label for="rememberMe" class="connexion-checkbox-label">
-                Se souvenir de moi !
-            </label>
+            <input placeholder="********" type="password" name="inputMdp" id="inputMdp" class="connexion-input">
         </div>
         <div>
             <button type="submit" class="connexion-button">Se connecter</button>
