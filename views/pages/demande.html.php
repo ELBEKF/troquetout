@@ -1,12 +1,16 @@
-<link rel="stylesheet" href="/css/mesdemandes.css">
+<link rel="stylesheet" href="/css/demandes.css">
 
 <section class="requests-container">
 
     <header class="text-center mb-5">
-        <h2 class="form-title"> Demandes de la communauté</h2>
+        <div class="title-container">
+            <h2 class="form-title">Demandes de la communauté</h2>
+            <div class="ball"></div>
+        </div>
         <p class="subtitle">Découvrez les besoins publiés par les autres membres.</p>
     </header>
-<?php if (isset($_SESSION['user_id'])): ?>
+
+    <?php if (isset($_SESSION['user_id'])): ?>
         <div class="add-request-wrapper">
             <a href="/demande/create/" class="btn btn-primary mb-4 btn-add">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor">
@@ -25,6 +29,7 @@
             </div>
         </div>
     <?php endif; ?>
+
     <div class="requests-grid">
         <?php foreach ($requests as $req): ?>
             <?php 

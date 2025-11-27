@@ -156,15 +156,15 @@
 }
 
 .btn-warning {
-  background: linear-gradient(90deg, #fbbf24, #fcd34d);
-  color: #1e293b;
+  background: linear-gradient(90deg, #c5a554, #efb909);
+  color: white;
 }
 .btn-warning:hover {
   background: linear-gradient(90deg, #f59e0b, #c78f01ce);
 }
 
 .btn-danger {
-  background: linear-gradient(90deg, #ef4444, #d42727b6);
+  background: linear-gradient(90deg, #ee7f7f, #d42727b6);
   color: white;
 }
 .btn-danger:hover {
@@ -241,4 +241,118 @@
     font-size: 0.85rem;
     padding: 8px;
   }
+}
+/* 🧭 Layout principal */
+.dashboard-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* 🧱 Sidebar */
+.sidebar {
+  width: 220px;
+  background: linear-gradient(180deg, #6d86cc4b, #3b82f6);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 4px 0 15px rgba(0,0,0,0.15);
+  /* margin-bottom: 800px; */
+  position: fixed;
+}
+
+.sidebar {
+  height: auto;
+  max-height: 40vh; /* limite la taille */
+}
+
+
+.sidebar-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.sidebar-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 10px 18px;
+  width: 100%;
+  margin: 8px 0;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s;
+}
+
+.sidebar-btn:hover {
+  background: rgba(255,255,255,0.35);
+  transform: scale(1.05);
+}
+
+.sidebar-btn.active {
+  background: white;
+  color: #597ee2d7;
+}
+
+/* 🧩 Zone principale */
+.admin-dashboard {
+  flex: 1;
+  padding: 2rem 3rem;
+  overflow-y: auto;
+}
+
+.admin-dashboard {
+  flex: 1;
+  padding: 2rem 3rem;
+  overflow-y: auto;
+  margin-left: 250px; /* espace pour la sidebar */
+}
+/* Conteneur pour le titre et le ballon */
+.title-container {
+  position: relative;
+  display: inline-flex; /* titre + ballon sur la même ligne */
+  align-items: center;
+  overflow: hidden;     /* masque le titre et le ballon au départ */
+}
+
+/* Titre sort complètement de la gauche */
+.form-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1f2a44;
+  opacity: 0;
+  transform: translateX(-100vw); /* part de tout à gauche */
+  animation: slideInTitle 1s forwards;
+}
+
+/* Ballon */
+.ball {
+  width: 40px;
+  height: 40px;
+  margin-left: 10px; /* petit espace à droite du titre */
+  background: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center/cover;
+  transform: translateX(-150px); /* départ derrière le titre */
+  animation: rollBall 1s forwards;
+  animation-delay: 0.6s; /* commence un peu après le titre */
+}
+
+/* Animation du titre */
+@keyframes slideInTitle {
+  0% { transform: translateX(-100vw); opacity: 0; }
+  80% { transform: translateX(20px); opacity: 1; } /* léger dépassement pour effet rebond */
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* Animation du ballon */
+@keyframes rollBall {
+  0% { transform: translateX(-150px) rotate(0deg); }
+  80% { transform: translateX(10px) rotate(720deg); } /* roule vers la droite du titre */
+  100% { transform: translateX(0) rotate(720deg); }   /* s’arrête juste à droite du titre */
 }

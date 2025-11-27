@@ -119,7 +119,18 @@
     </div>
     <?php endif; ?>
   </nav>
-  
+  <!-- À placer après l'ouverture de <body> -->
+<div class="theme-toggle-container">
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="theme-toggle-label">Thème</span>
+        <div class="toggle-switch">
+            <div class="toggle-slider">
+                <span class="icon-sun">☀️</span>
+                <span class="icon-moon">🌙</span>
+            </div>
+        </div>
+    </div>
+</div>
 </header>
 
 <script>

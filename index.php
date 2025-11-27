@@ -1,6 +1,4 @@
 <?php
-// session_start();
-// Debug temporaire - à supprimer après résolution
 
 require_once 'controllers/AdminController.php';
 require_once 'controllers/ConnexionController.php';
@@ -18,23 +16,13 @@ use PHPMailer\PHPMailer\Exception;
 $method = $_SERVER['REQUEST_METHOD'];
 
 
-// Récupère uniquement le chemin de l'URL (par exemple : /contact)
+
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-// parse_url est une fonction PHP qui analyse une URL et peut en extraire différentes parties
-// PHP_URL_PATH est une constante qui indique qu’on souhaite récupérer uniquement le chemin (c’est-à-dire sans les paramètres ?)
+
 
 
 $segments = explode('/', trim($uri, '/'));
 
-// var_dump($segments);
-// var_dump($_SERVER['REQUEST_METHOD']);
-// exit;
-
-
-
-// $resource = $segments[0] ?? null;
-// $param1 = $segments[1] ?? null;
-// $param2 = $segments[2] ?? null;
 
 if ($segments[0] == "") {
     if ($method == "GET") {
@@ -148,7 +136,6 @@ if ($segments[0] == "messages_recus") {
     }
 }
 
-// Route pour modification d'utilisateur par l'admin
 if ($segments[0] === "admin" && isset($segments[1]) && $segments[1] === "modifUser" && isset($segments[2]) && is_numeric($segments[2])) {
     // Vérification sécurité admin
     if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
@@ -221,9 +208,8 @@ if ($segments[0] === "admin" && isset($segments[1]) && $segments[1] === "modifUs
 
 if ($segments[0] == "admin") {
     if ($method == "GET") {
-        // ==========================
 // Vérification de sécurité :
-// ==========================
+
 // On vérifie si l'utilisateur est connecté (user_id présent en session)
 // et si son rôle est bien "admin"
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
@@ -490,7 +476,7 @@ if ($segments[0] === 'sendcontact' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->Host = 'smtp.gmail.com';
                 $mail->SMTPAuth = true;
                 $mail->Username = 'faycaltroquetout@gmail.com';
-                $mail->Password = 'gbdg iloh ylmz iwho';
+                $mail->Password = 'juis jxyx xngn irpd';
                 $mail->SMTPSecure = 'tls';
                 $mail->Port = 587;
 

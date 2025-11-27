@@ -62,88 +62,138 @@ class OffersController {
 }
 
 
-  public function handleAddOffer()
+ public function handleAddOffer()
 {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Vérifie la session
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['user_id'])) {
-            echo "Vous devez être connecté pour ajouter une offre.";
-            exit;
-        }
-
-        // Vérifie les champs obligatoires (sauf photo, gérée à part)
-        $requiredFields = ['titre', 'description', 'sens', 'type', 'categorie', 'etat', 'prix', 'caution', 'localisation', 'disponibilite', 'statut'];
-        foreach ($requiredFields as $field) {
-            if (empty($_POST[$field]) && $_POST[$field] !== "0") {
-                $error = "Veuillez remplir tous les champs.";
-                render('addOffers', ["title" => "Ajout d'une offre", "error" => $error]);
-                return;
-            }
-        }
-
-        // === 🔹 Gestion de l'image uploadée ===
-        $photo_path = null;
-
-        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-            $tmp_name = $_FILES['photo']['tmp_name'];
-            $nom_original = basename($_FILES['photo']['name']);
-            $extension = strtolower(pathinfo($nom_original, PATHINFO_EXTENSION));
-
-            // Vérifie que c’est bien une image
-            $extensions_autorisees = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-            if (in_array($extension, $extensions_autorisees)) {
-                $dossier_upload = dirname(__DIR__, 2) . '/'; // dossier /public/uploads/
-                if (!is_dir($dossier_upload)) {
-                    mkdir($dossier_upload, 0755, true);
-                }
-
-                $nom_fichier = uniqid('img_') . '.' . $extension;
-                $chemin_final = $dossier_upload . $nom_fichier;
-
-                if (move_uploaded_file($tmp_name, $chemin_final)) {
-                    $photo_path = 'uploads/' . $nom_fichier; // chemin relatif à stocker en BDD
-                }
-            }
-        }
-
-        // Crée et enregistre l’offre
-        $addOffer = new Offers();
-        $addOffer->setTitre($_POST["titre"]);
-        $addOffer->setDescription($_POST["description"]);
-        $addOffer->setSens($_POST["sens"]);
-        $addOffer->setType($_POST["type"]);
-        $addOffer->setCategorie($_POST["categorie"]);
-        $addOffer->setEtat($_POST["etat"]);
-        $addOffer->setPrix($_POST["prix"]);
-        $addOffer->setCaution($_POST["caution"]);
-        $addOffer->setLocalisation($_POST["localisation"]);
-        $addOffer->setPhoto($photo_path); // ✅ chemin local
-        $addOffer->setDisponibilite($_POST["disponibilite"]);
-        $addOffer->setStatut($_POST["statut"]);
-        $addOffer->setUserId($_SESSION['user_id']);
-
-        if ($addOffer->addOffers()) {
-            header("Location: /");
-            exit;
-        } else {
-            $error = "Erreur lors de l'ajout de l'offre.";
-        }
-
-        render('addOffers', [
-            "title" => "Ajout d'une offre",
-            "error" => $error ?? ''
-        ]);
-    } else {
-        // GET : affiche le formulaire
-        render('addOffers', [
-            "title" => "Ajout d'une offre"
-        ]);
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        render('addOffers', ["title" => "Ajout d'une offre"]);
+        return;
     }
+
+    // session
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    if (!isset($_SESSION['user_id'])) {
+        echo "Vous devez être connecté pour ajouter une offre.";
+        exit;
+    }
+
+    // champs obligatoires
+    $requiredFields = [
+        'titre', 'description', 'sens', 'type', 'categorie',
+        'etat', 'prix', 'caution', 'localisation',
+        'disponibilite', 'statut'
+    ];
+    foreach ($requiredFields as $field) {
+        if (empty($_POST[$field]) && $_POST[$field] !== "0") {
+            $error = "Veuillez remplir tous les champs.";
+            render('addOffers', ["title" => "Ajout d'une offre", "error" => $error]);
+            return;
+        }
+    }
+
+    // vérification fichier
+    if (!isset($_FILES['photo']) || $_FILES['photo']['error'] !== UPLOAD_ERR_OK) {
+        $error = "Veuillez ajouter une photo valide.";
+        render('addOffers', ["title" => "Ajout d'une offre", "error" => $error]);
+        return;
+    }
+
+    // infos fichier
+    $tmp_name = $_FILES['photo']['tmp_name'];
+    $original = basename($_FILES['photo']['name']);
+    $extension = strtolower(pathinfo($original, PATHINFO_EXTENSION));
+    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    if (!in_array($extension, $allowed)) {
+        $error = "Extension de fichier non autorisée. (jpg,jpeg,png,gif,webp)";
+        render('addOffers', ["title" => "Ajout d'une offre", "error" => $error]);
+        return;
+    }
+
+    // --- CHEMINS ROBUSTES ---
+    // project root (dossier troquetout)
+    $projectRoot = realpath(dirname(__DIR__)); // controllers/.. => troquetout
+    if ($projectRoot === false) {
+        render('addOffers', ["title" => "Ajout d'une offre", "error" => "Impossible de déterminer le chemin du projet."]);
+        return;
+    }
+
+    // dossier public physique
+    $publicDir = $projectRoot . DIRECTORY_SEPARATOR . 'public';
+    $uploadDir = $publicDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'offers' . DIRECTORY_SEPARATOR;
+
+    // crée dossier si nécessaire
+    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)) {
+        render('addOffers', ["title" => "Ajout d'une offre", "error" => "Impossible de créer le dossier d'upload ($uploadDir). Vérifiez les permissions."]);
+        return;
+    }
+
+    // nom de fichier unique
+    $filename = uniqid('offer_') . '.' . $extension;
+    $finalPath = $uploadDir . $filename;
+
+    // déplacer le fichier uploadé
+    if (!move_uploaded_file($tmp_name, $finalPath)) {
+        render('addOffers', ["title" => "Ajout d'une offre", "error" => "Erreur lors du déplacement du fichier sur le serveur."]);
+        return;
+    }
+
+    // --- construire une URL publique fiable pour la BDD ---
+    // essaie de déduire le chemin relatif depuis DOCUMENT_ROOT
+    $publicDirReal = realpath($publicDir);
+    $docRootReal = realpath($_SERVER['DOCUMENT_ROOT']);
+
+    // Normalise séparateurs
+    $publicDirNorm = $publicDirReal ? str_replace('\\', '/', $publicDirReal) : '';
+    $docRootNorm = $docRootReal ? str_replace('\\', '/', $docRootReal) : '';
+
+    if ($docRootNorm !== '' && strpos($publicDirNorm, $docRootNorm) === 0) {
+        // cas classique : public est sous DOCUMENT_ROOT
+        $publicUrlBase = substr($publicDirNorm, strlen($docRootNorm));
+        // ensure leading slash
+        if ($publicUrlBase === '' || $publicUrlBase[0] !== '/') {
+            $publicUrlBase = '/' . ltrim($publicUrlBase, '/');
+        }
+    } else {
+        // fallback : si public est le docroot ou unknown, on prend empty string (URL '/uploads/offers/...')
+        // si ton site est servi depuis /troquetout/public, alors $publicUrlBase sera '' et /uploads/... fonctionnera.
+        // si ton site est servi depuis /troquetout (public non root), tu peux forcer la base (ex: '/troquetout/public')
+        $publicUrlBase = '';
+    }
+
+    // url relative à stocker en BDD (ex: '/uploads/offers/offer_xxx.jpg' or '/troquetout/public/uploads/offers/offer_xxx.jpg')
+    $photo_path = rtrim($publicUrlBase, '/') . '/uploads/offers/' . $filename;
+    // s'assurer d'un leading slash
+    if ($photo_path[0] !== '/') {
+        $photo_path = '/' . $photo_path;
+    }
+
+    // --- CRÉATION DE L'OFFRE ---
+    $addOffer = new Offers();
+    $addOffer->setTitre($_POST["titre"]);
+    $addOffer->setDescription($_POST["description"]);
+    $addOffer->setSens($_POST["sens"]);
+    $addOffer->setType($_POST["type"]);
+    $addOffer->setCategorie($_POST["categorie"]);
+    $addOffer->setEtat($_POST["etat"]);
+    $addOffer->setPrix($_POST["prix"]);
+    $addOffer->setCaution($_POST["caution"]);
+    $addOffer->setLocalisation($_POST["localisation"]);
+    $addOffer->setPhoto($photo_path);
+    $addOffer->setDisponibilite($_POST["disponibilite"]);
+    $addOffer->setStatut($_POST["statut"]);
+    $addOffer->setUserId($_SESSION['user_id']);
+
+    // enregistrement en BDD
+    if ($addOffer->addOffers()) {
+        header("Location: /");
+        exit;
+    }
+
+    // en cas d'erreur
+    render('addOffers', ["title" => "Ajout d'une offre", "error" => "Erreur lors de l'enregistrement en base."]);
 }
+
 
 
 

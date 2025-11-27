@@ -1,52 +1,12 @@
-/* ====== VARIABLES (garder toujours) ====== */
-:root {
-    --primary-gradient: linear-gradient(135deg, #40AFA7 0%, #325B94 50%, #1B1A28 100%);
-    --secondary-gradient: linear-gradient(135deg, #325B94 0%, #1B1A28 50%, #40AFA7 100%);
-    --accent-gradient: linear-gradient(135deg, #40AFA7 0%, #325B94 100%);
-    --light-gradient: linear-gradient(135deg, #FFFFFF 0%, #f8f9fa 50%, #e9ecef 100%);
-    --dark-gradient: linear-gradient(135deg, #1B1A28 0%, #2c3e50 50%, #325B94 100%);
-    
-    --primary-color: #40AFA7;
-    --secondary-color: #325B94;
-    --accent-color: #1B1A28;
-    --light-color: #FFFFFF;
-    --success-color: #27ae60;
-    --warning-color: #f39c12;
-    --danger-color: #e74c3c;
-    
-    --text-primary: #1B1A28;
-    --text-secondary: #325B94;
-    --text-light: #7f8c8d;
-    --text-white: #FFFFFF;
-    
-    --bg-primary: #FFFFFF;
-    --bg-secondary: #f8f9fa;
-    --bg-dark: #1B1A28;
-    
-    --border-radius-sm: 8px;
-    --border-radius-md: 12px;
-    --border-radius-lg: 20px;
-    --border-radius-xl: 30px;
-    
-    --shadow-sm: 0 2px 10px rgba(64, 175, 167, 0.1);
-    --shadow-md: 0 4px 20px rgba(64, 175, 167, 0.15);
-    --shadow-lg: 0 8px 30px rgba(64, 175, 167, 0.2);
-    --shadow-xl: 0 12px 40px rgba(64, 175, 167, 0.25);
-}
+/* ====== PROPOSE OFFRE - COMPATIBLE THÈME CLAIR/SOMBRE ====== */
+
+/* Les variables de thème sont déjà définies dans style.css */
 
 /* ====== RESET ET BASE ====== */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #fdfdfd 0%, #e6f0f8 100%);
-    color: #333333;
-    line-height: 1.6;
-    overflow-x: hidden;
 }
 
 /* ====== TITRE ====== */
@@ -56,24 +16,23 @@ body {
     margin-bottom: 40px;
     font-size: 2.8rem;
     font-weight: 700;
-    background: var(--primary-gradient);
+    background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 2px 4px rgba(64, 175, 167, 0.2);
 }
 
 /* ====== MESSAGE D'ERREUR ====== */
 .offer-error {
-    background: linear-gradient(135deg, #ffebee 0%, #f8f9fa 100%);
+    background: var(--bg-card);
     color: var(--danger-color);
     padding: 15px 20px;
-    border-radius: var(--border-radius-md);
+    border-radius: 12px;
     margin-bottom: 25px;
     border-left: 5px solid var(--danger-color);
     font-weight: 500;
     text-align: center;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 12px var(--shadow-sm);
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
@@ -89,11 +48,11 @@ body {
 
 /* ====== FORMULAIRE OFFRE ====== */
 .offer-form {
-    background: var(--bg-primary);
-    border-radius: var(--border-radius-lg);
+    background: var(--bg-card);
+    border-radius: 16px;
     padding: 30px;
-    box-shadow: var(--shadow-md);
-    border: 1px solid rgba(64, 175, 167, 0.1);
+    box-shadow: 0 8px 32px var(--shadow-sm);
+    border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
     animation: slideInLeft 0.6s ease forwards;
@@ -106,7 +65,7 @@ body {
     left: 0;
     right: 0;
     height: 6px;
-    background: var(--primary-gradient);
+    background: var(--gradient-primary);
 }
 
 /* ====== CHAMPS DU FORMULAIRE ====== */
@@ -118,31 +77,43 @@ body {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--primary-indigo);
     font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .form-select,
 .form-textarea {
     width: 100%;
     padding: 15px 20px;
-    border: 2px solid #e9ecef;
-    border-radius: var(--border-radius-md);
+    border: 2px solid var(--border-light);
+    border-radius: 10px;
     font-size: 1rem;
     font-family: inherit;
-    background: var(--bg-primary);
+    background: var(--bg-input);
+    color: var(--text-primary);
     transition: all 0.3s ease;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 2px 4px var(--shadow-sm);
 }
 
 .form-select {
     appearance: none;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="%2340AFA7" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%236366f1" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
     background-repeat: no-repeat;
     background-position: right 15px center;
     background-size: 20px;
     padding-right: 50px;
     cursor: pointer;
+}
+
+[data-theme="dark"] .form-select {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%2300fff5" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+}
+
+.form-select option {
+    background: var(--bg-card);
+    color: var(--text-primary);
 }
 
 .form-textarea {
@@ -153,9 +124,14 @@ body {
 .form-select:focus,
 .form-textarea:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(64, 175, 167, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    border-color: var(--primary-indigo);
+    box-shadow: 0 0 0 3px var(--shadow-sm);
     transform: translateY(-2px);
+}
+
+.form-select::placeholder,
+.form-textarea::placeholder {
+    color: var(--text-muted);
 }
 
 /* ====== ACTIONS / BOUTONS ====== */
@@ -166,19 +142,21 @@ body {
 }
 
 .contact-button {
-    background: var(--primary-gradient);
-    color: var(--text-white);
+    background: var(--gradient-primary);
+    color: #fff;
     border: none;
     padding: 15px 40px;
     font-size: 1.1rem;
     font-weight: 600;
-    border-radius: var(--border-radius-lg);
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 12px var(--shadow-sm);
     position: relative;
     overflow: hidden;
     min-width: 180px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .contact-button::before {
@@ -198,8 +176,7 @@ body {
 
 .contact-button:hover {
     transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-    background: linear-gradient(135deg, #38A099 0%, #2B4F82 100%);
+    box-shadow: 0 8px 20px var(--shadow-md);
 }
 
 .contact-button:active {

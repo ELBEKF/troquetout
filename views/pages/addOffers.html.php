@@ -1,22 +1,18 @@
 <link rel="stylesheet" href="/css/addoffer.css">
 
-<!-- <link rel="stylesheet" href="./css/header.css"> -->
-
-
 <div class="form-container">
     <h2 class="form-title">Créer une nouvelle offre</h2>
 
-    <!-- ⚠️ enctype DOIT être sur le <form>, pas dans un <div> -->
     <form class="form" action="addOffer" method="POST" enctype="multipart/form-data">
 
         <div class="form-group">
             <label class="form-label" for="titre">Titre <span class="form-required">*</span></label>
-            <input class="form-input" type="text" name="titre" id="titre" required>
+            <input class="form-input" type="text" name="titre" id="titre" placeholder="Ex: Perceuse Bosch" required>
         </div>
 
         <div class="form-group">
             <label class="form-label" for="description">Description <span class="form-required">*</span></label>
-            <textarea class="form-textarea" name="description" id="description" required></textarea>
+            <textarea class="form-textarea" name="description" id="description" placeholder="Décrivez votre offre en détail..." required></textarea>
         </div>
 
         <div class="form-row">
@@ -41,7 +37,7 @@
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label" for="categorie">Catégorie <span class="form-required">*</span></label>
-                <input class="form-input" type="text" name="categorie" id="categorie" required>
+                <input class="form-input" type="text" name="categorie" id="categorie" placeholder="Ex: Outillage" required>
             </div>
 
             <div class="form-group">
@@ -57,22 +53,22 @@
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label" for="prix">Prix (€) <span class="form-required">*</span></label>
-                <input class="form-input" type="number" step="0.01" name="prix" id="prix" required>
+                <input class="form-input" type="number" step="0.01" name="prix" id="prix" placeholder="0.00" required>
             </div>
 
             <div class="form-group">
                 <label class="form-label" for="caution">Caution (€) <span class="form-required">*</span></label>
-                <input class="form-input" type="number" step="0.01" name="caution" id="caution" required>
+                <input class="form-input" type="number" step="0.01" name="caution" id="caution" placeholder="0.00" required>
             </div>
         </div>
+
         <div class="form-group">
             <label class="form-label" for="localisation">Localisation <span class="form-required">*</span></label>
-            <input class="form-input" type="text" name="localisation" id="localisation" required>
+            <input class="form-input" type="text" name="localisation" id="localisation" placeholder="Ex: Paris, France" required>
         </div>
 
-        <!-- ✅ Ici, le champ pour importer une image -->
         <div class="form-group">
-            <label class="form-label" for="photo">Photo</label>
+            <label class="form-label" for="photo">Photo <span class="form-required">*</span></label>
             <input class="form-input" type="file" name="photo" id="photo" accept="image/*" required>
         </div>
 

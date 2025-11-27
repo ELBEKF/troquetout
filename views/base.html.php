@@ -32,7 +32,18 @@ if (session_status() === PHP_SESSION_NONE) {
     <?php endif; ?>
 </head>
 <body>
-
+  <!-- À placer après l'ouverture de <body> -->
+<div class="theme-toggle-container">
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="theme-toggle-label">Thème</span>
+        <div class="toggle-switch">
+            <div class="toggle-slider">
+                <span class="icon-sun">☀️</span>
+                <span class="icon-moon">🌙</span>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Fond animé -->
 <div class="carte">
     <div class="gradient-orb"></div>
@@ -87,7 +98,7 @@ if (!empty($_SESSION['user_id'])) {
 {
 
 position: fixed;
-padding: 150px;
+padding-right: 150px;
 width: 10px;
 bottom : 10px;
 right: 20px;  
@@ -110,6 +121,22 @@ html {
   overflow-y: scroll; /* (pour éviter le décalage dont on parlait avant) */
 }
 </style>
+
+<script>
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+}
+
+document.addEventListener('DOMContentLoaded', loadTheme);
+</script>
 </body>
 </html>
 
@@ -138,6 +165,5 @@ html {
 });
 });
 
-console.log("sdlk,dlms")
  
 </script>

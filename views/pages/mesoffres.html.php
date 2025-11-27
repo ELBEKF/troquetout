@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/offer.css">
+<link rel="stylesheet" href="/css/mesoffres.css">
 
 <h2 class="form-title"><?= htmlspecialchars($title) ?></h2>
 

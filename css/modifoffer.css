@@ -1,18 +1,17 @@
-/* ====== PAGE MODIFICATION OFFRE ====== */
+/* ====== MODIFICATION OFFRE - COMPATIBLE THÈME CLAIR/SOMBRE ====== */
 
 /* Conteneur principal du formulaire */
 .form-page {
-    background: var(--light-gradient);
     min-height: 100vh;
     padding: 40px 0;
 }
 
 .form-container {
-    background: var(--bg-primary);
-    border-radius: var(--border-radius-lg);
+    background: var(--bg-card);
+    border-radius: 16px;
     padding: 40px;
-    box-shadow: var(--shadow-md);
-    border: 1px solid rgba(64, 175, 167, 0.1);
+    box-shadow: 0 8px 32px var(--shadow-sm);
+    border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
     max-width: 800px;
@@ -28,7 +27,7 @@
     left: 0;
     right: 0;
     height: 6px;
-    background: var(--primary-gradient);
+    background: var(--gradient-primary);
 }
 
 /* Titre du formulaire */
@@ -38,7 +37,7 @@
     margin-bottom: 35px;
     font-size: 2.2rem;
     font-weight: 700;
-    background: var(--primary-gradient);
+    background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -62,8 +61,10 @@
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: var(--text-primary);
+    color:blue;
     font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .form-required {
@@ -72,26 +73,27 @@
 }
 
 /* Champs de saisie */
-.form-input,
+/* .form-input,
 .form-select,
 .form-textarea {
     width: 100%;
     padding: 15px 20px;
-    border: 2px solid #e9ecef;
-    border-radius: var(--border-radius-md);
+    border: 2px solid var(--border-light);
+    border-radius: 10px;
     font-size: 1rem;
     font-family: inherit;
-    background: var(--bg-primary);
+    background: var(--bg-input);
+    color: var(--text-primary);
     transition: all 0.3s ease;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-}
+    box-shadow: inset 0 2px 4px var(--shadow-sm);
+} */
 
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(64, 175, 167, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    border-color: var(--primary-indigo);
+    box-shadow: 0 0 0 3px var(--shadow-sm);
     transform: translateY(-2px);
 }
 
@@ -105,12 +107,21 @@
 /* Select personnalisé */
 .form-select {
     appearance: none;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="%2340AFA7" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%236366f1" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
     background-repeat: no-repeat;
     background-position: right 15px center;
     background-size: 20px;
     padding-right: 50px;
     cursor: pointer;
+}
+
+[data-theme="dark"] .form-select {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%2300fff5" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+}
+
+.form-select option {
+    background: var(--bg-card);
+    color: var(--text-primary);
 }
 
 /* Champs nombre */
@@ -140,7 +151,7 @@ input[type="hidden"] {
     gap: 15px;
     margin-top: 35px;
     padding-top: 25px;
-    border-top: 2px solid rgba(64, 175, 167, 0.1);
+    border-top: 2px solid var(--border-color);
     flex-wrap: wrap;
 }
 
@@ -151,15 +162,17 @@ input[type="hidden"] {
     padding: 15px 30px;
     font-size: 1.1rem;
     font-weight: 600;
-    background: var(--primary-gradient);
-    color: var(--text-white);
+    background: var(--gradient-primary);
+    color: #fff;
     border: none;
-    border-radius: var(--border-radius-lg);
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 12px var(--shadow-sm);
     position: relative;
     overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .form-submit::before {
@@ -179,7 +192,7 @@ input[type="hidden"] {
 
 .form-submit:hover {
     transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 8px 20px var(--shadow-md);
 }
 
 .form-submit:active {
@@ -196,17 +209,19 @@ input[type="hidden"] {
     background: transparent;
     color: var(--text-secondary);
     border: 2px solid var(--text-secondary);
-    border-radius: var(--border-radius-lg);
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .form-cancel:hover {
-    background: var(--secondary-gradient);
-    color: var(--text-white);
+    background: var(--gradient-accent);
+    color: #fff;
     border-color: transparent;
     transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 12px var(--shadow-sm);
 }
 
 /* États de validation */
@@ -222,15 +237,45 @@ input[type="hidden"] {
     border-color: var(--danger-color);
 }
 
-/* Placeholder */
+/* Placeholder
 .form-input::placeholder,
 .form-textarea::placeholder {
-    color: #adb5bd;
+    color: var(--text-muted);
     font-style: italic;
+} */
+
+/* ====== ANIMATIONS ====== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation au focus des champs */
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    animation: inputFocus 0.3s ease;
+}
+
+@keyframes inputFocus {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-3px);
+    }
+    100% {
+        transform: translateY(-2px);
+    }
 }
 
 /* ====== RESPONSIVE ====== */
-
 @media (max-width: 768px) {
     .form-container {
         padding: 30px 25px;
@@ -284,37 +329,5 @@ input[type="hidden"] {
     .form-cancel {
         padding: 12px 24px;
         font-size: 1rem;
-    }
-}
-
-/* ====== ANIMATIONS ====== */
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Animation au focus des champs */
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
-    animation: inputFocus 0.3s ease;
-}
-
-@keyframes inputFocus {
-    0% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-3px);
-    }
-    100% {
-        transform: translateY(-2px);
     }
 }

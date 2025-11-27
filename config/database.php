@@ -6,7 +6,7 @@ $password = "";
 
 try {
     $pdo = new PDO($dsn, $username, $password);
-    // Activation des erreurs PDO (bonnes pratiques)
+    // Activation des erreurs PDO 
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 

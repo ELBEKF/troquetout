@@ -1,4 +1,4 @@
-/* ====== VARIABLES (garder toujours) ====== */
+/* profil */
 :root {
     --primary-gradient: linear-gradient(135deg, #40AFA7 0%, #325B94 50%, #1B1A28 100%);
     --secondary-gradient: linear-gradient(135deg, #325B94 0%, #1B1A28 50%, #40AFA7 100%);
@@ -231,4 +231,91 @@ body {
         font-size: 0.9rem;
         min-width: auto;
     }
+}
+/* ===== MODE SOMBRE FORMULAIRE ===== */
+[data-theme="dark"] body {
+    background: #0f1c2f; /* fond général sombre */
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+[data-theme="dark"] .form-container {
+    background: #1b2240; /* couleur du formulaire */
+    border: 1px solid #3a3f5c; /* bord clair pour délimiter */
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .form-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 35px;
+    background: linear-gradient(90deg, #4fd1ff, #3a86ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+[data-theme="dark"] .form-label {
+    color: #cbd5e1; /* gris clair pour les labels */
+    font-weight: 600;
+}
+
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .form-textarea {
+    background: #2a2f4a; /* champ sombre */
+    border: 1px solid #4a4e6c; /* bord clair */
+    color: #ffffff;
+    padding: 15px 20px;
+    border-radius: 12px;
+    font-size: 1rem;
+}
+
+[data-theme="dark"] .form-input:focus,
+[data-theme="dark"] .form-select:focus,
+[data-theme="dark"] .form-textarea:focus {
+    border-color: #3a86ff;
+    box-shadow: 0 0 10px rgba(58, 134, 255, 0.4);
+}
+
+[data-theme="dark"] .form-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+[data-theme="dark"] .form-submit {
+    background: linear-gradient(135deg, #4fd1ff, #3a86ff);
+    color: #ffffff;
+    border-radius: 15px;
+    padding: 14px 30px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(58, 134, 255, 0.4);
+    transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .form-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(58, 134, 255, 0.6);
+}
+
+[data-theme="dark"] .form-cancel {
+    background: #444770;
+    color: #ffffff;
+    border-radius: 15px;
+    padding: 14px 30px;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .form-cancel:hover {
+    background: #5c5f87;
+}
+
+/* Placeholder couleur claire */
+[data-theme="dark"] ::placeholder {
+    color: #94a3b8;
+    opacity: 0.8;
 }

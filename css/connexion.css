@@ -1,43 +1,77 @@
-/* ====== CSS EXACT POUR LE RENDU DE LA PAGE CONNEXION ====== */
+/* ====== VARIABLES GLOBALES POUR LA PAGE CONNEXION ====== */
 
+/* ====== MODE CLAIR (par défaut) ====== */
+:root {
+    --connexion-bg: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+    --connexion-card-bg: #ffffff;
+    --connexion-input-bg: #ffffff;
+    --connexion-input-border: #e2e8f0;
+    --connexion-text: #1e293b;
+    --connexion-subtext: #475569;
+    --connexion-placeholder: #94a3b8;
+    --connexion-primary: #6366f1;
+    --connexion-accent: #3b82f6;
+    --connexion-gradient: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
+    --connexion-link: #3b82f6;
+    --connexion-shadow: rgba(99, 102, 241, 0.15);
+    --connexion-error-bg: linear-gradient(135deg, #ffe8e8 0%, #fff5f5 100%);
+    --connexion-error-border: #e57373;
+    --connexion-error-text: #d32f2f;
+}
 
-/* === Centrage de la page === */
+/* ====== MODE SOMBRE ====== */
+[data-theme="dark"] {
+    --connexion-bg: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+    --connexion-card-bg: rgba(26, 31, 58, 0.85);
+    --connexion-input-bg: rgba(255, 255, 255, 0.05);
+    --connexion-input-border: rgba(139, 92, 246, 0.3);
+    --connexion-text: #ffffff;
+    --connexion-subtext: rgba(255, 255, 255, 0.8);
+    --connexion-placeholder: rgba(255, 255, 255, 0.5);
+    --connexion-primary: #8b5cf6;
+    --connexion-accent: #00fff5;
+    --connexion-gradient: linear-gradient(90deg, #00fff5 0%, #8b5cf6 100%);
+    --connexion-link: #00fff5;
+    --connexion-shadow: rgba(0, 255, 245, 0.2);
+    --connexion-error-bg: linear-gradient(135deg, #3a1c1c 0%, #4b2b2b 100%);
+    --connexion-error-border: #b75a5a;
+    --connexion-error-text: #ff7b7b;
+}
+
+/* ====== STRUCTURE GLOBALE ====== */
+body {
+    background: var(--connexion-bg);
+    color: var(--connexion-text);
+    transition: background 0.4s ease, color 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ====== CENTRAGE ====== */
 .connexion-center {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: calc(100vh - 120px);
-    /* padding: 40px 20px; */
     position: relative;
     z-index: 1;
 }
 
-/* === Titre principal === */
-.form-title {
-    color: #3d5a73;
-    text-align: center;
-    font-size: 2.5rem;
-    font-weight: 700;
-    /* margin-bottom: 60px; */
-    /* margin-top: 40px; */
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* === Formulaire de connexion === */
+/* ====== FORMULAIRE ====== */
 .connexion-form {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--connexion-card-bg);
     backdrop-filter: blur(10px);
     max-width: 440px;
     width: 100%;
-    padding: 50px ;
+    padding: 50px;
     border-radius: 24px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 30px var(--connexion-shadow);
+    border: 1px solid var(--connexion-input-border);
     position: relative;
     overflow: hidden;
+    transition: all 0.3s ease;
 }
 
-/* Bordure dégradée en haut */
+/* Bordure supérieure colorée */
 .connexion-form::before {
     content: '';
     position: absolute;
@@ -45,46 +79,59 @@
     left: 0;
     right: 0;
     height: 5px;
-    background: linear-gradient(90deg, #5eb5ac 0%, #4a8fa8 100%);
+    background: var(--connexion-gradient);
 }
 
-/* === Labels === */
+/* ====== TITRE ====== */
+.form-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    background: var(--connexion-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ====== LABELS ====== */
 .connexion-label {
     display: block;
-    /* margin-bottom: 10px; */
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--connexion-text);
     font-size: 1rem;
+    margin-bottom: 8px;
 }
 
-/* === Inputs === */
+/* ====== INPUTS ====== */
 .connexion-input {
     width: 100%;
-    padding: 16px 20px;
-    /* margin-bottom: 25px; */
-    border: 2px solid #e1e8ed;
+    padding: 14px 18px;
+    border: 2px solid var(--connexion-input-border);
     border-radius: 12px;
     font-size: 1rem;
     transition: all 0.3s ease;
-    background: #ffffff;
+    background: var(--connexion-input-bg);
+    color: var(--connexion-text);
     font-family: inherit;
     box-sizing: border-box;
+    margin-bottom: 20px;
 }
 
 .connexion-input:focus {
-    border-color: #5eb5ac;
-    box-shadow: 0 0 0 3px rgba(94, 181, 172, 0.1);
+    border-color: var(--connexion-accent);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
     outline: none;
 }
 
 .connexion-input::placeholder {
-    color: #adb5bd;
+    color: var(--connexion-placeholder);
 }
 
-/* === Bouton de connexion === */
+/* ====== BOUTON ====== */
 .connexion-button {
     width: 100%;
-    background: linear-gradient(90deg, #5eb5ac 0%, #3d5a73 100%);
+    background: var(--connexion-gradient);
     color: #ffffff;
     border: none;
     padding: 16px;
@@ -93,44 +140,43 @@
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(94, 181, 172, 0.3);
+    box-shadow: 0 4px 12px var(--connexion-shadow);
     margin-top: 10px;
 }
 
 .connexion-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(94, 181, 172, 0.4);
+    box-shadow: 0 6px 18px var(--connexion-shadow);
 }
 
 .connexion-button:active {
     transform: translateY(0);
 }
 
-/* === Footer du formulaire === */
+/* ====== FOOTER ====== */
 .connexion-footer {
-    /* margin-top: 25px; */
     text-align: center;
+    margin-top: 20px;
 }
 
 .connexion-footer p {
-    color: #5a6c7d;
+    color: var(--connexion-subtext);
     font-size: 0.95rem;
-    /* margin: 0; */
 }
 
 .connexion-footer a {
-    color: #5eb5ac;
+    color: var(--connexion-link);
     font-weight: 600;
     text-decoration: none;
     transition: all 0.3s ease;
 }
 
 .connexion-footer a:hover {
-    color: #3d5a73;
     text-decoration: underline;
+    color: var(--connexion-primary);
 }
 
-/* === Modal d'erreur === */
+/* ====== MODAL D'ERREUR ====== */
 .connexion-modal {
     position: fixed;
     top: 20px;
@@ -141,50 +187,41 @@
 }
 
 .connexion-modal-content {
-    background: linear-gradient(135deg, #ffe8e8 0%, #fff5f5 100%);
-    color: #d32f2f;
+    background: var(--connexion-error-bg);
+    color: var(--connexion-error-text);
     padding: 18px 28px;
     border-radius: 12px;
-    border: 2px solid #e57373;
+    border: 2px solid var(--connexion-error-border);
     box-shadow: 0 6px 20px rgba(211, 47, 47, 0.2);
     min-width: 300px;
     max-width: 500px;
 }
 
 .connexion-modal-content p {
-    /* margin: 0; */
     font-weight: 600;
     font-size: 1rem;
 }
 
-/* === Divs internes === */
-/* .connexion-form > div {
-    margin-bottom: 0;
-} */
+/* ====== LOGO CO ====== */
+.logoco {
+    width: 20px;
+}
 
-/* === Responsive === */
+/* ====== RESPONSIVE ====== */
 @media (max-width: 768px) {
     .form-title {
-        font-size: 2.5rem;
-        /* margin-bottom: 40px; */
+        font-size: 2.2rem;
     }
 
     .connexion-form {
         padding: 40px 30px;
         max-width: 90%;
     }
-
-    .floating-cards .cart {
-        width: 70px !important;
-        height: 70px !important;
-        font-size: 2rem;
-    }
 }
 
 @media (max-width: 576px) {
     .form-title {
-        font-size: 2rem;
-        /* margin-bottom: 30px; */
+        font-size: 1.9rem;
     }
 
     .connexion-form {
@@ -192,22 +229,16 @@
     }
 
     .connexion-input {
-        padding: 14px 16px;
+        padding: 12px 14px;
     }
 
     .connexion-button {
         padding: 14px;
         font-size: 1rem;
     }
-
-    .floating-cards .cart {
-        width: 60px !important;
-        height: 60px !important;
-        font-size: 1.5rem;
-    }
 }
 
-/* === Animation === */
+/* ====== ANIMATION ====== */
 @keyframes slideDown {
     from {
         opacity: 0;
@@ -217,7 +248,4 @@
         opacity: 1;
         transform: translate(-50%, 0);
     }
-}
-.logoco{
-    width: 20px;
 }
