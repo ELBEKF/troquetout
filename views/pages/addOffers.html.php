@@ -7,7 +7,7 @@
 
         <div class="form-group">
             <label class="form-label" for="titre">Titre <span class="form-required">*</span></label>
-            <input class="form-input" type="text" name="titre" id="titre" placeholder="Ex: Perceuse Bosch" required>
+            <input class="form-input" type="text" name="titre" id="titre" placeholder="Ex: Vélo, Ballon" required>
         </div>
 
         <div class="form-group">
@@ -37,7 +37,7 @@
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label" for="categorie">Catégorie <span class="form-required">*</span></label>
-                <input class="form-input" type="text" name="categorie" id="categorie" placeholder="Ex: Outillage" required>
+                <input class="form-input" type="text" name="categorie" id="categorie" placeholder="Ex: Football" required>
             </div>
 
             <div class="form-group">

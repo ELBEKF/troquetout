@@ -4,7 +4,7 @@
 <!-- Wrapper principal (IMPORTANT : ne pas commenter) -->
 
   <div class="form-container">
-    <h2 class="form-title">Inscription</h2>
+    <h1 class="form-title">Inscription</h1>
 
     <?php if (!empty($error)): ?>
         <p class="form-error"><?= htmlspecialchars($error) ?></p>

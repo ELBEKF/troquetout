@@ -13,10 +13,10 @@ if (session_status() === PHP_SESSION_NONE) {
     <title><?= $title ?></title>
     
     
-    <!-- Bootstrap Icons -->
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     
-    <!-- CSS de base -->
+   
     <link rel="stylesheet" href="/plugins/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/header.css">
@@ -24,7 +24,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <link rel="stylesheet" href="/css/headerdeco.css">
 
     
-    <!-- CSS spécifiques aux pages -->
+   
     <?php if (isset($pageCSS)): ?>
         <?php foreach ((array)$pageCSS as $css): ?>
             <link rel="stylesheet" href="<?= $css ?>">
@@ -106,7 +106,7 @@ z-index: 9999;
 }
 
 #scrollUp img.scrollUp {
-  width: 50px;   /* 🔹 plus petit qu’avant (40 → 30px) */
+  width: 50px;   
   height: 50px;
   opacity: 0.7;
   transition: opacity 0.3s, transform 0.3s;
@@ -118,7 +118,7 @@ z-index: 9999;
 }
 html {
   scroll-behavior: smooth;
-  overflow-y: scroll; /* (pour éviter le décalage dont on parlait avant) */
+  overflow-y: scroll; 
 }
 </style>
 
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', loadTheme);
 
 
 <script>
-  // attend que la page soit chargée avant d’ajouter l’événement
+  
   document.querySelector('#scrollUp a').addEventListener('click', function(e) {
     e.preventDefault(); // empêche le rechargement
     window.scrollTo({
@@ -154,12 +154,11 @@ document.addEventListener('DOMContentLoaded', loadTheme);
     jQuery(function(){
   $(function () {
     $(window).scroll(function () { //Fonction appelée quand on descend la page
-      if ($(this).scrollTop() > 200 ) {  // Quand on est à 200pixels du haut de page,
-        $('#scrollUp').css('right','10px'); // Replace à 10pixels de la droite l'image
-        // console.log("sdlk,dlms")
+      if ($(this).scrollTop() > 200 ) {  
+        $('#scrollUp').css('right','10px'); 
+       
     } else { 
-        $('#scrollUp').removeAttr( 'style' ); // Enlève les attributs CSS affectés par javascript
-        // console.log("sdlk,dlms")
+        $('#scrollUp').removeAttr( 'style' ); 
     }
 });
 });

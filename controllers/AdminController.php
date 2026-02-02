@@ -28,7 +28,7 @@ try {
 
 
 }
-    // Cette fonction affiche le tableau de bord (dashboard) de l'admin
+   
     public function dashboard() {
         // Vérifier si l'utilisateur est connecté et est bien un admin
         if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {

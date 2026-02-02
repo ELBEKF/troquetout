@@ -1,12 +1,10 @@
 <?php 
 
-// On importe les fichiers nécessaires
+
 require_once dirname(__DIR__) . '/model/message.php'; // Modèle Message (pour interagir avec la BDD)
 require_once dirname(__DIR__) . '/config/render.php'; // Fonction render() pour afficher les pages
 
-// =======================
-// Contrôleur Messages
-// =======================
+
 class MessagesController {
     private $pdo;
 
@@ -27,11 +25,9 @@ class MessagesController {
         }
     }
 
-    // -------------------------------
-    // Méthode : Afficher les messages reçus ET envoyés
-    // -------------------------------
+
     public function receivedMessages() {
-        // Vérifie si l'utilisateur est connecté (via session)
+        // Vérifie si l'utilisateur est connecté 
         if (!isset($_SESSION['user_id'])) {
             // Si pas connecté, on redirige vers la page de connexion
             header('Location: /login.php');
@@ -52,7 +48,7 @@ class MessagesController {
 
         // Affiche la page "messages_reçus" avec les messages reçus et envoyés
         render('messages_reçus', [
-            'title' => 'Mes messages', // Titre de la page
+            'title' => 'Mes messages', 
             'messages' => $receivedMessages,     // Messages reçus
             'sent' => $sentMessages              // Messages envoyés
         ]);

@@ -26,7 +26,7 @@ try {
 }
     public function form($requestId)
 {
-    // session_start();
+    
 
     if (!isset($_SESSION['user_id'])) {
         echo "Vous devez être connecté.";
@@ -35,7 +35,6 @@ try {
 
     $userId = $_SESSION['user_id'];
 
-    // Récupérer les offres de l'utilisateur connecté
     $sql = "SELECT id, titre FROM offers WHERE user_id = :userId";
     $stmt = $this->pdo->prepare($sql);
     $stmt->execute([':userId' => $userId]);
@@ -54,7 +53,7 @@ try {
 
     public function envoyer() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // session_start();
+     
         if (!isset($_SESSION['user_id'])) {
             echo "Vous devez être connecté.";
             exit;
