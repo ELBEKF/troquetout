@@ -151,7 +151,7 @@ public function getByUserId( $userId) {
 
 
 
-// offer_functions.php ou offerModel.php (hors de la classe)
+
 public function addFavori( int $userId, int $offerId): bool {
     $stmt = $this->pdo->prepare("INSERT IGNORE INTO favoris (user_id, offer_id) VALUES (:user_id, :offer_id)");
     return $stmt->execute([
@@ -189,7 +189,7 @@ public function toggleFavoris( $userId, $offerId) {
     }
 }
 
-// pratique pour l’affichage (coeur rempli ou vide)
+
     public function isFavorite($userId, $offerId)
     {
         $sql = "SELECT COUNT(*) FROM favorites WHERE user_id = :user_id AND offer_id = :offer_id";

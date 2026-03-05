@@ -6,163 +6,88 @@ if (session_status() === PHP_SESSION_NONE) {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <link rel="icon" type="image/png" href="/images/sac.png">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?></title>
-    
-    
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    
-   
-    <link rel="stylesheet" href="/plugins/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/footer.css">
-    <link rel="stylesheet" href="/css/headerdeco.css">
+    <meta name="description" content="TroqueTout — Plateforme de partage, d'échange et de don d'objets entre particuliers.">
+    <title><?= htmlspecialchars($title) ?></title>
 
-    
-   
-    <?php if (isset($pageCSS)): ?>
-        <?php foreach ((array)$pageCSS as $css): ?>
-            <link rel="stylesheet" href="<?= $css ?>">
-        <?php endforeach; ?>
-    <?php endif; ?>
+    <link rel="icon" type="image/png" href="/images/sac.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <meta property="og:title" content="<?= htmlspecialchars($title) ?>">
+    <meta property="og:type" content="website">
+
+    <script>
+        (function () {
+            var KEY = 'troquetout-theme';
+            function getTheme() {
+                var saved = localStorage.getItem(KEY);
+                if (saved === 'dark' || saved === 'light') return saved;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem(KEY, theme);
+            }
+            window.toggleTheme = function () {
+                var current = document.documentElement.getAttribute('data-theme') || getTheme();
+                applyTheme(current === 'dark' ? 'light' : 'dark');
+            };
+            applyTheme(getTheme());
+        })();
+    </script>
 </head>
 <body>
-  <!-- À placer après l'ouverture de <body> -->
-<div class="theme-toggle-container">
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <span class="theme-toggle-label">Thème</span>
-        <div class="toggle-switch">
-            <div class="toggle-slider">
-                <span class="icon-sun">☀️</span>
-                <span class="icon-moon">🌙</span>
-            </div>
+    <div class="carte" aria-hidden="true">
+        <div class="gradient-orb"></div>
+        <div class="floating-cards">
+            <div class="cart cart-1" role="presentation">⚽️</div>
+            <div class="cart cart-2" role="presentation">🏀</div>
+            <div class="cart cart-3" role="presentation">🎾</div>
+            <div class="cart cart-4" role="presentation">🥊</div>
+            <div class="cart cart-5" role="presentation">🏊‍♂️</div>
         </div>
     </div>
-</div>
-<!-- Fond animé -->
-<div class="carte">
-    <div class="gradient-orb"></div>
-    <div class="floating-cards">
-        <div class="cart cart-1">⚽️</div>
-        <div class="cart cart-2">🏀</div>
-        <div class="cart cart-3">🎾</div>
-        <div class="cart cart-4">🥊</div>
-        <div class="cart cart-5">🏊‍♂️</div>
-    </div>
-</div>
 
-<?php
-if (!empty($_SESSION['user_id'])) {
-    require_once 'views/partials/header.php';
-} else {
-    require_once 'views/partials/headerdeco.php';
-}
-?>
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
 
-<?= $content ?>
+    <?php
+    if (!empty($_SESSION['user_id'])) {
+        require_once 'views/partials/header.php';
+    } else {
+        require_once 'views/partials/headerdeco.php';
+    }
+    ?>
 
-<?php require_once 'views/partials/footer.php'; ?>
+    <main id="main-content">
+        <div class="container">
+            <?= $content ?>
+        </div>
+    </main>
 
-<!-- Scripts -->
-<script src="/plugins/jquery/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/plugins/slick-carousel/slick/slick.min.js"></script>
-<script src="/plugins/jquery-nice-select/js/jquery.nice-select.min.js"></script>
-<script src="/js/script.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+    <?php require_once 'views/partials/footer.php'; ?>
 
- 
-<!-- Scripts spécifiques aux pages -->
-<?php if (isset($pageJS)): ?>
-    <?php foreach ((array)$pageJS as $js): ?>
-        <script src="<?= $js ?>"></script>
-    <?php endforeach; ?>
-<?php endif; ?>
-
-<!-- <div id="scrollUp">
-<a href="#top">TOP</a>
-</div> -->
-
-<div id="scrollUp">
-    <a href="/"><img class="scrollUp" src="/images/arrow-up.png" alt="scrolltop" /></a>
+    <div id="scrollUp">
+        <a href="#main-content" aria-label="Retourner en haut de la page">
+            <img class="scrollUp-img" src="/images/arrow-up.png" alt="">
+        </a>
     </div>
 
+    <script src="/plugins/jquery/jquery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="/plugins/slick-carousel/slick/slick.min.js" defer></script>
+    <script src="/plugins/jquery-nice-select/js/jquery.nice-select.min.js" defer></script>
+    <script src="/js/scripts.js" defer></script>
 
-<style>
-  #scrollUp
-{
-
-position: fixed;
-padding-right: 150px;
-width: 10px;
-bottom : 10px;
-right: 20px;  
-z-index: 9999;  
-}
-
-#scrollUp img.scrollUp {
-  width: 50px;   
-  height: 50px;
-  opacity: 0.7;
-  transition: opacity 0.3s, transform 0.3s;
-  cursor: pointer;
-}
-#scrollUp img.scrollUp:hover {
-  opacity: 1;
-  transform: scale(1.1);
-}
-html {
-  scroll-behavior: smooth;
-  overflow-y: scroll; 
-}
-</style>
-
-<script>
-function loadTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-}
-
-function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-}
-
-document.addEventListener('DOMContentLoaded', loadTheme);
-</script>
+    <?php if (isset($pageJS)): ?>
+        <?php foreach ((array)$pageJS as $js): ?>
+            <script src="<?= htmlspecialchars($js) ?>" defer></script>
+        <?php endforeach; ?>
+    <?php endif; ?>
 </body>
 </html>
-
-
-<script>
-  
-  document.querySelector('#scrollUp a').addEventListener('click', function(e) {
-    e.preventDefault(); // empêche le rechargement
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth' // effet fluide
-    });
-  });
-    
-    jQuery(function(){
-  $(function () {
-    $(window).scroll(function () { //Fonction appelée quand on descend la page
-      if ($(this).scrollTop() > 200 ) {  
-        $('#scrollUp').css('right','10px'); 
-       
-    } else { 
-        $('#scrollUp').removeAttr( 'style' ); 
-    }
-});
-});
-});
-
- 
-</script>

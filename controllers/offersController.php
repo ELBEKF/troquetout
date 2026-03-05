@@ -155,9 +155,7 @@ class OffersController {
             $publicUrlBase = '/' . ltrim($publicUrlBase, '/');
         }
     } else {
-        // fallback : si public est le docroot ou unknown, on prend empty string (URL '/uploads/offers/...')
-        // si ton site est servi depuis /troquetout/public, alors $publicUrlBase sera '' et /uploads/... fonctionnera.
-        // si ton site est servi depuis /troquetout (public non root), tu peux forcer la base (ex: '/troquetout/public')
+        
         $publicUrlBase = '';
     }
 

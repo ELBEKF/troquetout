@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/dashboard.css">
+
 
 <?php if (isset($_SESSION['success'])) : ?>
     <div class="alert alert-success" id="successMessage">

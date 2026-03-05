@@ -1,173 +1,213 @@
-<link rel="stylesheet" href="/css/homepage.css">
 <?php
-$search = $search ?? '';
-$type = $type ?? '';
-$etat = $etat ?? '';
+$search       = $search       ?? '';
+$type         = $type         ?? '';
+$etat         = $etat         ?? '';
 $localisation = $localisation ?? '';
-$sort = $sort ?? 'desc';
+$sort         = $sort         ?? 'desc';
 ?>
 
-<!-- HERO SECTION -->
-<div class="hero-section">
-  <h1 class="hero-title">L'avenir du partage commence ici</h1>
-  <p class="hero-subtitle">Découvrez une plateforme moderne de partage et d'échange. Donnez, louez ou prêtez simplement vos objets.</p>
-</div>
+<!--
+    ✅ Sémantique HTML5 :
+    - <header> pour l'accroche principale
+    - <section> pour les zones de contenu distinctes
+    - <article> pour chaque offre
+    - aria-* pour l'accessibilité
+-->
 
-<!-- FORMULAIRE DE RECHERCHE -->
-<div class="container">
-  <form method="GET" class="recherche">
-    <div class="search">
-      <label for="search">Titre</label>
-      <input type="text" name="search" id="search" placeholder="Rechercher par nom" value="<?= htmlspecialchars($search) ?>" class="form-control">
-    </div>
-    
-    <div class="filtre">
-      <label for="type">Type d'offre</label>
-      <select name="type" id="type" class="form-select">
-        <option value="">Tous les types</option>
-        <option value="don" <?= ($type === 'don') ? 'selected' : '' ?>>Don</option>
-        <option value="location" <?= ($type === 'location') ? 'selected' : '' ?>>Location</option>
-        <option value="pret" <?= ($type === 'pret') ? 'selected' : '' ?>>Prêt</option>
-      </select>
-    </div>
+<header class="hero-section">
+    <h1 class="hero-title">L'avenir du partage commence ici</h1>
+    <p class="hero-subtitle">Découvrez une plateforme moderne de partage et d'échange.</p>
+</header>
 
-    <div class="filtre">
-      <label for="etat">État</label>
-      <select name="etat" id="etat" class="form-select">
-        <option value="">Tous les états</option>
-        <option value="neuf" <?= ($etat === 'neuf') ? 'selected' : '' ?>>Neuf</option>
-        <option value="bon" <?= ($etat === 'bon') ? 'selected' : '' ?>>Bon</option>
-        <option value="usé" <?= ($etat === 'usé') ? 'selected' : '' ?>>Usé</option>
-      </select>
-    </div>
+<!-- ✅ Section de recherche avec rôle search -->
+<section aria-labelledby="recherche-titre">
+    <h2 id="recherche-titre" class="sr-only">Rechercher une offre</h2>
 
-    <div class="filtre">
-      <label for="localisation">Localisation</label>
-      <input type="text" name="localisation" id="localisation" placeholder="Ville" value="<?= htmlspecialchars($localisation) ?>" class="form-control">
-    </div>
-
-    <div class="filtre">
-      <label for="sort">Trier par date</label>
-      <select name="sort" id="sort" class="form-select">
-        <option value="desc" <?= ($sort === 'desc') ? 'selected' : '' ?>>Plus récentes</option>
-        <option value="asc" <?= ($sort === 'asc') ? 'selected' : '' ?>>Plus anciennes</option>
-      </select>
-    </div>
-
-    <button type="submit" class="btn btn-primary">
-      Rechercher
-    </button>
-  </form>
-
-  <section class="section">
-    <!-- Bouton Ajouter une offre -->
-    <div class="offres-wrapper">
-      <?php if (isset($_SESSION['user_id'])): ?>
-        <a href="offers/addOffer" class="btn btn-primary btn-add">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor">
-            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
-            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-          </svg>
-          Ajouter une offre
-        </a>
-      <?php else: ?>
-        <button class="btn btn-outline-secondary w-100 mb-4" disabled>
-          🔒 Connectez-vous pour ajouter une offre
-        </button>
-      <?php endif; ?>
-
-      <!-- GRID DES OFFRES -->
-      <div class="row">
-        <?php foreach ($offers as $offer): ?>
-          <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card">
-              <a href="/offers/detail/<?= urlencode($offer['id']) ?>">
-                <img class="card-img-top" src="<?= htmlspecialchars($offer['photo']) ?>" alt="Image de l'offre">
-              </a>
-
-              <div class="card-body">
-                <h5 class="card-title"><?= htmlspecialchars($offer['titre']) ?></h5>
-                <p class="card-text"><strong>Type :</strong> <?= htmlspecialchars($offer['type']) ?></p>
-                <p class="card-text"><strong>Prix :</strong> <?= number_format($offer['prix'], 2) ?> €</p>
-                <p class="card-text"><strong>Ville :</strong> <?= htmlspecialchars($offer['localisation']) ?></p>
-                <p class="card-text"><strong>Disponibilité :</strong> <?= htmlspecialchars($offer['disponibilite']) ?></p>
-                <p class="card-text"><strong>Statut :</strong> <?= $offer['statut'] ? '✅ Actif' : '⛔ Inactif' ?></p>
-
-                <a href="/offers/detail/<?= urlencode($offer['id']) ?>" class="btn btn-outline-primary btn-sm mt-2">Voir détail</a>
-
-                <?php if (
-                  isset($_SESSION['user_id']) &&
-                  ($_SESSION['user_id'] == $offer['user_id'] || ($_SESSION['user_role'] ?? '') === 'admin')
-                ): ?>
-                  <a href="/deleteOffer/<?= urlencode($offer['id']) ?>" 
-                    class="btn btn-outline-danger btn-sm mt-2"
-                    onclick="return confirm('Êtes-vous sûr ?');">
-                    Supprimer
-                  </a>
-                  
-                  <a href="/offers/modifoffer/<?= urlencode($offer['id']) ?>" class="btn btn-warning btn-sm mt-2">Modifier</a>
-                <?php endif; ?>
-              </div>
-
-              <div class="p-2">
-                <?php if (isset($_SESSION['user_id'])): ?>
-                  <form action="/offers/addfavoris/" method="POST" class="favoris-form">
-                    <input type="hidden" name="offer_id" value="<?= $offer['id'] ?>">
-                    <?php 
-                      $isFavori = $offer['is_favori'] ?? false;
-                      $btnClass = $isFavori ? 'btn btn-danger' : 'btn btn-outline-danger';
-                      $btnIcon = $isFavori ? '<i class="bi bi-heart-fill"></i>' : '<i class="bi bi-heart"></i>';
-                    ?>
-                    <button 
-                      type="submit" 
-                      class="<?= $btnClass ?> favoris-btn"
-                      onclick="toggleFavori(this, event)">
-                      <?= $btnIcon ?>
-                    </button>
-                  </form>
-                <?php else: ?>
-                  <button 
-                    class="btn btn-outline-secondary favoris-btn"
-                    onclick="alert('Connectez-vous pour ajouter aux favoris !')">
-                    <i class="bi bi-heart"></i>
-                  </button>
-                <?php endif; ?>
-              </div>
+    <form method="GET" class="recherche" role="search" aria-label="Recherche d'offres">
+        <div class="recherche-grid">
+            <div class="form-group">
+                <!-- ✅ label explicite lié à l'input par for/id -->
+                <label for="search" class="form-label">Titre</label>
+                <input
+                    type="search"
+                    name="search"
+                    id="search"
+                    placeholder="Rechercher une offre..."
+                    value="<?= htmlspecialchars($search) ?>"
+                    class="form-input"
+                    autocomplete="off"
+                >
             </div>
-          </div>
-        <?php endforeach; ?>
-      </div>
+
+            <div class="form-group">
+                <label for="type" class="form-label">Type</label>
+                <select name="type" id="type" class="form-select">
+                    <option value="">Tous les types</option>
+                    <option value="don"      <?= ($type === 'don')      ? 'selected' : '' ?>>Don</option>
+                    <option value="location" <?= ($type === 'location') ? 'selected' : '' ?>>Location</option>
+                    <option value="pret"     <?= ($type === 'pret')     ? 'selected' : '' ?>>Prêt</option>
+                </select>
+            </div>
+
+            <div class="form-group form-group--action">
+                <button type="submit" class="btn btn-primary">
+                    <!-- ✅ SVG décoratif aria-hidden -->
+                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    Rechercher
+                </button>
+            </div>
+        </div>
+    </form>
+</section>
+
+<!-- ✅ Section principale des offres -->
+<section class="offres-wrapper" aria-labelledby="offres-titre">
+    <div class="offres-header">
+        <h2 id="offres-titre">Dernières offres</h2>
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <a href="/offers/addOffer" class="btn btn-primary">
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Ajouter une offre
+            </a>
+        <?php endif; ?>
     </div>
-  </section>
-</div>
+
+    <?php if (empty($offers)): ?>
+        <p class="request-alert" role="status">Aucune offre disponible pour le moment.</p>
+    <?php else: ?>
+        <!-- ✅ <ul> sémantique pour une liste d'éléments -->
+        <ul class="offers-list" role="list">
+            <?php foreach ($offers as $offer): ?>
+                <!-- ✅ <article> pour contenu autonome -->
+                <li>
+                    <article class="card" aria-label="Offre : <?= htmlspecialchars($offer['titre']) ?>">
+
+                        <a href="/offers/detail/<?= urlencode($offer['id']) ?>" class="card-img-link"
+                           aria-label="Voir le détail de l'offre <?= htmlspecialchars($offer['titre']) ?>">
+                            <img
+                                class="card-img-top"
+                                src="<?= htmlspecialchars($offer['photo']) ?>"
+                                alt="Photo de l'offre : <?= htmlspecialchars($offer['titre']) ?>"
+                                loading="lazy"
+                                width="400" height="224"
+                            >
+                        </a>
+
+                        <div class="card-body">
+                            <h3 class="card-title"><?= htmlspecialchars($offer['titre']) ?></h3>
+
+                            <dl class="card-meta">
+                                <dt class="sr-only">Type</dt>
+                                <dd><span class="badge-type"><?= htmlspecialchars($offer['type']) ?></span></dd>
+                                <dt class="sr-only">Ville</dt>
+                                <dd class="card-location">
+                                    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
+                                         fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                        <circle cx="12" cy="10" r="3"/>
+                                    </svg>
+                                    <?= htmlspecialchars($offer['localisation']) ?>
+                                </dd>
+                            </dl>
+
+                            <div class="card-actions">
+                                <a href="/offers/detail/<?= urlencode($offer['id']) ?>"
+                                   class="btn btn-outline-primary btn-sm">Voir détail</a>
+
+                                <?php if (isset($_SESSION['user_id'])): ?>
+                                    <!-- ✅ Requête asynchrone fetch API — pas de rechargement de page -->
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm fav-btn <?= ($offer['is_favori'] ?? false) ? 'btn-danger' : 'btn-outline-danger' ?>"
+                                        data-offer-id="<?= (int)$offer['id'] ?>"
+                                        data-favori="<?= ($offer['is_favori'] ?? false) ? '1' : '0' ?>"
+                                        aria-label="<?= ($offer['is_favori'] ?? false) ? 'Retirer des favoris' : 'Ajouter aux favoris' ?>"
+                                        aria-pressed="<?= ($offer['is_favori'] ?? false) ? 'true' : 'false' ?>"
+                                    >
+                                        <i class="bi <?= ($offer['is_favori'] ?? false) ? 'bi-heart-fill' : 'bi-heart' ?>"
+                                           aria-hidden="true"></i>
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                    </article>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+</section>
 
 <script>
-function toggleFavori(button, event) {
-  event.preventDefault();
+/**
+ * ✅ Requêtes asynchrones avec l'API fetch (sans jQuery)
+ * Permet d'ajouter/retirer un favori sans rechargement de page.
+ *
+ * Bonne pratique :
+ * - Utilisation de const/let (pas var)
+ * - Gestion des erreurs avec try/catch
+ * - Mise à jour de l'interface ET des attributs d'accessibilité (aria-pressed, aria-label)
+ */
+document.addEventListener('DOMContentLoaded', () => {
 
-  const form = button.closest("form");
+    // ✅ Délégation d'événement : un seul listener pour tous les boutons favoris
+    document.addEventListener('click', async (e) => {
+        const btn = e.target.closest('.fav-btn');
+        if (!btn) return;
 
-  fetch(form.action, {
-    method: form.method,
-    body: new FormData(form)
-  })
-  .then(response => response.text())
-  .then(() => {
-    const isCurrentlyFavori = button.classList.contains("btn-danger");
+        const offerId = btn.dataset.offerId;
+        const isFavori = btn.dataset.favori === '1';
 
-    if (isCurrentlyFavori) {
-      button.classList.remove("btn-danger");
-      button.classList.add("btn-outline-danger");
-      button.innerHTML = '<i class="bi bi-heart"></i>';
-    } else {
-      button.classList.remove("btn-outline-danger");
-      button.classList.add("btn-danger");
-      button.innerHTML = '<i class="bi bi-heart-fill"></i>';
-    }
-  })
-  .catch(error => {
-    console.error("Erreur:", error);
-    alert("Une erreur s'est produite lors de la modification des favoris.");
-  });
-}
+        // Désactiver temporairement pour éviter les double-clics
+        btn.disabled = true;
+
+        try {
+            // ✅ Requête HTTP asynchrone vers le serveur
+            const response = await fetch('/offers/addfavoris/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `offer_id=${encodeURIComponent(offerId)}`
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erreur serveur : ${response.status}`);
+            }
+
+            // Mise à jour de l'interface après succès
+            const newFavori = !isFavori;
+            btn.dataset.favori = newFavori ? '1' : '0';
+
+            // Toggle des classes CSS
+            btn.classList.toggle('btn-danger',         newFavori);
+            btn.classList.toggle('btn-outline-danger', !newFavori);
+
+            // ✅ Mise à jour accessibilité
+            btn.setAttribute('aria-pressed', String(newFavori));
+            btn.setAttribute('aria-label',
+                newFavori ? 'Retirer des favoris' : 'Ajouter aux favoris'
+            );
+
+            // Toggle de l'icône
+            const icon = btn.querySelector('.bi');
+            if (icon) {
+                icon.classList.toggle('bi-heart-fill', newFavori);
+                icon.classList.toggle('bi-heart',      !newFavori);
+            }
+
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour du favori :', error);
+            // ✅ Feedback utilisateur en cas d'erreur
+            btn.setAttribute('aria-label', 'Erreur — réessayez');
+        } finally {
+            btn.disabled = false;
+        }
+    });
+
+});
 </script>

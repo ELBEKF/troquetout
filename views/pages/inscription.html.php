@@ -1,5 +1,4 @@
-<link rel="stylesheet" href="/css/homepage.css"> <!-- variables globales : charger avant -->
-<link rel="stylesheet" href="/css/inscription.css">
+
 
 <!-- Wrapper principal (IMPORTANT : ne pas commenter) -->
 

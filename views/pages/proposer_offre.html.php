@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/proposeoffre.css">
+
 
 <h2 class="form-title">Proposer une offre</h2>
 

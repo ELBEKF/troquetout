@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/modifoffer.css">
+
 
 <!-- <div class="form-page"> -->
     <div class="form-container">
@@ -75,7 +75,7 @@
                 <label class="form-label" for="localisation">Localisation <span class="form-required">*</span></label>
                 <input class="form-input" type="text" name="localisation" id="localisation" value="<?= htmlspecialchars($modif['localisation']) ?>" required>
             </div>
-
+ 
             <div class="form-group">
                 <label class="form-label" for="photo">Photo (URL)</label>
                 <input class="form-input" type="url" name="photo" id="photo" value="<?= htmlspecialchars($modif['photo']) ?>" placeholder="https://exemple.com/image.jpg">

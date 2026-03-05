@@ -1,5 +1,4 @@
-<!--  -->
-<link rel="stylesheet" href="/css/connexion.css">
+
 
 <?php if (!empty($error)): ?>
     <div id="errorModal" class="connexion-modal">

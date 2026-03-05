@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/mesdemandes.css">
+
 <!-- SVG Gradient for icon -->
 <svg width="0" height="0">
   <defs>

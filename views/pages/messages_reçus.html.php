@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/message.css">
+
 
 <div class="messaging-container">
 
