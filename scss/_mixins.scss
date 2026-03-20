@@ -1,0 +1,88 @@
+
+@use 'variables' as *;
+
+
+@mixin respond-to($bp) {
+    @if $bp == 'sm'  { @media (min-width: $bp-sm)  { @content; } }
+    @else if $bp == 'md'  { @media (min-width: $bp-md)  { @content; } }
+    @else if $bp == 'lg'  { @media (min-width: $bp-lg)  { @content; } }
+    @else if $bp == 'xl'  { @media (min-width: $bp-xl)  { @content; } }
+}
+
+
+@mixin glass {
+    background:    $glass-bg;
+    border:        1px solid $glass-border;
+    backdrop-filter: $glass-blur;
+    -webkit-backdrop-filter: $glass-blur;
+}
+
+
+@mixin flex-center($direction: row) {
+    display:         flex;
+    flex-direction:  $direction;
+    align-items:     center;
+    justify-content: center;
+}
+
+
+@mixin line-clamp($lines) {
+    display:            -webkit-box;
+    -webkit-line-clamp: $lines;
+    line-clamp:         $lines;  
+    -webkit-box-orient: vertical;
+    overflow:           hidden;
+}
+
+
+@mixin avatar($size, $bg: $primary-gradient) {
+    width:          $size;
+    height:         $size;
+    border-radius:  $radius-full;
+    background:     $bg;
+    @include flex-center;
+    font-weight:    700;
+    color:          white;
+    flex-shrink:    0;
+}
+
+
+@mixin btn-pill($bg, $color: white) {
+    display:         inline-flex;
+    align-items:     center;
+    gap:             $space-sm;
+    padding:         $space-sm $space-lg;
+    background:      $bg;
+    color:           $color;
+    border:          none;
+    border-radius:   $radius-full;
+    font-weight:     700;
+    cursor:          pointer;
+    transition:      $t-base;
+    text-decoration: none;
+
+    &:hover {
+        filter:     brightness(1.08);
+        box-shadow: $shadow-md;
+        transform:  translateY(-1px);
+    }
+
+    &:active {
+        transform:  translateY(0);
+    }
+}
+
+
+@mixin card($radius: $radius-md) {
+    @include glass;
+    border-radius: $radius;
+    box-shadow:    $shadow-sm;
+    transition:    $t-base;
+}
+
+@mixin focus-ring($color: $primary) {
+    &:focus-visible {
+        outline:        3px solid $color;
+        outline-offset: 3px;
+    }
+}

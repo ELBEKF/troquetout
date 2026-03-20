@@ -1,201 +1,286 @@
-/**
- * scripts.js — TroqueTout
- * Scripts principaux de l'application.
- *
- * Chargé avec defer depuis base_html.php.
- * Le thème (toggleTheme) est géré en inline dans le <head> — ne pas le mettre ici.
- */
 
-/* =========================================================================
-   1. PLUGINS JQUERY (niceSelect, slick, etc.)
-   ========================================================================= */
-(function ($) {
-    'use strict';
+'use strict';
 
-    $(document).ready(function () {
+window.applyTheme = function (theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+};
 
-        // Initialisation de niceSelect sur tous les <select> sauf .ignore
-        if ($.fn.niceSelect) {
-            $('select:not(.ignore)').niceSelect();
-        }
+window.toggleTheme = function () {
+    var current = localStorage.getItem('theme') || 'light';
+    window.applyTheme(current === 'light' ? 'dark' : 'light');
+};
 
-        // Carousel Slick (seulement si l'élément existe)
-        if ($('.category-slider').length && $.fn.slick) {
-            $('.category-slider').slick({
-                slidesToShow:  8,
-                infinite:      true,
-                arrows:        false,
-                autoplay:      false,
-                autoplaySpeed: 2000,
-                responsive: [
-                    { breakpoint: 1024, settings: { slidesToShow: 5 } },
-                    { breakpoint: 768,  settings: { slidesToShow: 3 } },
-                    { breakpoint: 480,  settings: { slidesToShow: 2 } }
-                ]
-            });
-        }
+(function () {
+    window.applyTheme(localStorage.getItem('theme') || 'light');
+}());
 
-        // Lecteur vidéo à la demande
-        $('.video-box img').on('click', function () {
-            var src   = $(this).attr('data-video');
-            var video = '<iframe allowfullscreen src="' + src + '"></iframe>';
-            $(this).replaceWith(video);
+function initConfirmLinks() {
+    document.querySelectorAll('a[data-confirm]').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            var message = this.getAttribute('data-confirm') || 'Confirmer cette action ?';
+            if (!window.confirm(message)) {
+                e.preventDefault();
+            }
         });
-
-        // Coupon types
-        $('.coupon-types li').on('click', function () {
-            $('.coupon-types li').not(this).removeClass('active');
-            $(this).addClass('active');
-        });
-
-        // Coupon code input toggle
-        $('#online-code').on('click', function () {
-            $('.code-input').fadeIn(500);
-        });
-        $('#store-coupon, #online-sale').on('click', function () {
-            $('.code-input').fadeOut(500);
-        });
-
-        // Tooltips Bootstrap 4 (si disponible)
-        if ($.fn.tooltip) {
-            $('[data-toggle="tooltip"]').tooltip();
-        }
-
     });
+}
 
-})(jQuery);
-
-
-/* =========================================================================
-   2. BOOTSTRAP 5 — Carousels
-   ========================================================================= */
-document.addEventListener('DOMContentLoaded', function () {
-    if (typeof bootstrap !== 'undefined' && bootstrap.Carousel) {
-        document.querySelectorAll('.carousel').forEach(function (el) {
-            new bootstrap.Carousel(el, { interval: 5000, ride: 'carousel' });
+function initBackButtons() {
+    document.querySelectorAll('[data-action="back"]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            history.back();
         });
-    }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    initNavDropdown();
+    initMobileMenu();
+    initOutsideClick();
+    initTabs();
+    initAjaxSearch();
+    initPhotoPreview();
+    initMessaging();
+    initScrollUp();
+
 });
 
+function initNavDropdown() {
+    var btn  = document.getElementById('user-menu-button');
+    var menu = document.getElementById('user-menu');
+    if (!btn || !menu) return;
 
-/* =========================================================================
-   3. NAVIGATION — Menu mobile & dropdown utilisateur
-   ========================================================================= */
-document.addEventListener('DOMContentLoaded', function () {
+    btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var isNowVisible = !menu.classList.toggle('hidden');
+        btn.setAttribute('aria-expanded', isNowVisible ? 'true' : 'false');
+    });
+}
 
-    /* ── Menu mobile ───────────────────────────────────────────────────── */
-    var mobileBtn = document.getElementById('mobile-menu-button');
-    if (mobileBtn) {
-        mobileBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var menu      = document.getElementById('mobile-menu');
-            var openIcon  = document.getElementById('menu-open-icon');
-            var closeIcon = document.getElementById('menu-close-icon');
-            var isOpen    = menu && !menu.classList.contains('hidden');
 
-            if (menu)      menu.classList.toggle('hidden');
-            if (openIcon)  openIcon.classList.toggle('hidden');
-            if (closeIcon) closeIcon.classList.toggle('hidden');
-            mobileBtn.setAttribute('aria-expanded', String(!isOpen));
-        });
-    }
+function initMobileMenu() {
+    var btn       = document.getElementById('mobile-menu-button');
+    var menu      = document.getElementById('mobile-menu');
+    var iconOpen  = document.getElementById('menu-open-icon');
+    var iconClose = document.getElementById('menu-close-icon');
+    if (!btn || !menu) return;
 
-    /* ── Dropdown utilisateur ──────────────────────────────────────────── */
-    var userBtn = document.getElementById('user-menu-button');
-    if (userBtn) {
-        userBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var menu = document.getElementById('user-menu');
-            if (menu) menu.classList.toggle('hidden');
-        });
-    }
+    btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var isNowVisible = !menu.classList.toggle('hidden');
+        btn.setAttribute('aria-expanded', isNowVisible ? 'true' : 'false');
+        if (iconOpen)  iconOpen.classList.toggle('hidden');
+        if (iconClose) iconClose.classList.toggle('hidden');
+    });
+}
 
-    /* ── Fermer les menus au clic extérieur ────────────────────────────── */
-    document.addEventListener('click', function (e) {
-        // Dropdown utilisateur
-        var userBtn  = document.getElementById('user-menu-button');
+
+function initOutsideClick() {
+    document.addEventListener('click', function () {
+
         var userMenu = document.getElementById('user-menu');
-        if (userBtn && userMenu &&
-            !userBtn.contains(e.target) &&
-            !userMenu.contains(e.target)) {
+        var userBtn  = document.getElementById('user-menu-button');
+        if (userMenu && !userMenu.classList.contains('hidden')) {
             userMenu.classList.add('hidden');
+            if (userBtn) userBtn.setAttribute('aria-expanded', 'false');
         }
+
+        var mobileMenu = document.getElementById('mobile-menu');
+        var mobileBtn  = document.getElementById('mobile-menu-button');
+        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+            if (mobileBtn) mobileBtn.setAttribute('aria-expanded', 'false');
+            var iconOpen  = document.getElementById('menu-open-icon');
+            var iconClose = document.getElementById('menu-close-icon');
+            if (iconOpen)  iconOpen.classList.remove('hidden');
+            if (iconClose) iconClose.classList.add('hidden');
+        }
+
+    });
+}
+
+
+function initTabs() {
+    var buttons = document.querySelectorAll('.tab-button[data-tab]');
+    if (!buttons.length) return;
+
+    buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var targetId = btn.getAttribute('data-tab');
+
+            buttons.forEach(function (b) {
+                b.classList.remove('active', 'btn-primary');
+                b.classList.add('btn-outline-primary');
+                b.setAttribute('aria-selected', 'false');
+            });
+            btn.classList.add('active', 'btn-primary');
+            btn.classList.remove('btn-outline-primary');
+            btn.setAttribute('aria-selected', 'true');
+
+            document.querySelectorAll('.tab-content').forEach(function (panel) {
+                panel.classList.add('hidden');
+                panel.classList.remove('active');
+            });
+            var target = document.getElementById(targetId);
+            if (target) {
+                target.classList.remove('hidden');
+                target.classList.add('active');
+            }
+        });
+    });
+}
+
+function initAjaxSearch() {
+    var form        = document.getElementById('search-form');
+    var offersGrid  = document.getElementById('offers-grid');
+    var offersCount = document.getElementById('offers-count');
+    if (!form || !offersGrid) return;
+
+    var debounceTimer;
+
+    function debounce(fn, delay) {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(fn, delay);
+    }
+
+    function showLoader() {
+        offersGrid.innerHTML =
+            '<div class="text-center py-5" role="status" aria-live="polite">' +
+                '<div class="spinner-border text-primary mb-3" aria-hidden="true"></div>' +
+                '<p class="text-muted">Recherche en cours\u2026</p>' +
+            '</div>';
+    }
+
+    function updateCount(count) {
+        if (offersCount) {
+            offersCount.textContent = count + ' annonce' + (count > 1 ? 's' : '');
+        }
+    }
+
+    function fetchOffers() {
+        var params = new URLSearchParams(new FormData(form)).toString();
+        showLoader();
+
+        fetch('/?' + params, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.text();
+            })
+            .then(function (html) {
+                offersGrid.innerHTML = html;
+                updateCount(offersGrid.querySelectorAll('article').length);
+            })
+            .catch(function () {
+                offersGrid.innerHTML =
+                    '<div class="alert alert-danger text-center shadow-sm" role="alert">' +
+                        '<i class="bi bi-wifi-off me-2" aria-hidden="true"></i>' +
+                        'Une erreur est survenue. Veuillez r\u00e9essayer.' +
+                    '</div>';
+            });
+    }
+
+    var searchEl = document.getElementById('search');
+    if (searchEl) {
+        searchEl.addEventListener('input', function () { debounce(fetchOffers, 400); });
+    }
+
+    var locEl = document.getElementById('localisation');
+    if (locEl) {
+        locEl.addEventListener('input', function () { debounce(fetchOffers, 500); });
+    }
+
+    form.querySelectorAll('select').forEach(function (sel) {
+        sel.addEventListener('change', fetchOffers);
     });
 
-    /* ── Fermer le menu mobile sur clic d'un lien ──────────────────────── */
-    document.querySelectorAll('.mobile-nav-link').forEach(function (link) {
-        link.addEventListener('click', function () {
-            var menu      = document.getElementById('mobile-menu');
-            var openIcon  = document.getElementById('menu-open-icon');
-            var closeIcon = document.getElementById('menu-close-icon');
-            var btn       = document.getElementById('mobile-menu-button');
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        fetchOffers();
+    });
+}
 
-            if (menu)      menu.classList.add('hidden');
-            if (openIcon)  openIcon.classList.remove('hidden');
-            if (closeIcon) closeIcon.classList.add('hidden');
-            if (btn)       btn.setAttribute('aria-expanded', 'false');
+function initPhotoPreview() {
+    var input     = document.getElementById('photo');
+    var container = document.getElementById('preview-container');
+    var img       = document.getElementById('preview-img');
+    if (!input || !container || !img) return;
+
+    input.addEventListener('change', function () {
+        var file = this.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                img.src = e.target.result;
+                container.classList.remove('d-none');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            container.classList.add('d-none');
+        }
+    });
+}
+
+
+function initMessaging() {
+
+    document.querySelectorAll('.message-preview[data-target]').forEach(function (preview) {
+
+        preview.addEventListener('click', function () {
+            var details  = document.getElementById(preview.getAttribute('data-target'));
+            var icon     = preview.querySelector('.expand-icon');
+            if (!details) return;
+
+            var isOpening = details.classList.contains('msg-body-hidden');
+            details.classList.toggle('msg-body-hidden', !isOpening);
+            preview.setAttribute('aria-expanded', isOpening ? 'true' : 'false');
+
+            if (icon) {
+                icon.style.transform  = isOpening ? 'rotate(180deg)' : 'rotate(0deg)';
+                icon.style.transition = 'transform 0.3s ease';
+            }
+        });
+
+        preview.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                preview.click();
+            }
         });
     });
 
-});
-
-
-/* =========================================================================
-   4. GOOGLE MAPS — Initialisé uniquement si l'API est chargée
-   ========================================================================= */
-window.marker = null;
-
-function initGoogleMap() {
-    var mapEl = document.getElementById('map');
-    if (!mapEl) return; // Ne rien faire si la page n'a pas de carte
-
-    var center = new google.maps.LatLng(51.507351, -0.127758);
-
-    var style = [{
-        stylers: [
-            { hue: '#ff61a6' },
-            { visibility: 'on' },
-            { invert_lightness: true },
-            { saturation: 40 },
-            { lightness: 10 }
-        ]
-    }];
-
-    var map = new google.maps.Map(mapEl, {
-        center:                center,
-        mapTypeId:             google.maps.MapTypeId.ROADMAP,
-        zoom:                  17,
-        backgroundColor:       '#000',
-        panControl:            false,
-        zoomControl:           true,
-        mapTypeControl:        false,
-        scaleControl:          false,
-        streetViewControl:     false,
-        overviewMapControl:    false,
-        zoomControlOptions: {
-            style: google.maps.ZoomControlStyle.LARGE
-        }
+    document.querySelectorAll('.reply-btn[data-reply-target]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var form = document.getElementById(btn.getAttribute('data-reply-target'));
+            if (!form) return;
+            form.classList.remove('msg-body-hidden');
+            btn.classList.add('d-none');
+        });
     });
 
-    var mapType = new google.maps.StyledMapType(style, { name: 'Grayscale' });
-    map.mapTypes.set('grey', mapType);
-    map.setMapTypeId('grey');
+    document.querySelectorAll('.cancel-reply-btn[data-reply-id]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var replyId   = btn.getAttribute('data-reply-id');
+            var replyForm = document.getElementById(replyId);
+            if (replyForm) replyForm.classList.add('msg-body-hidden');
 
-    var pinIcon = new google.maps.MarkerImage(
-        'plugins/google-map/images/marker.png',
-        null, null, null,
-        new google.maps.Size(74, 73)
-    );
-
-    window.marker = new google.maps.Marker({
-        position: center,
-        map:      map,
-        icon:     pinIcon,
-        title:    'TroqueTout'
+            var replyBtn = document.querySelector('.reply-btn[data-reply-target="' + replyId + '"]');
+            if (replyBtn) replyBtn.classList.remove('d-none');
+        });
     });
 }
 
-// N'écouter l'événement Google Maps que si l'API est présente
-if (typeof google !== 'undefined' && google.maps) {
-    google.maps.event.addDomListener(window, 'load', initGoogleMap);
+
+function initScrollUp() {
+    var btn = document.getElementById('scrollUp');
+    if (!btn) return;
+
+    window.addEventListener('scroll', function () {
+        btn.classList.toggle('d-none', window.scrollY < 300);
+    }, { passive: true });
 }
+(function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();   

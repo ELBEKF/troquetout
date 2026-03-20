@@ -1,52 +1,47 @@
 <?php
 
 require_once dirname(__DIR__) . '/config/render.php';
-require_once dirname(__DIR__) . '/model/User.php';
+require_once dirname(__DIR__) . '/model/Users.php';
 
 class UsersController
 {
+    /**
+     * Inscription d'un nouvel utilisateur
+     */
     public function register()
     {
         $error = '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Récupérer les données du formulaire
-            $nom = $_POST['nom'] ?? '';
-            $prenom = $_POST['prenom'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $password = $_POST['password'] ?? '';
-            $telephone = $_POST['telephone'] ?? '';
-            $ville = $_POST['ville'] ?? '';
-            $code_postal = $_POST['code_postal'] ?? '';
-
-            // Validation simple
+            $nom         = trim($_POST['nom'] ?? '');
+            $prenom      = trim($_POST['prenom'] ?? '');
+            $email       = trim($_POST['email'] ?? '');
+            $password    = $_POST['password'] ?? '';
+            
             if (empty($nom) || empty($prenom) || empty($email) || empty($password)) {
                 $error = 'Veuillez remplir tous les champs obligatoires.';
             } else {
-                $userCheck = new Users();
+                $userModel = new Users();
 
-                // Vérifie si l’e-mail existe déjà
-                if ($userCheck->emailExists($email)) {
+                if ($userModel->emailExists($email)) {
                     $error = 'Cet email est déjà utilisé.';
                 } else {
                     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-                    // Créer un nouvel utilisateur
-                    $user = new Users(
-                        $nom,
-                        $prenom,
-                        $email,
-                        $hashedPassword,
-                        'utilisateur',
-                        $telephone,
-                        $ville,
-                        $code_postal,
-                        date('Y-m-d H:i:s')
-                    );
+                    // prépare les données pour le modèle
+                    $userData = [
+                        'nom' => $nom,
+                        'prenom' => $prenom,
+                        'email' => $email,
+                        'password' => $hashedPassword,
+                        'role' => 'utilisateur',
+                        'telephone' => $_POST['telephone'] ?? '',
+                        'ville' => $_POST['ville'] ?? '',
+                        'code_postal' => $_POST['code_postal'] ?? ''
+                    ];
 
-                    $id = $user->addUsers();
-
-                    if ($id) {
+                    if ($userModel->addUsers($userData)) {
+                        $_SESSION['success'] = "Inscription réussie ! Vous pouvez vous connecter.";
                         header('Location: /connexion');
                         exit;
                     } else {
@@ -62,10 +57,11 @@ class UsersController
         ]);
     }
 
+    /**
+     * Affiche le profil de l'utilisateur connecté
+     */
     public function profil()
     {
-        // session_start();
-
         if (!isset($_SESSION['user_id'])) {
             header("Location: /connexion");
             exit;
@@ -80,47 +76,53 @@ class UsersController
         ]);
     }
 
+    /**
+     * Traite la mise à jour complète des informations du profil
+     */
     public function updateProfil()
     {
-        
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
             $id = $_SESSION['user_id'];
-
-            $nom = $_POST['nom'] ?? '';
-            $prenom = $_POST['prenom'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $telephone = $_POST['telephone'] ?? '';
-            $ville = $_POST['ville'] ?? '';
-            $code_postal = $_POST['code_postal'] ?? '';
-
             $userModel = new Users();
-            $userModel->updateUser($id, $nom, $prenom, $email, $telephone, $ville, $code_postal);
 
-            header('Location: /modifUser');
+            $userData = [
+                'nom'         => trim($_POST['nom'] ?? ''),
+                'prenom'      => trim($_POST['prenom'] ?? ''),
+                'email'       => trim($_POST['email'] ?? ''),
+                'telephone'   => trim($_POST['telephone'] ?? ''),
+                'ville'       => trim($_POST['ville'] ?? ''),
+                'code_postal' => trim($_POST['code_postal'] ?? '')
+            ];
+
+            if ($userModel->updateProfil($id, $userData)) {
+                $_SESSION['user_nom'] = $userData['nom'];
+                $_SESSION['success'] = "Votre profil a été mis à jour avec succès.";
+                header('Location: /profil');
+                exit;
+            } else {
+                $_SESSION['error'] = "Une erreur est survenue lors de la mise à jour.";
+                header('Location: /profil/modifProfil');
+                exit;
+            }
+        }
+    }
+    /**
+     * Affiche le formulaire de modification
+     */
+    public function modifProfil()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /connexion");
             exit;
         }
 
-        echo "Erreur : formulaire invalide.";
+        $userModel = new Users();
+        $user = $userModel->readProfil($_SESSION['user_id']);
+
+        render('modifProfil', [
+            'title' => 'Modifier mon profil',
+            'user' => $user,
+            'error' => ''
+        ]);
     }
-
-public function modifProfil()
-{
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: /connexion");
-        exit;
-    }
-
-    $userModel = new Users();
-    $user = $userModel->readProfil($_SESSION['user_id']);
-
-    render('modifProfil', [
-        'title' => 'Modifier mon profil',
-        'user' => $user,
-        'error' => ''
-    ]);
 }
-
-
-}
-

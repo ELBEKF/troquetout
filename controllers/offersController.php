@@ -1,384 +1,294 @@
 <?php 
-require_once dirname(__DIR__).'/config/database.php';
+
 require_once dirname(__DIR__) . '/config/render.php';
-require_once dirname(__DIR__) . '/model/offer.php'; 
+require_once dirname(__DIR__) . '/model/Offers.php'; // On utilise le nom de classe correct
 
 class OffersController {
 
-    private $data = [];
+    public function index() {
+        $search       = $_GET['search'] ?? '';
+        $type         = $_GET['type'] ?? '';
+        $etat         = $_GET['etat'] ?? '';
+        $localisation = $_GET['localisation'] ?? '';
+        $sort         = $_GET['sort'] ?? 'desc';
 
-    public function __construct($data = []) {
-        $this->data = $data;
-    }
-
-
-
-   public function index()
-{
-    // S'assurer que la session est démarrée
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
-    }
-
-    $search = $_GET['search'] ?? '';
-    $type = $_GET['type'] ?? '';
-    $etat = $_GET['etat'] ?? '';
-    $localisation = $_GET['localisation'] ?? '';
-    $sort = $_GET['sort'] ?? 'desc';
-
-    $offerModel = new Offers();
-    $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-    
-    // Utiliser la nouvelle méthode qui récupère directement le statut favori
-    $offers = $offerModel->findWithFiltersAndFavoris($search, $type, $etat, $localisation, $sort, $userId);
-
-    render('homepage', [
-        "title" => "Accueil - TroqueTout",
-        "offers" => $offers,
-        "search" => $search,
-        "type" => $type,
-        "etat" => $etat,
-        "localisation" => $localisation,
-        "sort" => $sort,
-    ]);
-}
-
-    public function offerDetail($id){
-    // Ne pas écraser $id ici, utilise simplement le paramètre reçu
-    $offerDetail = new Offers();
-    $detail = $offerDetail->findOfferById($id);
-
-    // Vérifie que l'offre existe avant de continuer
-    if (!$detail) {
-        // Offre non trouvée, gérer l'erreur, afficher message ou page 404
-        echo "Offre non trouvée.";
-        exit;
-    }
-
-    render('offerdetail', [
-        "title" => "detail",
-        "detail" => $detail
-    ]);
-}
-
-
- public function handleAddOffer()
-{
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        render('addOffers', ["title" => "Ajout d'une offre"]);
-        return;
-    }
-
-    // session
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
-    if (!isset($_SESSION['user_id'])) {
-        echo "Vous devez être connecté pour ajouter une offre.";
-        exit;
-    }
-
-    // champs obligatoires
-    $requiredFields = [
-        'titre', 'description', 'sens', 'type', 'categorie',
-        'etat', 'prix', 'caution', 'localisation',
-        'disponibilite', 'statut'
-    ];
-    foreach ($requiredFields as $field) {
-        if (empty($_POST[$field]) && $_POST[$field] !== "0") {
-            $error = "Veuillez remplir tous les champs.";
-            render('addOffers', ["title" => "Ajout d'une offre", "error" => $error]);
-            return;
-        }
-    }
-
-    // vérification fichier
-    if (!isset($_FILES['photo']) || $_FILES['photo']['error'] !== UPLOAD_ERR_OK) {
-        $error = "Veuillez ajouter une photo valide.";
-        render('addOffers', ["title" => "Ajout d'une offre", "error" => $error]);
-        return;
-    }
-
-    // infos fichier
-    $tmp_name = $_FILES['photo']['tmp_name'];
-    $original = basename($_FILES['photo']['name']);
-    $extension = strtolower(pathinfo($original, PATHINFO_EXTENSION));
-    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    if (!in_array($extension, $allowed)) {
-        $error = "Extension de fichier non autorisée. (jpg,jpeg,png,gif,webp)";
-        render('addOffers', ["title" => "Ajout d'une offre", "error" => $error]);
-        return;
-    }
-
-    // --- CHEMINS ROBUSTES ---
-    // project root (dossier troquetout)
-    $projectRoot = realpath(dirname(__DIR__)); // controllers/.. => troquetout
-    if ($projectRoot === false) {
-        render('addOffers', ["title" => "Ajout d'une offre", "error" => "Impossible de déterminer le chemin du projet."]);
-        return;
-    }
-
-    // dossier public physique
-    $publicDir = $projectRoot . DIRECTORY_SEPARATOR . 'public';
-    $uploadDir = $publicDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'offers' . DIRECTORY_SEPARATOR;
-
-    // crée dossier si nécessaire
-    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)) {
-        render('addOffers', ["title" => "Ajout d'une offre", "error" => "Impossible de créer le dossier d'upload ($uploadDir). Vérifiez les permissions."]);
-        return;
-    }
-
-    // nom de fichier unique
-    $filename = uniqid('offer_') . '.' . $extension;
-    $finalPath = $uploadDir . $filename;
-
-    // déplacer le fichier uploadé
-    if (!move_uploaded_file($tmp_name, $finalPath)) {
-        render('addOffers', ["title" => "Ajout d'une offre", "error" => "Erreur lors du déplacement du fichier sur le serveur."]);
-        return;
-    }
-
-    // --- construire une URL publique fiable pour la BDD ---
-    // essaie de déduire le chemin relatif depuis DOCUMENT_ROOT
-    $publicDirReal = realpath($publicDir);
-    $docRootReal = realpath($_SERVER['DOCUMENT_ROOT']);
-
-    // Normalise séparateurs
-    $publicDirNorm = $publicDirReal ? str_replace('\\', '/', $publicDirReal) : '';
-    $docRootNorm = $docRootReal ? str_replace('\\', '/', $docRootReal) : '';
-
-    if ($docRootNorm !== '' && strpos($publicDirNorm, $docRootNorm) === 0) {
-        // cas classique : public est sous DOCUMENT_ROOT
-        $publicUrlBase = substr($publicDirNorm, strlen($docRootNorm));
-        // ensure leading slash
-        if ($publicUrlBase === '' || $publicUrlBase[0] !== '/') {
-            $publicUrlBase = '/' . ltrim($publicUrlBase, '/');
-        }
-    } else {
+        $userId = $_SESSION['user_id'] ?? null;
         
-        $publicUrlBase = '';
+        $offerModel = new Offers();
+
+        $offers = $offerModel->findWithFiltersAndFavoris($search, $type, $etat, $localisation, $sort, $userId);
+
+        render('homepage', [
+            "title"        => "Accueil - TroqueTout",
+            "offers"       => $offers,
+            "search"       => $search,
+            "type"         => $type,
+            "etat"         => $etat,
+            "localisation" => $localisation,
+            "sort"         => $sort,
+        ]);
     }
 
-    // url relative à stocker en BDD (ex: '/uploads/offers/offer_xxx.jpg' or '/troquetout/public/uploads/offers/offer_xxx.jpg')
-    $photo_path = rtrim($publicUrlBase, '/') . '/uploads/offers/' . $filename;
-    // s'assurer d'un leading slash
-    if ($photo_path[0] !== '/') {
-        $photo_path = '/' . $photo_path;
+    /**
+     * Détail d'une offre spécifique
+     */
+    public function offerDetail($id) {
+        $offerModel = new Offers();
+        $detail = $offerModel->findOfferById(intval($id));
+
+        if (!$detail) {
+            $_SESSION['error'] = "Cette annonce n'existe pas ou a été supprimée.";
+            header('Location: /');
+            exit;
+        }
+
+        render('offerdetail', [
+            "title"  => $detail['titre'],
+            "detail" => $detail
+        ]);
     }
 
-    // --- CRÉATION DE L'OFFRE ---
-    $addOffer = new Offers();
-    $addOffer->setTitre($_POST["titre"]);
-    $addOffer->setDescription($_POST["description"]);
-    $addOffer->setSens($_POST["sens"]);
-    $addOffer->setType($_POST["type"]);
-    $addOffer->setCategorie($_POST["categorie"]);
-    $addOffer->setEtat($_POST["etat"]);
-    $addOffer->setPrix($_POST["prix"]);
-    $addOffer->setCaution($_POST["caution"]);
-    $addOffer->setLocalisation($_POST["localisation"]);
-    $addOffer->setPhoto($photo_path);
-    $addOffer->setDisponibilite($_POST["disponibilite"]);
-    $addOffer->setStatut($_POST["statut"]);
-    $addOffer->setUserId($_SESSION['user_id']);
+   // Dans OffersController.php
+public function handleAddOffer() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        
+        $offerModel = new Offers();
+        $photo_path = '/assets/images/default-offer.png';
 
-    // enregistrement en BDD
-    if ($addOffer->addOffers()) {
-        header("Location: /");
+        // Gestion de l'upload
+        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+            
+            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/offers/';
+
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            $extension = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+            $newName   = uniqid('offer_', true) . '.' . $extension;
+
+            if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadDir . $newName)) {
+                $photo_path = '/uploads/offers/' . $newName;
+            }
+        }
+
+        // Préparation des données
+        $data = [
+            'titre'         => $_POST['titre'] ?? '',
+            'description'   => $_POST['description'] ?? '',
+            'sens'          => $_POST['sens'] ?? 'offre',
+            'type'          => $_POST['type'] ?? 'don',
+            'categorie'     => $_POST['categorie'] ?? 'Divers',
+            'etat'          => $_POST['etat'] ?? 'bon',
+            'prix'          => $_POST['prix'] ?? 0,
+            'caution'       => $_POST['caution'] ?? 0,
+            'localisation'  => $_POST['localisation'] ?? '',
+            'disponibilite' => $_POST['disponibilite'] ?? date('Y-m-d'),
+            'statut'        => intval($_POST['statut'] ?? 1),
+            'photo'         => $photo_path,
+            'user_id'       => $_SESSION['user_id']
+        ];
+
+        if ($offerModel->addOffers($data)) {
+            $_SESSION['success'] = "Annonce créée avec succès !";
+            header('Location: /mesoffres');
+            exit;
+        }
+
+        $_SESSION['error'] = "Erreur lors de la création de l'annonce.";
+    }
+
+    render('addOffers', ['title' => 'Ajouter une offre']);
+}
+    public function toggleFavoris() {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /connexion');
+            exit;
+        }
+
+        $userId = $_SESSION['user_id'];
+        $offerId = $_POST['offer_id'] ?? null;
+
+        if (!$offerId) {
+            header('Location: /');
+            exit;
+        }
+
+        $offerModel = new Offers();
+        $isNowInFavoris = $offerModel->toggleFavoris($userId, $offerId);
+
+        // Utilisation des messages flash centralisés dans base.html.php
+        $_SESSION['success'] = $isNowInFavoris ? "Ajouté aux favoris." : "Retiré des favoris.";
+        
+        // Redirection vers la page d'où l'on vient
+        $redirect = $_SERVER['HTTP_REFERER'] ?? '/';
+        header('Location: ' . $redirect);
         exit;
     }
 
-    // en cas d'erreur
-    render('addOffers', ["title" => "Ajout d'une offre", "error" => "Erreur lors de l'enregistrement en base."]);
-}
+    /**
+     * Liste des favoris de l'utilisateur
+     */
+    public function favoris() {
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /connexion");
+            exit;
+        }
 
+        $offerModel = new Offers();
+        $favoris = $offerModel->getFavorisByUser($_SESSION['user_id']);
 
+        render('mesfavoris', [
+            'title'  => 'Mes favoris',
+            'offers' => $favoris
+        ]);
+    }
 
-
-public function delete( $id)
-{
-    session_start();
-
-    // Vérifie si l'utilisateur est connecté
+ // OffersController.php
+public function delete($id) {
     if (!isset($_SESSION['user_id'])) {
-        echo "Accès non autorisé.";
+        header('Location: /connexion');
         exit;
     }
 
     $offerModel = new Offers();
     $offer = $offerModel->findOfferById($id);
 
-    // Vérifie si l'offre existe
-    if (!$offer) {
-        echo "Offre non trouvée.";
+    // Sécurité : Vérifier le propriétaire
+    if (!$offer || ($_SESSION['user_id'] != $offer['user_id'] && $_SESSION['user_role'] !== 'admin')) {
+        $_SESSION['error'] = "Action non autorisée.";
+        header('Location: /mesoffres');
         exit;
     }
 
-    // Vérifie si l'utilisateur est le propriétaire de l'offre ou un admin
-    if ($_SESSION['user_id'] != $offer['user_id'] && ($_SESSION['user_role'] ?? '') !== 'admin') {
-        echo "Vous n'avez pas la permission de supprimer cette offre.";
-        exit;
+    // Suppression en base de données
+    if ($offerModel->deleteOffer($id)) {
+        $_SESSION['success'] = "L'annonce a été supprimée.";
     }
-
-    // Suppression autorisée
-    $offerModel->deleteOffer( $id);
-
-    // Redirige vers la page précédente si possible, sinon vers une page par défaut
-    if (!empty($_SERVER['HTTP_REFERER'])) {
-        header("Location: " . $_SERVER['HTTP_REFERER']);
-    } else {
-        header("Location: /offers"); // page par défaut
-    }
+    
+    // Redirection pour rafraîchir la page
+    header("Location: /mesoffres");
     exit;
 }
-
-
-
-
-public function modifoffer( $id)
+public function addFavori() 
 {
-    $id = intval($id);
-    $offerModel = new Offers();
-    $row = $offerModel->findOfferById( $id);
-
-    render('modifOffer', [
-        "title" => "Modifier l'offre",
-        "modif" => $row
-    ]);
-}
-public function updateoffer()
-{
-    $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
-
-    // Récupérer les données du formulaire dans un tableau
-    $data = [
-        'titre'         => $_POST['titre'] ?? '',
-        'description'   => $_POST['description'] ?? '',
-        'sens'          => $_POST['sens'] ?? '',
-        'type'          => $_POST['type'] ?? '',
-        'categorie'     => $_POST['categorie'] ?? '',
-        'etat'          => $_POST['etat'] ?? '',
-        'prix'          => $_POST['prix'] ?? 0,
-        'caution'       => $_POST['caution'] ?? 0,
-        'localisation'  => $_POST['localisation'] ?? '',
-        'photo'         => $_POST['photo'] ?? '',
-        'disponibilite' => $_POST['disponibilite'] ?? '',
-        'statut'        => $_POST['statut'] ?? 1,
-    ];
-
-    $offer = new Offers();
-
-    // Affecter les valeurs aux propriétés de l'objet
-    $offer->setTitre($data['titre']);
-    $offer->setDescription($data['description']);
-    $offer->setSens($data['sens']);
-    $offer->setType($data['type']);
-    $offer->setCategorie($data['categorie']);
-    $offer->setEtat($data['etat']);
-    $offer->setPrix($data['prix']);
-    $offer->setCaution($data['caution']);
-    $offer->setLocalisation($data['localisation']);
-    $offer->setPhoto($data['photo']);
-    $offer->setDisponibilite($data['disponibilite']);
-    $offer->setStatut($data['statut']);
-
-    // Appeler la méthode de mise à jour avec l'id
-    if ($offer->updateOfferInDb($id)) {
-        header("Location: /");
-        exit;
-    } else {
-        echo "Erreur lors de la mise à jour.";
-    }
-}
-
-
-public function mesOffres() {
+    // 1. Vérification de la session
     if (!isset($_SESSION['user_id'])) {
-        echo "Erreur : vous devez être connecté pour voir vos offres.";
+        header("Location: /connexion");
         exit;
     }
 
-    $userId = $_SESSION['user_id'];
-    $offerModel = new Offers();
-    $offers = $offerModel->getByUserId($userId);
-
-    render('mesoffres', [
-        'title' => 'Mes offres',
-        'offers' => $offers
-    ]);
-}
-
-
-public function addFavori()
-{
+    // 2. Traitement du formulaire POST
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['offer_id'])) {
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: /connexion");
-            exit;
-        }
-
         $userId = $_SESSION['user_id'];
         $offerId = intval($_POST['offer_id']);
 
         $offerModel = new Offers();
         
-        // Utiliser toggleFavoris au lieu de addFavori pour gérer l'ajout/suppression
+        // 3. Appel au modèle (méthode toggleFavoris créer)
         $isNowInFavoris = $offerModel->toggleFavoris($userId, $offerId);
 
-        // Optionnel : message flash pour informer l'utilisateur
-        $_SESSION['flash_message'] = $isNowInFavoris ? "Offre ajoutée aux favoris." : "Offre retirée des favoris.";
-        $_SESSION['flash_type'] = $isNowInFavoris ? "success" : "warning";
+        // 4. Message flash pour l'utilisateur (optionnel)
+        $_SESSION['success'] = $isNowInFavoris ? "Annonce ajoutée aux favoris." : "Annonce retirée des favoris.";
 
-        // Redirection vers la page précédente ou l'accueil
+        // 5. Redirection vers la page d'origine
         $redirect = $_SERVER['HTTP_REFERER'] ?? '/';
         header("Location: " . $redirect);
         exit;
     }
 }
-public function favoris()
+
+public function modifoffer($id) 
 {
     if (!isset($_SESSION['user_id'])) {
-        // Rediriger vers la page login si pas connecté
-        header("Location: /connexion");
+        header('Location: /connexion');
         exit;
     }
 
-    $userId = $_SESSION['user_id'];
-    $offerModel = new Offers();
-    $favoris = $offerModel->getFavorisByUser($userId);
+    $_SESSION['previous_url'] = $_SERVER['HTTP_REFERER'] ?? '/mesoffres';
 
-    render('mesfavoris', [  // on appelle ici la vue mesfavoris.php
-        'title' => 'Mes favoris',
-        'offers' => $favoris
+    $offerModel = new Offers();
+    $offerData = $offerModel->findOfferById(intval($id));
+
+    if (!$offerData || ($offerData['user_id'] != $_SESSION['user_id'] && $_SESSION['user_role'] !== 'admin')) {
+        $_SESSION['error'] = "Vous n'avez pas l'autorisation de modifier cette offre.";
+        header('Location: /mesoffres');
+        exit;
+    }
+
+    render('modifoffer', [
+        'title' => 'Modifier mon annonce',
+        'modif' => $offerData 
     ]);
 }
 
-public function toggleFavoris() {
-    session_start();
+public function updateoffer() 
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+        $offerModel = new Offers();
+        $oldOffer = $offerModel->findOfferById($id);
 
+        if (!$oldOffer) {
+            header('Location: /mesoffres');
+            exit;
+        }
+
+        // Gestion de la photo (via upload )
+        $photo_path = $oldOffer['photo'];
+        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+            // ... (votre logique move_uploaded_file ici) ...
+        }
+
+        $data = [
+            'titre'         => $_POST['titre'],
+            'description'   => $_POST['description'],
+            'type'          => $_POST['type'],
+            'sens'          => $_POST['sens'],
+            'categorie'     => $oldOffer['categorie'], 
+            'etat'          => $_POST['etat'],
+            'prix'          => $_POST['prix'],
+            'caution'       => $_POST['caution'],
+            'localisation'  => $_POST['localisation'],
+            'disponibilite' => $_POST['disponibilite'],
+            'statut'        => intval($_POST['statut']),
+            'photo'         => $photo_path,
+            'user_id'       => $_SESSION['user_id'] 
+        ];
+
+      $isAdmin = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
+      if ($offerModel->updateOffer($id, $data, $isAdmin)) {
+    $_SESSION['success'] = "Annonce mise à jour !";
+} else {
+    $_SESSION['error'] = "Erreur de mise à jour.";
+}
+
+$redirect = $_SESSION['previous_url'] ?? '/mesoffres';
+header('Location: ' . $redirect);
+exit;
+    }
+}
+public function mesOffres() 
+{
+    // 1. Sécurité : Vérifier si l'utilisateur est bien connecté
     if (!isset($_SESSION['user_id'])) {
         header('Location: /connexion');
         exit;
     }
 
     $userId = $_SESSION['user_id'];
-    $offerId = $_POST['offer_id'] ?? null;
 
-    if (!$offerId) {
-        header('Location: /');
-        exit;
-    }
-
+    // 2. Instancier le modèle
     $offerModel = new Offers();
-    $inFavoris = $offerModel->toggleFavoris( $userId, $offerId);
 
-    $_SESSION['flash_message'] = $inFavoris ? "Offre ajoutée aux favoris." : "Offre retirée des favoris.";
-    $_SESSION['flash_type'] = $inFavoris ? "success" : "warning";
+    // 3. Récupérer uniquement les offres de cet utilisateur
+    // méthode getByUserId() du modèle Offers
+    $myOffers = $offerModel->getByUserId($userId);
 
-    $redirect = $_SERVER['HTTP_REFERER'] ?? '/';
-    header('Location: ' . $redirect);
-    exit;
+    // 4. Afficher la vue dédiée aux annonces de l'utilisateur
+    render('mesoffres', [
+        'title'  => 'Mes annonces - TroqueTout',
+        'offers' => $myOffers
+    ]);
 }
-
-
 }

@@ -1,456 +1,210 @@
 <?php
 
+session_start();
+if (isset($_SESSION['user_id'])) {
+    require_once 'model/message.php';
+    $msg = new Message();
+    $_SESSION['unread_count'] = $msg->countUnread((int)$_SESSION['user_id']);
+}
 require_once 'controllers/AdminController.php';
 require_once 'controllers/ConnexionController.php';
-require_once 'controllers/homecontroller.php';
+require_once 'controllers/HomeController.php';      
 require_once 'controllers/MessagesController.php';
-require_once 'controllers/offersController.php';
+require_once 'controllers/OffersController.php';     
 require_once 'controllers/PropositionController.php';
-require_once 'controllers/requestController.php';
-require_once 'controllers/usersController.php';
+require_once 'controllers/RequestController.php';    
+require_once 'controllers/UsersController.php';      
+
+// 3. Import PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-
-
+// 4. Analyse de l'URL
 $method = $_SERVER['REQUEST_METHOD'];
-
-
-
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
-
-
 $segments = explode('/', trim($uri, '/'));
-
 
 if ($segments[0] == "") {
     if ($method == "GET") {
         $controller = new HomeController();
-        $controller->index();
+
+        //  Détecte si c'est une requête AJAX
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            $controller->indexAjax(); // Renvoie uniquement le fragment HTML
+            exit;
+        }
+
+        $controller->index(); // Renvoie la page complète normalement
+        exit;
     }
 }
 
-if (isset($segments[0]) && $segments[0] == "offers" && isset($segments[1]) && $segments[1] == "detail") {
-    if ($method == "GET") {
-        $controller = new OffersController();
-        $id = isset($segments[2]) ? intval($segments[2]) : 0;
-        $controller->offerDetail($id);
-    }
-}
-
+// --- ROUTAGE CONNEXION / DECONNEXION ---
 if ($segments[0] == "connexion") {
     $controller = new ConnexionController();
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $controller->handleLogin();
-    } else {
-        $controller->showForm();
-    }
+    $method === 'POST' ? $controller->handleLogin() : $controller->showForm();
+    exit;
 }
 
 if ($segments[0] == "deconnexion") {
-    
-        session_start();
-        $_SESSION = [];
-        session_destroy();
-        header("Location: /");
-        exit;
-    
+    $_SESSION = [];
+    session_destroy();
+    header("Location: /");
+    exit;
 }
 
 if ($segments[0] == "inscription") {
     $controller = new UsersController();
-    $controller->register(); // gère GET et POST en interne
+    $controller->register();
+    exit;
 }
 
-if ($segments[0] == "demandes") {
-    if ($method == "GET") {
-       $requestController = new RequestController();
-
-$action = $_GET['action'] ?? 'listRequests';
-
-switch ($action) {
-    case 'createRequest':
-        $requestController->create();
-        break;
-
-    case 'editRequest':
-        if (isset($_GET['id'])) {
-            $requestController->update($_GET['id']);
-        } else {
-            echo "ID manquant pour modification.";
+if ($segments[0] == "offers") {
+    $controller = new OffersController();
+    if (isset($segments[1])) {
+        switch ($segments[1]) {
+            case 'detail':
+                $id = isset($segments[2]) ? intval($segments[2]) : 0;
+                $controller->offerDetail($id);
+                break;
+            case 'addOffer':
+                $controller->handleAddOffer();
+                break;
+            case 'addfavoris':
+                if ($method == "POST") { $controller->addFavori(); }
+                break;
+            case 'modifoffer':
+                $id = isset($segments[2]) ? intval($segments[2]) : 0;
+                $method === 'POST' ? $controller->updateoffer() : $controller->modifoffer($id);
+                break;
+            case 'updateoffer':
+                if ($method == "POST") { $controller->updateoffer(); }
+                break;
+            case 'delete':
+                $id = isset($segments[2]) ? intval($segments[2]) : 0;
+                $controller->delete($id);
+                break;
         }
-        break;
-
-    case 'deleteRequest':
-        if (isset($_GET['id'])) {
-            $requestController->delete($_GET['id']);
-        } else {
-            echo "ID manquant pour suppression.";
-        }
-        break;
-
-    case 'listRequests':
-    default:
-        $requestController->index();
-        break;
-}
+        exit; // ✅ ici, après le switch
     }
 }
 
+// --- ROUTAGE ESPACE PERSO ---
 if ($segments[0] == "mesoffres") {
-    if ($method == "GET") {
-        $controller = new OffersController();
-        $controller->mesOffres(); 
-    }
-}
-
-if ($segments[0] == "contact") {
-// session_start();
-
-render('contact', [
-    'title' => 'Contactez-nous'
-]);
-
+    $controller = new OffersController();
+    $controller->mesOffres();
+    exit;
 }
 
 if ($segments[0] == "mesdemandes") {
-    if ($method == "GET") {
-        $controller = new RequestController();
-        $controller->mesDemandes(); 
-    }
+    $controller = new RequestController();
+    $controller->mesDemandes();
+    exit;
 }
+
 if ($segments[0] == "mesfavoris") {
-    if ($method == "GET") {
-        $controller = new OffersController();
+    $controller = new OffersController();
+    // Gère l'affichage de la liste OU le retrait d'un favori
+    if (isset($segments[1]) && $segments[1] == "togglefavoris") {
+        $controller->addFavori(); 
+    } else {
         $controller->favoris();
     }
+    exit;
 }
 
+// index.php
+
+// Route pour l'affichage ET la modification du profil
+if ($segments[0] === "profil") {
+    $controller = new UsersController();
+    
+    // Si on a /profil/modifProfil
+    if (isset($segments[1]) && $segments[1] === "modifProfil") {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->updateProfil();
+        } else {
+            $controller->modifProfil();
+        }
+    } 
+    // Si on a juste /profil
+    else {
+        $controller->profil();
+    }
+    exit;
+}
+
+// --- ROUTAGE MESSAGERIE ---
 if ($segments[0] == "messages_recus") {
-    if ($method == "GET") {
-        // session_start();
-        $controller = new MessagesController();
-        $controller->receivedMessages();
+    $controller = new MessagesController();
+    $controller->receivedMessages();
+    exit;
+}
+
+// index.php
+
+if ($segments[0] === "send_message") {
+    // On instancie le bon contrôleur
+    $controller = new MessagesController();
+    // On appelle la méthode send() (qui existe dans ton MessagesController)
+    $controller->send();
+    exit;
+}
+
+// --- ROUTAGE DEMANDES (Besoins) ---
+if ($segments[0] == "demandes") {
+    $controller = new RequestController();
+    $controller->index();
+    exit;
+}
+
+if ($segments[0] === "demande") {
+    $controller = new RequestController();
+    if (isset($segments[1])) {
+        switch ($segments[1]) {
+            case 'create':
+                $controller->create();
+                break;
+            case 'editdemande':
+                $controller->update(intval($segments[2]));
+                break;
+            case 'proposer': // Répondre à une demande avec une offre
+                $propController = new PropositionController();
+                $id = intval($segments[2]);
+                $method === 'POST' ? $propController->envoyer() : $propController->form($id);
+                break;
+        }
+        exit;
     }
 }
 
-if ($segments[0] === "admin" && isset($segments[1]) && $segments[1] === "modifUser" && isset($segments[2]) && is_numeric($segments[2])) {
-    // Vérification sécurité admin
-    if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+// --- ROUTAGE ADMIN ---
+if ($segments[0] == "admin") {
+    if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
         header('Location: /');
         exit;
     }
-
     $controller = new AdminController();
-    $userId = intval($segments[2]);
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Récupère et sécurise les données du formulaire
-        $nom = trim($_POST['nom'] ?? '');
-        $prenom = trim($_POST['prenom'] ?? '');
-        $email = trim($_POST['email'] ?? '');
-        $telephone = trim($_POST['telephone'] ?? '');
-        $ville = trim($_POST['ville'] ?? '');
-        $code_postal = trim($_POST['code_postal'] ?? '');
-
-        $success = $controller->updateUser($userId, $nom, $prenom, $email, $telephone, $ville, $code_postal);
-
-        if ($success) {
-            $_SESSION['success'] = "Utilisateur modifié avec succès.";
-            header('Location: /admin');
-            exit;
-        } else {
-            $_SESSION['error'] = "Erreur lors de la modification.";
-            // Pour réafficher le formulaire avec les données postées en cas d'erreur
-            $user = [
-                'id' => $userId,
-                'nom' => $nom,
-                'prenom' => $prenom,
-                'email' => $email,
-                'telephone' => $telephone,
-                'ville' => $ville,
-                'code_postal' => $code_postal,
-            ];
-            render('modifUser', [
-                'user' => $user, 
-                'error' => $_SESSION['error'],
-                'title' => 'Modifier Utilisateur'
-            ]);
-            exit;
-        }
-    } else {
-        // GET : afficher le formulaire avec les données actuelles
-        if ($userId <= 0) {
-            header('Location: /admin');
-            exit;
-        }
-
-        $user = $controller->getUserById($userId);
-
-        if (!$user) {
-            $_SESSION['error'] = "Utilisateur introuvable.";
-            header('Location: /admin');
-            exit;
-        }
-
-        render('modifUser', [
-            'user' => $user, 
-            'error' => '',
-            'title' => 'Modifier Utilisateur'
-        ]);
-    }
-    exit;
-}
-
-
-
-if ($segments[0] == "admin") {
-    if ($method == "GET") {
-// Vérification de sécurité :
-
-// On vérifie si l'utilisateur est connecté (user_id présent en session)
-// et si son rôle est bien "admin"
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
-    // Si ce n'est pas un admin, on le redirige vers la page d'accueil
-    header('Location: /'); // Redirection
-    exit;                 // On arrête le script ici
-}
-
-// ==========================
-// Appel du contrôleur Admin
-// ==========================
-// On crée un objet AdminController
-$controller = new AdminController();
-
-// On appelle la méthode dashboard() pour afficher la page admin
-// et on lui passe $pdo (connexion à la base)
-$controller->dashboard();
-    }
-}
-
-if ($segments[0] === "profil" && isset($segments[1]) && $segments[1] === "modifProfil") {
-    // session_start();
-
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: /connexion");
-        exit;
-    }
-
-    $userModel = new Users();
-    $userId = $_SESSION['user_id'];
-    $method = $_SERVER['REQUEST_METHOD'];
-    $error = '';
-    $user = [];
-
-    if ($method === 'POST') {
-        // Récupération et nettoyage des données du formulaire
-        $nom = trim($_POST['nom'] ?? '');
-        $prenom = trim($_POST['prenom'] ?? '');
-        $email = trim($_POST['email'] ?? '');
-        $telephone = trim($_POST['telephone'] ?? '');
-        $ville = trim($_POST['ville'] ?? '');
-        $code_postal = trim($_POST['code_postal'] ?? '');
-
-        // Mise à jour de l'utilisateur
-        $success = $userModel->updateUser($userId, $nom, $prenom, $email, $telephone, $ville, $code_postal);
-
-        if ($success) {
-            $_SESSION['success'] = "Profil mis à jour avec succès.";
-            header('Location: /profil');
-            exit;
-        } else {
-            $error = "Erreur lors de la mise à jour.";
-            // On renvoie les données saisies pour les réafficher dans le formulaire
-            $user = [
-                'nom' => $nom,
-                'prenom' => $prenom,
-                'email' => $email,
-                'telephone' => $telephone,
-                'ville' => $ville,
-                'code_postal' => $code_postal
-            ];
-        }
-    } else {
-        // En GET : on récupère les données actuelles de l'utilisateur
-        $user = $userModel->readProfil($userId);
-    }
-
-    // Rendu de la vue du formulaire de modification
-    render('modifProfil', [
-        'user' => $user,
-        'error' => $error,
-        'title' => 'Modifier mon profil'
-    ]);
-    exit; // ← Important : stoppe l'exécution du script ici
-}
-
-if ($segments[0] == "profil") {
-    if ($method == "GET") {
-        $controller = new UsersController();
-        $controller->profil();
-    }
-}
-
-if ($segments[0] === "offers" && isset($segments[1]) && $segments[1] === "addOffer") {
-    $controller = new OffersController();
-    $controller->handleAddOffer(); 
-    exit;
-}
-
-if ($segments[0] === "deleteOffer" && isset($segments[1]) && is_numeric($segments[1])) {
-    $controller = new OffersController();
-    $controller->delete(intval($segments[1]));
-    exit;
-}
-
-if (isset($segments[0], $segments[1], $segments[2]) && ($segments[0] === "offers" || $segments[0] === "mesoffres") && $segments[1] === "modifoffer" &&
- is_numeric($segments[2])
-) {
-    $controller = new OffersController();
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $controller->updateoffer();
-    } else {
-        $controller->modifoffer(intval($segments[2]));
-    }
-
-    exit;
-}
-
-
-if ($segments[0] === "deleteUser" && isset($segments[1]) && is_numeric($segments[1])) {
-    $controller = new AdminController();
-    $controller->deleteUser( intval($segments[1]) );
-    header("Location: /admin");
-    exit;
-}
-
-
-// if ($segments[0] == "addfavoris") {
-//     if ($method == "GET") {
-//         $controller = new OffersController();
-//         $controller->addFavori();
-//     }
-// }
-
-if (isset($segments[0]) && $segments[0] == "offers" && isset($segments[1]) && $segments[1] == "addfavoris") {
-        if ($method == "POST") {
-        $controller = new OffersController();
-        $controller->addFavori();
-}
-
-    }
-
-if (isset($segments[0]) && $segments[0] == "mesfavoris" && isset($segments[1]) && $segments[1] == "togglefavoris") {
-        if ($method == "POST") {
-                    // Instancie ton contrôleur
-            $controller = new OffersController();
-
-            // Appelle la méthode toggleFavoris en lui passant la connexion PDO
-            $controller->toggleFavoris();
-}
-
-    }
-
     
-if ($segments[0] === "demande" && isset($segments[1]) && $segments[1] === "create") {
-    $requestController = new RequestController();
-$requestController->create();
-    exit;
-}
-
-if ($segments[0] == "deletedemande" && isset($segments[1]) && is_numeric($segments[1])) {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $requestController = new RequestController();
-        $requestController->delete((int)$segments[1]);
-        exit;
+    if (isset($segments[1]) && $segments[1] === "modifUser" && isset($segments[2])) {
+        $id = intval($segments[2]);
+        $method === 'POST' ? $controller->updateUser($id) : $controller->modifUser($id);
+    } else if (isset($segments[1]) && $segments[1] === "deleteUser" && isset($segments[2])) {
+        $controller->deleteUser(intval($segments[2]));
+    // ✅ Ajoute juste ce cas
+    } else if (isset($segments[1]) && $segments[1] === "deleteOffer" && isset($segments[2])) {
+        $controller->deleteOffer(intval($segments[2]));
     } else {
-        header('Location: /demandes');
-        exit;
-    }
-}
-
-if ($segments[0] === "demande" && $segments[1] === "editdemande" && isset($segments[2]) && is_numeric($segments[2])) {
-    $requestController = new RequestController();
-    $requestController->update((int)$segments[2]); 
-}
-
-if ($segments[0] === "demande" && $segments[1] === "proposer" && isset($segments[2]) && is_numeric($segments[2])) {
-    // require_once 'controllers/PropositionController.php';
-    $controller = new PropositionController();
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $controller->envoyer();
-    } else {
-        // tu passes l'id dans la méthode form()
-        $controller->form(intval($segments[2]));
+        $controller->dashboard();
     }
     exit;
 }
 
-if ($segments[0] === "demande" && $segments[1] === "proposer" && isset($segments[2]) && is_numeric($segments[2])) {
-   if (!isset($_SESSION['user_id'])) {
-    echo "Vous devez être connecté pour envoyer un message.";
+// --- ROUTAGE CONTACT & PHPMailer ---
+if ($segments[0] == "contact") {
+    render('contact', ['title' => 'Contactez-nous']);
     exit;
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $toUserId = intval($_POST['to_user_id'] ?? 0);
-    $offerId = intval($_POST['offer_id'] ?? 0);
-    $messageText = trim($_POST['message'] ?? '');
-
-    if ($toUserId && $offerId && !empty($messageText)) {
-        $messageModel = new Message();
-        $success = $messageModel->sendMessage( $_SESSION['user_id'], $toUserId, $offerId, $messageText);
-
-        if ($success) {
-            header("Location: offerdetail.php?id=$offerId&sent=1");
-            exit;
-        } else {
-            echo "Erreur lors de l'envoi du message.";
-        }
-    } else {
-        echo "Tous les champs sont obligatoires.";
-    }
-}
-}
-
-
-if ($segments[0] === "send_message") {
-    // Vérifier si l'utilisateur est connecté
-    if (!isset($_SESSION['user_id'])) {
-        echo "Vous devez être connecté pour envoyer un message.";
-        exit;
-    }
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $toUserId = intval($_POST['to_user_id'] ?? 0);
-        $offerId = intval($_POST['offer_id'] ?? 0);
-        $messageText = trim($_POST['message'] ?? '');
-
-        if ($toUserId && $offerId && !empty($messageText)) {
-            require_once __DIR__ . '/model/message.php';
-            $messageModel = new Message();
-
-            $success = $messageModel->sendMessage(
-                $_SESSION['user_id'],
-                $toUserId,
-                $offerId,
-                $messageText
-            );
-
-            if ($success) {
-                header("Location: /messages_recus");
-                exit;
-            } else {
-                echo "Erreur lors de l'envoi du message.";
-            }
-        } else {
-            echo "Tous les champs sont obligatoires.";
-        }
-    }
 }
 
 if ($segments[0] === 'sendcontact' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -510,3 +264,7 @@ if ($segments[0] === 'sendcontact' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
+
+// --- SI AUCUNE ROUTE NE CORRESPOND (404) ---
+header("HTTP/1.0 404 Not Found");
+echo "Page non trouvée";

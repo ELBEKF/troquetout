@@ -1,213 +1,149 @@
 <?php
+
 $search       = $search       ?? '';
 $type         = $type         ?? '';
-$etat         = $etat         ?? '';
 $localisation = $localisation ?? '';
-$sort         = $sort         ?? 'desc';
 ?>
 
-<!--
-    ✅ Sémantique HTML5 :
-    - <header> pour l'accroche principale
-    - <section> pour les zones de contenu distinctes
-    - <article> pour chaque offre
-    - aria-* pour l'accessibilité
--->
+<main id="main-content">
 
-<header class="hero-section">
-    <h1 class="hero-title">L'avenir du partage commence ici</h1>
-    <p class="hero-subtitle">Découvrez une plateforme moderne de partage et d'échange.</p>
+<header class="hero-section text-center py-5 mb-5">
+    <div class="container">
+        <h1 class="display-3 fw-bold text-gradient">L'avenir du partage commence ici</h1>
+        <p class="lead text-muted mx-auto hero-lead">
+            Découvrez une plateforme moderne de partage et d'échange. Donnez, louez ou prêtez simplement vos objets au sein de votre communauté.
+        </p>
+    </div>
 </header>
 
-<!-- ✅ Section de recherche avec rôle search -->
-<section aria-labelledby="recherche-titre">
-    <h2 id="recherche-titre" class="sr-only">Rechercher une offre</h2>
+<div class="container">
+    <section class="search-bar-wrapper mb-5" aria-labelledby="search-heading">
+        <h2 id="search-heading" class="visually-hidden">Rechercher une offre</h2>
 
-    <form method="GET" class="recherche" role="search" aria-label="Recherche d'offres">
-        <div class="recherche-grid">
-            <div class="form-group">
-                <!-- ✅ label explicite lié à l'input par for/id -->
-                <label for="search" class="form-label">Titre</label>
-                <input
-                    type="search"
-                    name="search"
-                    id="search"
-                    placeholder="Rechercher une offre..."
-                    value="<?= htmlspecialchars($search) ?>"
-                    class="form-input"
-                    autocomplete="off"
-                >
-            </div>
+        <form id="search-form" method="GET" class="card glass-effect p-4 border-0 shadow-sm" role="search" aria-label="Formulaire de recherche d'offres">
+            <div class="row g-3 align-items-end">
 
-            <div class="form-group">
-                <label for="type" class="form-label">Type</label>
-                <select name="type" id="type" class="form-select">
-                    <option value="">Tous les types</option>
-                    <option value="don"      <?= ($type === 'don')      ? 'selected' : '' ?>>Don</option>
-                    <option value="location" <?= ($type === 'location') ? 'selected' : '' ?>>Location</option>
-                    <option value="pret"     <?= ($type === 'pret')     ? 'selected' : '' ?>>Prêt</option>
-                </select>
-            </div>
+                <div class="col-lg-4">
+                    <label for="search" class="form-label fw-bold small">Quoi ?</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0" aria-hidden="true">
+                            <i class="bi bi-search" aria-hidden="true"></i>
+                        </span>
+                        <input type="search" name="search" id="search"
+                               class="form-control border-start-0"
+                               placeholder="Nom de l'objet..."
+                               value="<?= htmlspecialchars($search) ?>"
+                               aria-label="Rechercher par nom d'objet"
+                               autocomplete="off">
+                    </div>
+                </div>
 
-            <div class="form-group form-group--action">
-                <button type="submit" class="btn btn-primary">
-                    <!-- ✅ SVG décoratif aria-hidden -->
-                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"
-                         fill="none" stroke="currentColor" stroke-width="2.5">
-                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                    </svg>
-                    Rechercher
-                </button>
+                <div class="col-lg-3">
+                    <label for="type" class="form-label fw-bold small">Type d'échange</label>
+                    <select name="type" id="type" class="form-select" aria-label="Filtrer par type d'échange">
+                        <option value="">Tous les types</option>
+                        <option value="don"      <?= ($type === 'don')      ? 'selected' : '' ?>>Don</option>
+                        <option value="location" <?= ($type === 'location') ? 'selected' : '' ?>>Location</option>
+                        <option value="pret"     <?= ($type === 'pret')     ? 'selected' : '' ?>>Prêt</option>
+                    </select>
+                </div>
+
+                <div class="col-lg-3">
+                    <label for="localisation" class="form-label fw-bold small">Où ?</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0" aria-hidden="true">
+                            <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                        </span>
+                        <input type="text" name="localisation" id="localisation"
+                               class="form-control border-start-0"
+                               placeholder="Ville..."
+                               value="<?= htmlspecialchars($localisation) ?>"
+                               aria-label="Filtrer par ville ou localisation"
+                               autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="col-lg-2">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2" aria-label="Lancer la recherche">
+                        Trouver
+                    </button>
+                </div>
+
             </div>
+        </form>
+    </section>
+
+    <section class="offers-section" aria-labelledby="offers-heading">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 id="offers-heading" class="h3 fw-bold mb-0">Les dernières offres</h2>
+            <span class="badge bg-primary-subtle text-primary rounded-pill" id="offers-count" aria-live="polite">
+                <?= count($offers) ?> annonce<?= count($offers) > 1 ? 's' : '' ?>
+            </span>
         </div>
-    </form>
-</section>
 
-<!-- ✅ Section principale des offres -->
-<section class="offres-wrapper" aria-labelledby="offres-titre">
-    <div class="offres-header">
-        <h2 id="offres-titre">Dernières offres</h2>
-        <?php if (isset($_SESSION['user_id'])): ?>
-            <a href="/offers/addOffer" class="btn btn-primary">
-                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"
-                     fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M12 5v14M5 12h14"/>
-                </svg>
-                Ajouter une offre
-            </a>
-        <?php endif; ?>
-    </div>
+        <div id="offers-grid">
+            <?php if (empty($offers)): ?>
+                <div class="text-center py-5 card glass-effect">
+                    <i class="bi bi-emoji-frown display-1 text-muted mb-3" aria-hidden="true"></i>
+                    <p class="fs-4 text-muted">Désolé, aucune offre ne correspond à votre recherche.</p>
+                    <a href="/" class="btn btn-outline-primary">Réinitialiser les filtres</a>
+                </div>
+            <?php else: ?>
+                <div class="row g-4">
+                    <?php foreach ($offers as $offer): ?>
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <article class="card h-100 glass-effect border-0 shadow-hover overflow-hidden">
 
-    <?php if (empty($offers)): ?>
-        <p class="request-alert" role="status">Aucune offre disponible pour le moment.</p>
-    <?php else: ?>
-        <!-- ✅ <ul> sémantique pour une liste d'éléments -->
-        <ul class="offers-list" role="list">
-            <?php foreach ($offers as $offer): ?>
-                <!-- ✅ <article> pour contenu autonome -->
-                <li>
-                    <article class="card" aria-label="Offre : <?= htmlspecialchars($offer['titre']) ?>">
+                                <div class="position-relative">
+                                    <img src="<?= htmlspecialchars($offer['photo']) ?>"
+                                         class="card-img-top offer-img"
+                                         alt="<?= htmlspecialchars($offer['titre']) ?> — <?= htmlspecialchars($offer['etat'] ?? '') ?> à <?= htmlspecialchars($offer['localisation']) ?>"
+                                         loading="lazy">
+                                    <span class="badge bg-primary position-absolute top-0 end-0 m-3 shadow-sm"
+                                          aria-label="Type : <?= ucfirst(htmlspecialchars($offer['type'])) ?>">
+                                        <?= ucfirst(htmlspecialchars($offer['type'])) ?>
+                                    </span>
+                                </div>
 
-                        <a href="/offers/detail/<?= urlencode($offer['id']) ?>" class="card-img-link"
-                           aria-label="Voir le détail de l'offre <?= htmlspecialchars($offer['titre']) ?>">
-                            <img
-                                class="card-img-top"
-                                src="<?= htmlspecialchars($offer['photo']) ?>"
-                                alt="Photo de l'offre : <?= htmlspecialchars($offer['titre']) ?>"
-                                loading="lazy"
-                                width="400" height="224"
-                            >
-                        </a>
+                                <div class="card-body p-4">
+                                    <h3 class="h5 card-title fw-bold mb-2">
+                                        <?= htmlspecialchars($offer['titre']) ?>
+                                    </h3>
+                                    <p class="small text-muted mb-3">
+                                        <i class="bi bi-geo-alt me-1" aria-hidden="true"></i>
+                                        <?= htmlspecialchars($offer['localisation']) ?>
+                                    </p>
 
-                        <div class="card-body">
-                            <h3 class="card-title"><?= htmlspecialchars($offer['titre']) ?></h3>
+                                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                                        <a href="/offers/detail/<?= (int)$offer['id'] ?>"
+                                           class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold"
+                                           aria-label="Voir les détails de l'offre : <?= htmlspecialchars($offer['titre']) ?>">
+                                            Voir les détails
+                                        </a>
 
-                            <dl class="card-meta">
-                                <dt class="sr-only">Type</dt>
-                                <dd><span class="badge-type"><?= htmlspecialchars($offer['type']) ?></span></dd>
-                                <dt class="sr-only">Ville</dt>
-                                <dd class="card-location">
-                                    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
-                                         fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                                        <circle cx="12" cy="10" r="3"/>
-                                    </svg>
-                                    <?= htmlspecialchars($offer['localisation']) ?>
-                                </dd>
-                            </dl>
+                                        <?php if (isset($_SESSION['user_id'])): ?>
+                                            <?php $isFavori = (isset($offer['is_favori']) && $offer['is_favori'] == 1); ?>
+                                            <form action="/offers/addfavoris" method="POST" class="m-0">
+                                                <input type="hidden" name="offer_id" value="<?= $offer['id'] ?>">
+                                                <button type="submit"
+                                                        class="btn <?= $isFavori ? 'btn-danger' : 'btn-outline-danger' ?> btn-sm rounded-circle p-2 shadow-sm"
+                                                        aria-label="<?= $isFavori ? 'Retirer des favoris' : 'Ajouter aux favoris' ?>"
+                                                        title="<?= $isFavori ? 'Retirer des favoris' : 'Ajouter aux favoris' ?>">
+                                                    <i class="bi <?= $isFavori ? 'bi-heart-fill' : 'bi-heart' ?>" aria-hidden="true"></i>
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
 
-                            <div class="card-actions">
-                                <a href="/offers/detail/<?= urlencode($offer['id']) ?>"
-                                   class="btn btn-outline-primary btn-sm">Voir détail</a>
-
-                                <?php if (isset($_SESSION['user_id'])): ?>
-                                    <!-- ✅ Requête asynchrone fetch API — pas de rechargement de page -->
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm fav-btn <?= ($offer['is_favori'] ?? false) ? 'btn-danger' : 'btn-outline-danger' ?>"
-                                        data-offer-id="<?= (int)$offer['id'] ?>"
-                                        data-favori="<?= ($offer['is_favori'] ?? false) ? '1' : '0' ?>"
-                                        aria-label="<?= ($offer['is_favori'] ?? false) ? 'Retirer des favoris' : 'Ajouter aux favoris' ?>"
-                                        aria-pressed="<?= ($offer['is_favori'] ?? false) ? 'true' : 'false' ?>"
-                                    >
-                                        <i class="bi <?= ($offer['is_favori'] ?? false) ? 'bi-heart-fill' : 'bi-heart' ?>"
-                                           aria-hidden="true"></i>
-                                    </button>
-                                <?php endif; ?>
-                            </div>
+                            </article>
                         </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </section>
 
-                    </article>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    <?php endif; ?>
-</section>
+</div>
 
-<script>
-/**
- * ✅ Requêtes asynchrones avec l'API fetch (sans jQuery)
- * Permet d'ajouter/retirer un favori sans rechargement de page.
- *
- * Bonne pratique :
- * - Utilisation de const/let (pas var)
- * - Gestion des erreurs avec try/catch
- * - Mise à jour de l'interface ET des attributs d'accessibilité (aria-pressed, aria-label)
- */
-document.addEventListener('DOMContentLoaded', () => {
-
-    // ✅ Délégation d'événement : un seul listener pour tous les boutons favoris
-    document.addEventListener('click', async (e) => {
-        const btn = e.target.closest('.fav-btn');
-        if (!btn) return;
-
-        const offerId = btn.dataset.offerId;
-        const isFavori = btn.dataset.favori === '1';
-
-        // Désactiver temporairement pour éviter les double-clics
-        btn.disabled = true;
-
-        try {
-            // ✅ Requête HTTP asynchrone vers le serveur
-            const response = await fetch('/offers/addfavoris/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `offer_id=${encodeURIComponent(offerId)}`
-            });
-
-            if (!response.ok) {
-                throw new Error(`Erreur serveur : ${response.status}`);
-            }
-
-            // Mise à jour de l'interface après succès
-            const newFavori = !isFavori;
-            btn.dataset.favori = newFavori ? '1' : '0';
-
-            // Toggle des classes CSS
-            btn.classList.toggle('btn-danger',         newFavori);
-            btn.classList.toggle('btn-outline-danger', !newFavori);
-
-            // ✅ Mise à jour accessibilité
-            btn.setAttribute('aria-pressed', String(newFavori));
-            btn.setAttribute('aria-label',
-                newFavori ? 'Retirer des favoris' : 'Ajouter aux favoris'
-            );
-
-            // Toggle de l'icône
-            const icon = btn.querySelector('.bi');
-            if (icon) {
-                icon.classList.toggle('bi-heart-fill', newFavori);
-                icon.classList.toggle('bi-heart',      !newFavori);
-            }
-
-        } catch (error) {
-            console.error('Erreur lors de la mise à jour du favori :', error);
-            // ✅ Feedback utilisateur en cas d'erreur
-            btn.setAttribute('aria-label', 'Erreur — réessayez');
-        } finally {
-            btn.disabled = false;
-        }
-    });
-
-});
-</script>
+</main>

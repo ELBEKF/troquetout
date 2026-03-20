@@ -47,7 +47,7 @@
             </div>
         </div>
 
-        <!-- Menu mobile — "hidden" = géré par initMobileMenu() dans scripts.js -->
+        
         <div id="mobile-menu"
              class="d-lg-none hidden bg-white border-top shadow-sm w-100 position-absolute start-0 py-4 px-4"
              role="navigation"

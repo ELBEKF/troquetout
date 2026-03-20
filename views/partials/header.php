@@ -1,151 +1,141 @@
-<header class="header modern-nav" role="banner">
-  <nav class="nav-container" aria-label="Navigation principale">
-    <div class="nav-wrapper">
-      <div class="nav-content">
+<?php
+/**
+ * Partiel : En-tête (Header) — Utilisateur connecté
+ * Optimisé RNCP : Sémantique, Accessibilité, zéro style inline, zéro script inline
+ */
+?>
+<header class="header modern-nav sticky-top" role="banner">
+    <nav class="nav-container container-fluid" aria-label="Navigation principale">
+        <div class="nav-wrapper d-flex align-items-center justify-content-between py-2">
 
-        <!-- Bouton menu mobile -->
-        <div class="mobile-menu-toggle">
-          <button type="button" id="mobile-menu-button" class="menu-btn"
-                  aria-expanded="false" aria-controls="mobile-menu"
-                  aria-label="Ouvrir le menu de navigation">
-            <svg id="menu-open-icon" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" class="icon-menu" aria-hidden="true">
-              <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                    stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <svg id="menu-close-icon" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" class="icon-menu hidden" aria-hidden="true">
-              <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
+            <div class="d-flex align-items-center">
 
-        <!-- Logo + liens desktop -->
-        <div class="nav-main">
-          <div class="nav-logo">
-            <a href="/" aria-label="TroqueTout — Accueil">
-              <img class="logo" src="/images/logo.png" alt="TroqueTout">
-            </a>
-          </div>
+                <!-- Hamburger — visible uniquement sur mobile (d-lg-none) -->
+                <button type="button"
+                        id="mobile-menu-button"
+                        class="btn btn-link d-lg-none me-2"
+                        aria-expanded="false"
+                        aria-controls="mobile-menu"
+                        aria-label="Ouvrir le menu de navigation">
+                    <i class="bi bi-list fs-2 text-dark" id="menu-open-icon" aria-hidden="true"></i>
+                    <i class="bi bi-x-lg fs-2 text-dark hidden" id="menu-close-icon" aria-hidden="true"></i>
+                </button>
 
-          <?php if (isset($_SESSION['user_id'])): ?>
-          <div class="nav-menu desktop-only">
-            <div class="nav-links" role="list">
-              <a href="/"         class="nav-link" role="listitem">Accueil</a>
-              <a href="/demandes" class="nav-link" role="listitem">Les Demandes</a>
-              <a href="/contact"  class="nav-link" role="listitem">Contact</a>
-              <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-              <a href="/admin"    class="nav-link" role="listitem">Dashboard</a>
-              <?php endif; ?>
-            </div>
-          </div>
-          <?php endif; ?>
-        </div>
-
-        <!-- ✅ Actions à droite — toggle thème intégré ici -->
-        <div class="nav-actions">
-
-          <?php if (isset($_SESSION['user_id'])): ?>
-
-            <!-- Toggle thème -->
-            <button type="button" class="theme-toggle"
-                    onclick="toggleTheme()"
-                    aria-label="Basculer entre mode clair et sombre">
-              <span class="theme-toggle-label desktop-only">Thème</span>
-              <div class="toggle-switch" aria-hidden="true">
-                <div class="toggle-slider">
-                  <span class="icon-sun">☀️</span>
-                  <span class="icon-moon">🌙</span>
+                <div class="nav-logo me-4">
+                    <a href="/" aria-label="TroqueTout — Retour à l'accueil">
+                        <img class="logo" src="/images/logo.png" alt="TroqueTout">
+                    </a>
                 </div>
-              </div>
-            </button>
 
-            <!-- Bouton Messages -->
-            <a href="/messages_recus" class="icon-btn" aria-label="Mes messages">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                   stroke-width="2" class="icon" aria-hidden="true">
-                <path d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
-                      stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </a>
-
-            <!-- Menu utilisateur -->
-            <div class="user-menu-wrapper">
-              <button type="button" id="user-menu-button" class="user-avatar"
-                      aria-expanded="false" aria-controls="user-menu"
-                      aria-label="Ouvrir le menu utilisateur">
-                <div class="avatar-circle" aria-hidden="true">
-                  <?php
-                    echo isset($_SESSION['user_nom'])
-                      ? strtoupper(substr($_SESSION['user_nom'], 0, 1))
-                      : 'U';
-                  ?>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                <div class="nav-links d-none d-lg-flex gap-3" role="menubar">
+                    <a href="/"          class="nav-link fw-semibold" role="menuitem">Accueil</a>
+                    <a href="/demandes"  class="nav-link fw-semibold" role="menuitem">Les Demandes</a>
+                    <a href="/contact"   class="nav-link fw-semibold" role="menuitem">Contact</a>
+                    <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+                        <a href="/admin" class="nav-link fw-semibold text-primary" role="menuitem">Dashboard</a>
+                    <?php endif; ?>
                 </div>
-              </button>
-
-              <!-- Dropdown -->
-              <div id="user-menu" class="dropdown-menu hidden" role="menu">
-                <div class="dropdown-user-header">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                       stroke-width="1.5" stroke="currentColor" aria-hidden="true"
-                       style="width:1.125rem;height:1.125rem;flex-shrink:0;">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                  </svg>
-                  <?= htmlspecialchars($_SESSION['user_nom']) ?>
-                </div>
-                <div class="dropdown-divider"></div>
-                <a href="/profil"      class="dropdown-item" role="menuitem">Mon Profil</a>
-                <a href="/mesoffres"   class="dropdown-item" role="menuitem">Mes annonces</a>
-                <a href="/mesdemandes" class="dropdown-item" role="menuitem">Mes demandes</a>
-                <a href="/mesfavoris"  class="dropdown-item" role="menuitem">Mes Favoris</a>
-                <div class="dropdown-divider"></div>
-                <form action="/deconnexion" method="post">
-                  <button type="submit" class="dropdown-item logout-btn" role="menuitem">
-                    Déconnexion
-                  </button>
-                </form>
-              </div>
+                <?php endif; ?>
             </div>
 
-          <?php else: ?>
-            <!-- Visiteur non connecté -->
-            <button type="button" class="theme-toggle"
-                    onclick="toggleTheme()"
-                    aria-label="Basculer entre mode clair et sombre">
-              <span class="theme-toggle-label desktop-only">Thème</span>
-              <div class="toggle-switch" aria-hidden="true">
-                <div class="toggle-slider">
-                  <span class="icon-sun">☀️</span>
-                  <span class="icon-moon">🌙</span>
-                </div>
-              </div>
-            </button>
-            <a href="/connexion" class="btn btn-primary">Connexion</a>
-          <?php endif; ?>
+            <div class="nav-actions d-flex align-items-center gap-3">
 
+                <!-- Toggle thème — label masqué sur mobile via CSS (section 33) -->
+                <button type="button"
+                        class="theme-toggle btn btn-sm rounded-pill d-flex align-items-center gap-2 px-3"
+                        onclick="toggleTheme()"
+                        aria-label="Changer le mode de couleur">
+                    <i class="bi bi-sun-fill icon-sun" aria-hidden="true"></i>
+                    <span class="nav-actions .theme-toggle-label small fw-bold">Thème</span>
+                    <i class="bi bi-moon-stars-fill icon-moon" aria-hidden="true"></i>
+                </button>
+
+                <?php if (isset($_SESSION['user_id'])): ?>
+
+                    <a href="/messages_recus"
+                       class="btn btn-outline-dark rounded-circle p-2 position-relative"
+                       aria-label="Voir mes messages<?= (!empty($_SESSION['unread_count']) && $_SESSION['unread_count'] > 0) ? ' (' . $_SESSION['unread_count'] . ' non lu' . ($_SESSION['unread_count'] > 1 ? 's' : '') . ')' : '' ?>">
+                        <i class="bi bi-envelope fs-5" aria-hidden="true"></i>
+                        <?php if (!empty($_SESSION['unread_count']) && $_SESSION['unread_count'] > 0): ?>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light badge-notif"
+                                  aria-label="<?= $_SESSION['unread_count'] ?> message<?= $_SESSION['unread_count'] > 1 ? 's' : '' ?> non lu<?= $_SESSION['unread_count'] > 1 ? 's' : '' ?>">
+                                <?= $_SESSION['unread_count'] ?>
+                            </span>
+                        <?php endif; ?>
+                    </a>
+
+                    <!-- Dropdown utilisateur — géré par Bootstrap data-bs-toggle -->
+                    <div class="dropdown">
+                        <button class="btn btn-link p-0 border-0"
+                                type="button"
+                                id="userDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                aria-label="Menu utilisateur <?= htmlspecialchars($_SESSION['user_nom'] ?? '') ?>">
+                            <div class="avatar-circle avatar-circle--sm shadow-sm">
+                                <?= strtoupper(substr($_SESSION['user_nom'] ?? 'U', 0, 1)) ?>
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 card-wrap--r-lg"
+                            aria-labelledby="userDropdown">
+                            <li class="px-3 py-2 small border-bottom">
+                                <span class="text-muted d-block small">Connecté en tant que</span>
+                                <span class="fw-bold"><?= htmlspecialchars($_SESSION['user_nom'] ?? '') ?></span>
+                            </li>
+                            <li><a class="dropdown-item py-2" href="/profil">
+                                <i class="bi bi-person me-2" aria-hidden="true"></i>Mon Profil</a></li>
+                            <li><a class="dropdown-item py-2" href="/mesoffres">
+                                <i class="bi bi-card-list me-2" aria-hidden="true"></i>Mes annonces</a></li>
+                            <li><a class="dropdown-item py-2" href="/mesdemandes">
+                                <i class="bi bi-chat-left-quote me-2" aria-hidden="true"></i>Mes demandes</a></li>
+                            <li><a class="dropdown-item py-2" href="/mesfavoris">
+                                <i class="bi bi-heart me-2" aria-hidden="true"></i>Mes Favoris</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="/deconnexion" method="post" class="m-0">
+                                    <button type="submit" class="dropdown-item text-danger py-2">
+                                        <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>Déconnexion
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+
+                <?php else: ?>
+                    <a href="/connexion" class="btn btn-primary px-4 fw-bold rounded-pill">Connexion</a>
+                <?php endif; ?>
+
+            </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Menu mobile -->
-    <?php if (isset($_SESSION['user_id'])): ?>
-    <div id="mobile-menu" class="mobile-nav hidden" role="navigation" aria-label="Menu mobile">
-      <div class="mobile-nav-content">
-        <a href="/"         class="mobile-nav-link">Accueil</a>
-        <a href="/demandes" class="mobile-nav-link">Les Demandes</a>
-        <a href="/contact"  class="mobile-nav-link">Contact</a>
-        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-        <a href="/admin"    class="mobile-nav-link">Dashboard</a>
+        <!-- Menu mobile — classe "hidden" (CSS custom) pour correspondre à scripts.js -->
+        <?php if (isset($_SESSION['user_id'])): ?>
+        <div id="mobile-menu"
+             class="d-lg-none hidden bg-white border-top shadow-sm w-100 position-absolute start-0 py-3 px-4"
+             role="navigation"
+             aria-label="Menu mobile">
+            <div class="d-flex flex-column gap-3">
+                <a href="/"         class="text-dark text-decoration-none fw-bold">
+                    <i class="bi bi-house me-2" aria-hidden="true"></i>Accueil</a>
+                <a href="/demandes" class="text-dark text-decoration-none fw-bold">
+                    <i class="bi bi-search me-2" aria-hidden="true"></i>Les Demandes</a>
+                <a href="/contact"  class="text-dark text-decoration-none fw-bold">
+                    <i class="bi bi-envelope me-2" aria-hidden="true"></i>Contact</a>
+                <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+                <a href="/admin"    class="text-primary text-decoration-none fw-bold">
+                    <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>Dashboard</a>
+                <?php endif; ?>
+                <hr class="my-1">
+                <a href="/profil"    class="text-dark text-decoration-none small">
+                    <i class="bi bi-person me-2" aria-hidden="true"></i>Mon Profil</a>
+                <a href="/mesoffres" class="text-dark text-decoration-none small">
+                    <i class="bi bi-card-list me-2" aria-hidden="true"></i>Mes annonces</a>
+                <a href="/mesfavoris" class="text-dark text-decoration-none small">
+                    <i class="bi bi-heart me-2" aria-hidden="true"></i>Mes Favoris</a>
+            </div>
+        </div>
         <?php endif; ?>
-        <div class="mobile-nav-divider"></div>
-        <a href="/profil"      class="mobile-nav-link">Mon Profil</a>
-        <a href="/mesoffres"   class="mobile-nav-link">Mes annonces</a>
-        <a href="/mesdemandes" class="mobile-nav-link">Mes demandes</a>
-        <a href="/mesfavoris"  class="mobile-nav-link">Mes Favoris</a>
-      </div>
-    </div>
-    <?php endif; ?>
 
-  </nav>
+    </nav>
 </header>

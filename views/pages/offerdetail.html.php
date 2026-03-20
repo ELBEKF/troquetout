@@ -1,152 +1,177 @@
-<?php if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-?>
+<main class="offer-detail-wrapper py-5" aria-labelledby="offer-title">
 
-<article class="offer-detail-wrapper" aria-labelledby="offer-title">
-
-    <!-- ── En-tête ──────────────────────────────────────────────────────── -->
-    <header class="offer-detail-header">
-        <h1 class="offer-detail-title" id="offer-title">
+    <header class="container mb-5">
+        <nav aria-label="Fil d'Ariane" class="mb-3">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item">
+                    <a href="/" class="text-decoration-none text-muted">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active text-primary" aria-current="page">
+                    <?= htmlspecialchars($detail['titre']) ?>
+                </li>
+            </ol>
+        </nav>
+        <h1 class="display-5 fw-bold" id="offer-title">
             <?= htmlspecialchars($detail['titre']) ?>
         </h1>
-        <p class="offer-detail-subtitle">Découvrez tous les détails de cette offre</p>
+        <p class="text-muted">
+            <i class="bi bi-tag me-2" aria-hidden="true"></i>
+            Catégorie&nbsp;: <?= htmlspecialchars($detail['categorie']) ?>
+        </p>
     </header>
-
-    <!-- ── Contenu principal : image + infos ────────────────────────────── -->
-    <div class="offer-detail-grid">
-
-        <!-- Image -->
-        <div class="offer-detail-image-wrap">
-            <?php if (!empty($detail['photo'])): ?>
-                <img
-                    src="<?= htmlspecialchars($detail['photo']) ?>"
-                    alt="Photo de l'offre : <?= htmlspecialchars($detail['titre']) ?>"
-                    class="offer-detail-img"
-                    loading="lazy"
-                >
-            <?php else: ?>
-                <div class="offer-detail-no-image" role="img" aria-label="Aucune image disponible">
-                    <svg aria-hidden="true" width="48" height="48" viewBox="0 0 24 24"
-                         fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="3" y="3" width="18" height="18" rx="2"/>
-                        <circle cx="8.5" cy="8.5" r="1.5"/>
-                        <polyline points="21 15 16 10 5 21"/>
-                    </svg>
-                    <span>Aucune image disponible</span>
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-7">
+                <div class="card glass-effect border-0 shadow-lg overflow-hidden card-wrap">
+                    <?php if (!empty($detail['photo'])): ?>
+                        <img src="<?= htmlspecialchars($detail['photo']) ?>"
+                             alt="Photo de l'annonce : <?= htmlspecialchars($detail['titre']) ?>"
+                             class="img-detail"
+                             loading="lazy"
+                             width="700" height="467">
+                    <?php else: ?>
+                        <div class="bg-light d-flex flex-column align-items-center justify-content-center py-5 min-h-400"
+                             role="img"
+                             aria-label="Aucune image disponible pour cette annonce">
+                            <i class="bi bi-image text-muted display-1" aria-hidden="true"></i>
+                            <span class="text-muted mt-3">Aucune image disponible</span>
+                        </div>
+                    <?php endif; ?>
                 </div>
-            <?php endif; ?>
-        </div>
-
-        <!-- Infos -->
-        <div class="offer-detail-info">
-
-            <!-- Badges type / sens -->
-            <div class="offer-detail-badges">
-                <span class="badge-type"><?= htmlspecialchars($detail['type']) ?></span>
-                <span class="badge-sens"><?= htmlspecialchars($detail['sens']) ?></span>
-                <span class="badge-etat badge-etat--<?= htmlspecialchars($detail['etat']) ?>">
-                    <?= htmlspecialchars($detail['etat']) ?>
-                </span>
             </div>
+            <aside class="col-lg-5" aria-label="Informations et actions sur l'annonce">
 
-            <!-- Description -->
-            <section aria-labelledby="desc-title">
-                <h2 class="offer-detail-section-title" id="desc-title">Description</h2>
-                <p class="offer-detail-description">
-                    <?= nl2br(htmlspecialchars($detail['description'])) ?>
-                </p>
-            </section>
+                <div class="card glass-effect border-0 p-4 shadow-sm mb-4 card-wrap--r-lg">
 
-            <!-- Grille de détails -->
-            <dl class="offer-detail-dl">
-                <div class="offer-detail-dl-item">
-                    <dt>Catégorie</dt>
-                    <dd><?= htmlspecialchars($detail['categorie']) ?></dd>
-                </div>
-                <div class="offer-detail-dl-item">
-                    <dt>Prix</dt>
-                    <dd class="offer-detail-price"><?= number_format($detail['prix'], 2) ?> €</dd>
-                </div>
-                <div class="offer-detail-dl-item">
-                    <dt>Caution</dt>
-                    <dd><?= number_format($detail['caution'], 2) ?> €</dd>
-                </div>
-                <div class="offer-detail-dl-item">
-                    <dt>Localisation</dt>
-                    <dd>
-                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
-                             fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                            <circle cx="12" cy="10" r="3"/>
-                        </svg>
-                        <?= htmlspecialchars($detail['localisation']) ?>
-                    </dd>
-                </div>
-                <div class="offer-detail-dl-item">
-                    <dt>Disponibilité</dt>
-                    <dd><?= htmlspecialchars($detail['disponibilite']) ?></dd>
-                </div>
-                <div class="offer-detail-dl-item">
-                    <dt>Publiée le</dt>
-                    <dd><?= date('d/m/Y', strtotime($detail['date_creation'])) ?></dd>
-                </div>
-            </dl>
-
-        </div>
-    </div>
-
-    <!-- ── Formulaire de contact ─────────────────────────────────────────── -->
-    <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $detail['user_id']): ?>
-        <section class="offer-detail-contact" aria-labelledby="contact-title">
-            <h2 class="offer-detail-section-title" id="contact-title">Contacter l'offreur</h2>
-
-            <div class="form-container" style="max-width: 100%;">
-                <form class="form" action="/send_message/" method="POST">
-                    <input type="hidden" name="to_user_id" value="<?= (int)$detail['user_id'] ?>">
-                    <input type="hidden" name="offer_id"   value="<?= (int)$detail['id'] ?>">
-
-                    <div class="form-group">
-                        <label class="form-label" for="message-field">
-                            Votre message <span class="form-required">*</span>
-                        </label>
-                        <textarea
-                            class="form-textarea"
-                            id="message-field"
-                            name="message"
-                            required
-                            placeholder="Bonjour, je suis intéressé(e) par votre offre..."
-                            rows="5"
-                            aria-describedby="message-hint"
-                        ></textarea>
-                        <span class="form-info" id="message-hint">
-                            Votre message sera envoyé directement à l'offreur.
+                    <!-- Badges type/sens + prix -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-primary-subtle text-primary rounded-pill">
+                                <?= ucfirst(htmlspecialchars($detail['type'])) ?>
+                            </span>
+                            <span class="badge bg-secondary-subtle text-secondary rounded-pill">
+                                <?= ucfirst(htmlspecialchars($detail['sens'])) ?>
+                            </span>
+                        </div>
+                        <span class="h3 fw-bold text-primary mb-0"
+                              aria-label="Prix : <?= number_format($detail['prix'], 2) ?> euros">
+                            <?= number_format($detail['prix'], 2) ?>&nbsp;€
                         </span>
                     </div>
 
-                    <div class="form-buttons">
-                        <button type="submit" class="form-submit">
-                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="22" y1="2" x2="11" y2="13"/>
-                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                            </svg>
-                            Envoyer le message
-                        </button>
-                        <button type="button" class="form-cancel" onclick="history.back()">
-                            Annuler
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </section>
-    <?php elseif (!isset($_SESSION['user_id'])): ?>
-        <div class="request-alert" role="status">
-            <p>
-                <a href="/connexion" class="btn-connexion">Connectez-vous</a>
-                pour contacter l'offreur.
-            </p>
-        </div>
-    <?php endif; ?>
+                    <!-- Description -->
+                    <section aria-labelledby="section-description">
+                        <h2 class="h5 fw-bold border-bottom pb-2 mb-3" id="section-description">
+                            Description
+                        </h2>
+                        <p class="text-muted">
+                            <?= nl2br(htmlspecialchars($detail['description'])) ?>
+                        </p>
+                    </section>
 
-</article>
+                    <!-- Caractéristiques -->
+                    <ul class="list-unstyled mb-4" aria-label="Caractéristiques de l'annonce">
+                        <li class="mb-2 d-flex justify-content-between">
+                            <span class="text-muted">
+                                <i class="bi bi-star me-2" aria-hidden="true"></i>État&nbsp;:
+                            </span>
+                            <span class="fw-bold"><?= ucfirst(htmlspecialchars($detail['etat'])) ?></span>
+                        </li>
+                        <li class="mb-2 d-flex justify-content-between">
+                            <span class="text-muted">
+                                <i class="bi bi-shield-check me-2" aria-hidden="true"></i>Caution&nbsp;:
+                            </span>
+                            <span class="fw-bold"
+                                  aria-label="Caution : <?= number_format($detail['caution'], 2) ?> euros">
+                                <?= number_format($detail['caution'], 2) ?>&nbsp;€
+                            </span>
+                        </li>
+                        <li class="mb-2 d-flex justify-content-between">
+                            <span class="text-muted">
+                                <i class="bi bi-geo-alt me-2" aria-hidden="true"></i>Lieu&nbsp;:
+                            </span>
+                            <span class="fw-bold"><?= htmlspecialchars($detail['localisation']) ?></span>
+                        </li>
+                    </ul>
+
+                    <!-- Offreur -->
+                    <div class="offreur-card d-flex align-items-center p-3 bg-white bg-opacity-25 rounded-3 mb-4 border">
+                        <div class="avatar-circle avatar-circle--sm avatar-gradient me-3 shadow-sm"
+                             aria-hidden="true">
+                            <?= isset($detail['user_nom'])
+                                ? strtoupper(substr($detail['user_nom'], 0, 1))
+                                : 'U' ?>
+                        </div>
+                        <div>
+                            <span class="d-block small text-muted">Proposé par</span>
+                            <span class="fw-bold">
+                                <?= isset($detail['user_nom'])
+                                    ? htmlspecialchars($detail['user_nom'])
+                                    : 'Utilisateur #' . (int)$detail['user_id'] ?>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Bouton favoris -->
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <form action="/offers/addfavoris" method="POST" class="favoris-form mb-3">
+                            <input type="hidden" name="offer_id" value="<?= (int)$detail['id'] ?>">
+                            <button type="submit"
+                                    class="btn btn-outline-danger w-100 fw-bold shadow-sm py-2"
+                                    aria-label="Ajouter « <?= htmlspecialchars($detail['titre']) ?> » à mes favoris">
+                                <i class="bi bi-heart me-2" aria-hidden="true"></i>Ajouter aux favoris
+                            </button>
+                        </form>
+                    <?php endif; ?>
+
+                    <!-- Formulaire de contact -->
+                    <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $detail['user_id']): ?>
+                        <section class="card glass-effect border-0 p-4 shadow-sm mt-3 card-wrap--r-lg"
+                                 aria-labelledby="contact-heading">
+                            <h2 class="h5 fw-bold mb-3" id="contact-heading">
+                                <i class="bi bi-envelope-at me-2" aria-hidden="true"></i>Envoyer un message
+                            </h2>
+                            <form action="/send_message" method="POST"
+                                  aria-label="Contacter l'offreur de cette annonce">
+                                <input type="hidden" name="to_user_id" value="<?= (int)$detail['user_id'] ?>">
+                                <input type="hidden" name="offer_id"   value="<?= (int)$detail['id'] ?>">
+
+                                <!-- ✅ <label> explicite lié au textarea par for/id -->
+                                <div class="mb-3">
+                                    <label for="contact-message" class="form-label fw-bold small">
+                                        Votre message
+                                        <span class="text-danger" aria-label="champ obligatoire">*</span>
+                                    </label>
+                                    <textarea class="form-control"
+                                              id="contact-message"
+                                              name="message"
+                                              rows="4"
+                                              required
+                                              aria-required="true"
+                                              placeholder="Bonjour, votre offre m'intéresse…"></textarea>
+                                </div>
+
+                                <button type="submit"
+                                        class="btn btn-primary w-100 fw-bold py-2"
+                                        aria-label="Envoyer votre message à l'offreur">
+                                    <i class="bi bi-send me-2" aria-hidden="true"></i>Contacter l'offreur
+                                </button>
+                            </form>
+                        </section>
+
+                    <?php elseif (!isset($_SESSION['user_id'])): ?>
+                        <div class="alert alert-info text-center border-0 shadow-sm mt-3 card-wrap--r-lg"
+                             role="status">
+                            <p class="mb-2 small">Vous devez être connecté pour contacter l'offreur.</p>
+                            <a href="/connexion"
+                               class="btn btn-sm btn-primary px-4 fw-bold"
+                               aria-label="Se connecter pour contacter l'offreur">Se connecter</a>
+                        </div>
+                    <?php endif; ?>
+
+                </div>
+            </aside>
+
+        </div>
+    </div>
+</main>

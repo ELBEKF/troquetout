@@ -1,0 +1,54 @@
+
+$primary:       #6366f1;
+$primary-dark:  #4f46e5;
+$primary-glow:  rgba(99, 102, 241, 0.35);
+$secondary:     #0ea5e9;
+$accent:        #f59e0b;
+$danger:        #ef4444;
+$success:       #22c55e;
+$warning:       #f59e0b;
+
+$bg-page:       #f0f2f8;
+$glass-bg:      rgba(255, 255, 255, 0.72);
+$glass-border:  rgba(255, 255, 255, 0.55);
+$glass-blur:    blur(16px);
+
+$text-main:     #0f172a;
+$text-muted:    #64748b;
+$text-light:    #94a3b8;
+$font-base:     'Inter', 'Segoe UI', system-ui, sans-serif;
+
+$shadow-sm:     0 2px 8px  rgba(0, 0, 0, 0.08);
+$shadow-md:     0 8px 24px rgba(0, 0, 0, 0.10);
+$shadow-lg:     0 20px 48px rgba(0, 0, 0, 0.12);
+$shadow-glow:   0 0 40px   rgba(99, 102, 241, 0.22);
+
+$radius-sm:     0.5rem;
+$radius-md:     0.875rem;
+$radius-lg:     1.25rem;
+$radius-xl:     1.75rem;
+$radius-2xl:    2rem;
+$radius-full:   9999px;
+
+$space-xs:   0.25rem;
+$space-sm:   0.5rem;
+$space-md:   1rem;
+$space-lg:   1.5rem;
+$space-xl:   2rem;
+$space-2xl:  3rem;
+
+$t-base:    all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+$t-spring:  all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+$bp-sm:   36rem;    
+$bp-md:   48rem;    
+$bp-lg:   64rem;    
+$bp-xl:   80rem;    
+
+$z-dropdown:  1000;
+$z-sticky:    1020;
+$z-modal:     1050;
+$z-toast:     1070;
+
+$primary-gradient: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+$hero-gradient:    linear-gradient(135deg, #e0e7ff 0%, #f0f9ff 50%, #faf5ff 100%);

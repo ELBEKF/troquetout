@@ -1,248 +1,225 @@
+<main class="messaging-container py-5">
+    <div class="container">
 
+        <header class="messaging-header mb-5 card glass-effect border-0 p-4 shadow-sm card-wrap">
+            <div class="d-flex align-items-center mb-4">
+                <div class="icon-box bg-primary text-white rounded-circle p-3 me-3 shadow-sm"
+                     aria-hidden="true">
+                    <i class="bi bi-chat-left-dots fs-4" aria-hidden="true"></i>
+                </div>
+                <h1 class="h2 fw-bold mb-0">Ma Messagerie</h1>
+            </div>
 
-<div class="messaging-container">
+            <div class="tabs-container d-flex gap-2" role="tablist" aria-label="Sections de messagerie">
 
-    <!-- NOUVEAU : Header avec onglets -->
-    <div class="messaging-header">
-        <h1 class="header-title">
-            <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
-            </svg>
-            Messagerie
-        </h1>
-        
-        <div class="tabs-container">
-            <button class="tab-button active" data-tab="received">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                    <polyline points="22,6 12,13 2,6"></polyline>
-                </svg>
-                Messages reçus
-                <?php if (!empty($messages)): ?>
-                    <span class="tab-badge"><?= count($messages) ?></span>
-                <?php endif; ?>
-            </button>
-            
-            <button class="tab-button" data-tab="sent">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                </svg>
-                Messages envoyés
-                <?php if (!empty($sent)): ?>
-                    <span class="tab-badge"><?= count($sent) ?></span>
-                <?php endif; ?>
-            </button>
-        </div>
-    </div>
-
-    <!-- Message de confirmation -->
-    <?php if (isset($_GET['success'])): ?>
-        <div class="form-success">
-            Votre message a bien été envoyé !
-        </div>
-    <?php endif; ?>
-
-    <!-- Conteneur pour les onglets -->
-    <div class="tabs-content-wrapper">
-        <!-- Section Messages Reçus -->
-        <section id="received" class="message-section tab-content active">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
+                <button class="btn tab-button active flex-grow-1 d-flex align-items-center justify-content-center py-2 btn-primary"
+                        id="tab-received"
+                        role="tab"
+                        aria-selected="true"
+                        aria-controls="received"
+                        data-tab="received">
+                    <i class="bi bi-inbox me-2" aria-hidden="true"></i>
                     Messages reçus
-                </h2>
-                <?php if (!empty($messages)): ?>
-                    <span class="message-count"><?= count($messages) ?></span>
-                <?php endif; ?>
-            </div>
+                    <?php if (!empty($messages)): ?>
+                        <span class="badge bg-white text-primary ms-2"
+                              aria-label="<?= count($messages) ?> message<?= count($messages) > 1 ? 's' : '' ?>">
+                            <?= count($messages) ?>
+                        </span>
+                    <?php endif; ?>
+                </button>
 
-            <?php if (empty($messages)): ?>
-                <div class="request-alert">
-                    <p class="form-info">Vous n'avez reçu aucun message.</p>
-                </div>
-            <?php else: ?>
-                <div class="messages-list" id="received-messages-list">
-                    <?php foreach ($messages as $index => $msg): ?>
-                        <div class="message-item" onclick="toggleMessage('msg-<?= $msg['id'] ?>')" <?= $index >= 4 ? 'style="display:none;"' : '' ?>>
-                            <div class="message-preview">
-                                <div class="avatar"><?= strtoupper(substr($msg['sender_name'], 0, 1)) ?></div>
-                                <div class="preview-content">
-                                    <p class="preview-sender"><?= htmlspecialchars($msg['sender_name']) ?></p>
-                                    <p class="preview-offer"><?= htmlspecialchars($msg['offer_title']) ?></p>
-                                    <p class="preview-date"><?= date('d/m/Y H:i', strtotime($msg['date_sent'])) ?></p>
-                                </div>
-                                <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                </svg>
-                            </div>
-
-                            <div id="msg-<?= $msg['id'] ?>" class="message-details" style="display: none;">
-                                <div class="message-content">
-                                    <?= nl2br(htmlspecialchars($msg['message'])) ?>
-                                </div>
-
-                                <div class="form-buttons">
-                                    <button type="button" class="form-submit" onclick="event.stopPropagation(); showReplyForm('reply-<?= $msg['id'] ?>'); this.style.display='none'">
-                                        Répondre
-                                    </button>
-                                </div>
-
-                                <div id="reply-<?= $msg['id'] ?>" class="reply-form" style="display: none;">
-                                    <form method="POST" action="/send_message" class="form" onclick="event.stopPropagation()">
-                                        <input type="hidden" name="to_user_id" value="<?= (int)$msg['sender_id'] ?>">
-                                        <input type="hidden" name="offer_id" value="<?= (int)$msg['offer_id'] ?>">
-
-                                        <div class="form-group">
-                                            <label class="form-label">Votre réponse</label>
-                                            <textarea class="form-textarea" name="message" placeholder="Écrivez votre réponse ici..." required></textarea>
-                                        </div>
-
-                                        <div class="form-buttons">
-                                            <button type="submit" class="form-submit">Envoyer</button>
-                                            <button type="button" class="form-cancel" onclick="event.stopPropagation(); hideReplyForm('reply-<?= $msg['id'] ?>', 'msg-<?= $msg['id'] ?>')">Annuler</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <?php if (count($messages) > 3): ?>
-                    <div class="see-more-wrapper text-center mt-3">
-                        <button id="load-more-received" class="btn btn-outline-primary">Voir plus</button>
-                    </div>
-                <?php endif; ?>
-            <?php endif; ?>
-        </section>
-
-        <!-- Section Messages Envoyés -->
-        <section id="sent" class="message-section tab-content">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
+                <button class="btn tab-button flex-grow-1 d-flex align-items-center justify-content-center py-2 btn-outline-primary"
+                        id="tab-sent"
+                        role="tab"
+                        aria-selected="false"
+                        aria-controls="sent"
+                        data-tab="sent">
+                    <i class="bi bi-send me-2" aria-hidden="true"></i>
                     Messages envoyés
-                </h2>
-                <?php if (!empty($sent)): ?>
-                    <span class="message-count"><?= count($sent) ?></span>
-                <?php endif; ?>
+                    <?php if (!empty($sent)): ?>
+                        <span class="badge bg-secondary ms-2"
+                              aria-label="<?= count($sent) ?> message<?= count($sent) > 1 ? 's' : '' ?> envoyé<?= count($sent) > 1 ? 's' : '' ?>">
+                            <?= count($sent) ?>
+                        </span>
+                    <?php endif; ?>
+                </button>
             </div>
+        </header>
 
-            <?php if (empty($sent)): ?>
-                <div class="request-alert">
-                    <p class="form-info">Vous n'avez envoyé aucun message.</p>
-                </div>
-            <?php else: ?>
-                <div class="messages-list" id="sent-messages-list">
-                    <?php foreach ($sent as $index => $msg): ?>
-                        <div class="message-item message-sent" onclick="toggleMessage('sent-<?= $msg['id'] ?>')" <?= $index >= 3 ? 'style="display:none;"' : '' ?>>
-                            <div class="message-preview">
-                                <div class="avatar avatar-sent"><?= strtoupper(substr($msg['receiver_name'], 0, 1)) ?></div>
-                                <div class="preview-content">
-                                    <p class="preview-sender">À : <?= htmlspecialchars($msg['receiver_name']) ?></p>
-                                    <p class="preview-offer"><?= htmlspecialchars($msg['offer_title']) ?></p>
-                                    <p class="preview-date"><?= date('d/m/Y H:i', strtotime($msg['date_sent'])) ?></p>
-                                </div>
-                                <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                </svg>
-                            </div>
+        <div class="tabs-content-wrapper">
 
-                            <div id="sent-<?= $msg['id'] ?>" class="message-details" style="display: none;">
-                                <div class="message-content">
-                                    <?= nl2br(htmlspecialchars($msg['message'])) ?>
+            <section id="received"
+                     class="tab-content active"
+                     role="tabpanel"
+                     aria-labelledby="tab-received"
+                     tabindex="0">
+
+                <?php if (empty($messages)): ?>
+                    <div class="alert glass-effect text-center p-5 border-0 shadow-sm card-wrap">
+                        <i class="bi bi-mailbox display-1 text-muted opacity-50 mb-3" aria-hidden="true"></i>
+                        <p class="fs-5 text-muted">Votre boîte de réception est vide.</p>
+                    </div>
+                <?php else: ?>
+                    <div class="messages-list d-flex flex-column gap-3"
+                         aria-label="Liste des messages reçus">
+                        <?php foreach ($messages as $msg): ?>
+                            <article class="message-item card glass-effect border-0 shadow-sm overflow-hidden card-wrap--r-lg">
+
+                                <div class="message-preview p-3 d-flex align-items-center cursor-pointer"
+                                     data-target="msg-received-<?= (int)$msg['id'] ?>"
+                                     role="button"
+                                     tabindex="0"
+                                     aria-expanded="false"
+                                     aria-controls="msg-received-<?= (int)$msg['id'] ?>"
+                                     aria-label="Message de <?= htmlspecialchars($msg['sender_name']) ?> — cliquer pour ouvrir">
+
+                                    <div class="avatar-circle avatar-circle--sm avatar-gradient me-3 flex-shrink-0"
+                                         aria-hidden="true">
+                                        <?= strtoupper(substr($msg['sender_name'], 0, 1)) ?>
+                                    </div>
+
+                                    <div class="preview-content flex-grow-1 overflow-hidden">
+                                        <h2 class="h6 fw-bold mb-0 text-truncate">
+                                            <?= htmlspecialchars($msg['sender_name']) ?>
+                                        </h2>
+                                        <p class="small text-primary mb-0 text-truncate">
+                                            Re&nbsp;: <?= htmlspecialchars($msg['offer_title']) ?>
+                                        </p>
+                                        <time class="small text-muted"
+                                              datetime="<?= date('Y-m-d\TH:i', strtotime($msg['date_sent'])) ?>">
+                                            <?= date('d/m/Y à H:i', strtotime($msg['date_sent'])) ?>
+                                        </time>
+                                    </div>
+
+                                    <i class="bi bi-chevron-down expand-icon ms-2" aria-hidden="true"></i>
                                 </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <?php if (count($sent) > 3): ?>
-                    <div class="see-more-wrapper text-center mt-3">
-                        <button id="load-more-sent" class="btn btn-outline-primary">Voir plus</button>
+
+                                <div id="msg-received-<?= (int)$msg['id'] ?>"
+                                     class="message-details p-4 pt-0 msg-body-hidden"
+                                     role="region"
+                                     aria-label="Contenu du message de <?= htmlspecialchars($msg['sender_name']) ?>">
+
+                                    <div class="message-body bg-white bg-opacity-50 p-3 rounded-3 mb-3 border">
+                                        <?= nl2br(htmlspecialchars($msg['message'])) ?>
+                                    </div>
+
+                                    <div class="actions">
+                                        <button type="button"
+                                                class="btn btn-sm btn-primary px-4 fw-bold reply-btn"
+                                                data-reply-target="reply-<?= (int)$msg['id'] ?>"
+                                                aria-label="Répondre à <?= htmlspecialchars($msg['sender_name']) ?>">
+                                            <i class="bi bi-reply-fill me-1" aria-hidden="true"></i>Répondre
+                                        </button>
+                                    </div>
+
+                                    <div id="reply-<?= (int)$msg['id'] ?>"
+                                         class="reply-form mt-4 border-top pt-3 msg-body-hidden"
+                                         role="region"
+                                         aria-label="Formulaire de réponse">
+                                        <form method="POST" action="/send_message"
+                                              aria-label="Répondre à <?= htmlspecialchars($msg['sender_name']) ?>">
+                                            <input type="hidden" name="to_user_id" value="<?= (int)$msg['sender_id'] ?>">
+                                            <input type="hidden" name="offer_id"   value="<?= (int)$msg['offer_id'] ?>">
+
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold small"
+                                                       for="reply-textarea-<?= (int)$msg['id'] ?>">
+                                                    Votre réponse <span class="text-danger" aria-label="champ obligatoire">*</span>
+                                                </label>
+                                                <textarea class="form-control"
+                                                          id="reply-textarea-<?= (int)$msg['id'] ?>"
+                                                          name="message"
+                                                          rows="3"
+                                                          required
+                                                          aria-required="true"
+                                                          placeholder="Tapez votre message ici…"></textarea>
+                                            </div>
+
+                                            <div class="d-flex gap-2">
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-success flex-grow-1 fw-bold"
+                                                        aria-label="Envoyer la réponse à <?= htmlspecialchars($msg['sender_name']) ?>">
+                                                    <i class="bi bi-send me-1" aria-hidden="true"></i>Envoyer
+                                                </button>
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-secondary cancel-reply-btn"
+                                                        data-reply-id="reply-<?= (int)$msg['id'] ?>"
+                                                        aria-label="Annuler la réponse">
+                                                    Annuler
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-            <?php endif; ?>
-        </section>
+            </section>
+
+            <section id="sent"
+                     class="tab-content hidden"
+                     role="tabpanel"
+                     aria-labelledby="tab-sent"
+                     tabindex="0">
+
+                <?php if (empty($sent)): ?>
+                    <div class="alert glass-effect text-center p-5 border-0 shadow-sm card-wrap">
+                        <i class="bi bi-send-x display-1 text-muted opacity-50 mb-3" aria-hidden="true"></i>
+                        <p class="fs-5 text-muted">Vous n'avez envoyé aucun message.</p>
+                    </div>
+                <?php else: ?>
+                    <div class="messages-list d-flex flex-column gap-3"
+                         aria-label="Liste des messages envoyés">
+                        <?php foreach ($sent as $msg): ?>
+                            <article class="message-item card glass-effect border-0 shadow-sm overflow-hidden card-wrap--r-lg">
+
+                                <div class="message-preview p-3 d-flex align-items-center cursor-pointer"
+                                     data-target="msg-sent-<?= (int)$msg['id'] ?>"
+                                     role="button"
+                                     tabindex="0"
+                                     aria-expanded="false"
+                                     aria-controls="msg-sent-<?= (int)$msg['id'] ?>"
+                                     aria-label="Message envoyé à <?= htmlspecialchars($msg['receiver_name'] ?? 'Utilisateur') ?> — cliquer pour ouvrir">
+
+                                    <div class="avatar-circle avatar-circle--sm avatar-neutral me-3 flex-shrink-0"
+                                         aria-hidden="true">
+                                        <?= strtoupper(substr($msg['receiver_name'] ?? 'U', 0, 1)) ?>
+                                    </div>
+
+                                    <div class="preview-content flex-grow-1 overflow-hidden">
+                                        <h2 class="h6 fw-bold mb-0 text-truncate">
+                                            À&nbsp;: <?= htmlspecialchars($msg['receiver_name'] ?? 'Utilisateur') ?>
+                                        </h2>
+                                        <p class="small text-muted mb-0 text-truncate">
+                                            Objet&nbsp;: <?= htmlspecialchars($msg['offer_title'] ?? 'Annonce') ?>
+                                        </p>
+                                        <time class="small text-muted"
+                                              datetime="<?= date('Y-m-d\TH:i', strtotime($msg['date_sent'])) ?>">
+                                            <?= date('d/m/Y à H:i', strtotime($msg['date_sent'])) ?>
+                                        </time>
+                                    </div>
+
+                                    <i class="bi bi-chevron-down expand-icon ms-2" aria-hidden="true"></i>
+                                </div>
+
+                                <div id="msg-sent-<?= (int)$msg['id'] ?>"
+                                     class="message-details p-4 pt-0 msg-body-hidden"
+                                     role="region"
+                                     aria-label="Contenu du message envoyé à <?= htmlspecialchars($msg['receiver_name'] ?? 'Utilisateur') ?>">
+                                    <div class="message-body bg-light p-3 rounded-3 border">
+                                        <p class="small text-muted mb-2"><em>Votre message :</em></p>
+                                        <?= nl2br(htmlspecialchars($msg['message'])) ?>
+                                    </div>
+                                </div>
+
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </section>
+
+        </div>
     </div>
-
-</div>
-
-<script>
-// Gestion des onglets
-const tabButtons = document.querySelectorAll('.tab-button');
-const tabContents = document.querySelectorAll('.tab-content');
-
-tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        // Retirer la classe active de tous les boutons et contenus
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        tabContents.forEach(content => content.classList.remove('active'));
-
-        // Ajouter la classe active au bouton cliqué
-        button.classList.add('active');
-
-        // Afficher le contenu correspondant
-        const tabId = button.getAttribute('data-tab');
-        const targetContent = document.getElementById(tabId);
-        if (targetContent) {
-            targetContent.classList.add('active');
-        }
-    });
-});
-
-// Votre code existant
-function toggleMessage(id) {
-    const details = document.getElementById(id);
-    const item = details.closest('.message-item');
-    const icon = item.querySelector('.expand-icon');
-    
-    if (details.style.display === 'none') {
-        details.style.display = 'block';
-        item.classList.add('expanded');
-        icon.style.transform = 'rotate(180deg)';
-    } else {
-        details.style.display = 'none';
-        item.classList.remove('expanded');
-        icon.style.transform = 'rotate(0deg)';
-    }
-}
-
-function showReplyForm(id) {
-    const form = document.getElementById(id);
-    form.style.display = 'block';
-}
-
-function hideReplyForm(replyId, msgId) {
-    const form = document.getElementById(replyId);
-    const msg = document.getElementById(msgId);
-    const btn = msg.querySelector('.form-submit');
-    
-    form.style.display = 'none';
-    if (btn) btn.style.display = 'inline-flex';
-}
-
-// Voir plus pour messages reçus
-document.getElementById('load-more-received')?.addEventListener('click', function() {
-    const list = document.getElementById('received-messages-list');
-    const hiddenMessages = list.querySelectorAll('.message-item[style*="display:none"]');
-    const nextBatch = Array.from(hiddenMessages).slice(0, 3);
-    nextBatch.forEach(msg => msg.style.display = 'block');
-    if (list.querySelectorAll('.message-item[style*="display:none"]').length === 0) this.style.display = 'none';
-});
-
-// Voir plus pour messages envoyés
-document.getElementById('load-more-sent')?.addEventListener('click', function() {
-    const list = document.getElementById('sent-messages-list');
-    const hiddenMessages = list.querySelectorAll('.message-item[style*="display:none"]');
-    const nextBatch = Array.from(hiddenMessages).slice(0, 3);
-    nextBatch.forEach(msg => msg.style.display = 'block');
-    if (list.querySelectorAll('.message-item[style*="display:none"]').length === 0) this.style.display = 'none';
-});
-</script>
+</main>
